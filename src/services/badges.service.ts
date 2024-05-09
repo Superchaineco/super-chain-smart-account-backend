@@ -26,6 +26,7 @@ class BadgesServices {
     eoas: string[],
     account: string
   ): Promise<ResponseBadges[]> {
+    this.badges = [];
     const {
       data: _account,
       error: accountError,
@@ -89,6 +90,7 @@ class BadgesServices {
       await this.updateBadgeDataForAccount(account, eoas, badge, params);
     }
 
+    console.debug('Badges:', this.badges);
     return this.badges;
   }
 
