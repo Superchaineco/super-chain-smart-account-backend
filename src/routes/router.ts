@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { badgesService } from '../services/badges.service';
+import { BadgesServices } from '../services/badges.service';
 
 const routes = Router();
 
@@ -21,6 +21,7 @@ routes.get('/get-badges', async (req, res) => {
   }
 
   try {
+    const badgesService = new BadgesServices();
     const currentBadges = await badgesService.getBadges(eoas, account);
     const totalPoints = currentBadges.reduce((acc, badge) => {
       return acc + badge.points;

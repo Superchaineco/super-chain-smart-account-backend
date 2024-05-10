@@ -11,7 +11,7 @@ export type Badge = Tables<'badges'>;
 type ResponseBadges = Omit<AccountBadge, 'lastclaimblock' | 'badgeid'> &
   Omit<Badge, 'dataorigin' | 'isactive'>;
 
-class BadgesServices {
+export class BadgesServices {
   private supabase = createSupabaseClient();
   private badges: ResponseBadges[] = [];
   private helper: IBadgesHelper;
@@ -26,7 +26,6 @@ class BadgesServices {
     eoas: string[],
     account: string
   ): Promise<ResponseBadges[]> {
-    this.badges = [];
     const {
       data: _account,
       error: accountError,
@@ -233,5 +232,3 @@ class BadgesServices {
     return badges;
   }
 }
-
-export const badgesService = new BadgesServices();
