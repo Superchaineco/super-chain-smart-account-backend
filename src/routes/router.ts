@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { BadgesServices } from '../services/badges.service';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const routes = Router();
 
@@ -35,4 +36,21 @@ routes.get('/get-badges', async (req, res) => {
   }
 });
 
+routes.put('/badge', async (req, res) => {
+  let query = req.query;
+  if (!query.badgeid || !query.account) {
+    return res.json({ error: 'Invalid request' });
+  }
+  const badgeId = query.badgeid as string;
+  const account = query.account as string;
+  delete query.badgeid;
+  delete query.account;
+  try {
+    const badgesService = new BadgesServices();
+    const badge = await badgesService.updateBadge(account, badgeId, query);
+    return res.json(badge);
+  } catch (error) {
+    return res.json({ error });
+  }
+});
 export default routes;

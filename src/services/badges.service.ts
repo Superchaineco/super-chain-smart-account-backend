@@ -3,12 +3,13 @@ import { BadgesHelper, type IBadgesHelper } from './badges.helper';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables } from '../types/database.types';
 
-export type AccountBadge = Omit<
+type _AccountBadge = Omit<
   Tables<'accountbadges'>,
   'account' | 'id' | 'isdeleted' | 'isClaimed' | 'lastclaim' | 'lastclaimBlock'
 >;
+type AccountBadge = Tables<'accountbadges'>;
 export type Badge = Tables<'badges'>;
-type ResponseBadges = Omit<AccountBadge, 'lastclaimblock' | 'badgeid'> &
+type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
   Omit<Badge, 'dataorigin' | 'isactive'>;
 
 export class BadgesServices {
@@ -80,10 +81,12 @@ export class BadgesServices {
             ? {
                 blockNumber: accountBadge.lastClaimBlock,
                 points: accountBadge.points,
+                favorite: accountBadge.favorite,
               }
             : {
                 timestamp: accountBadge.lastClaim,
                 points: accountBadge.points,
+                favorite: accountBadge.favorite,
               };
       }
       await this.updateBadgeDataForAccount(account, eoas, badge, params);
@@ -91,6 +94,40 @@ export class BadgesServices {
 
     console.debug('Badges:', this.badges);
     return this.badges;
+  }
+
+  public async updateBadge(
+    account: string,
+    badgeId: string,
+    params: Partial<AccountBadge>
+  ) {
+    const { data: accountBadge, error: accountBadgeError } = await this.supabase
+      .from('accountbadges')
+      .select('*')
+      .eq('badgeid', badgeId)
+      .eq('account', account)
+      .eq('isdeleted', false)
+      .single();
+
+    if (accountBadgeError) {
+      console.error(
+        `Error fetching badge for account ${account}:`,
+        accountBadgeError
+      );
+      throw new Error('Error fetching badge for account');
+    }
+    console.log({ accountBadge: accountBadge.id, params });
+    const { data, error } = await this.supabase
+      .from('accountbadges')
+      .update({ ...params })
+      .eq('id', accountBadge.id)
+      .select();
+    console.log({ data });
+    if (error) {
+      console.error('Error updating badge:', error);
+      throw new Error('Error updating badge');
+    }
+    return data;
   }
 
   private async updateBadgeDataForAccount(
@@ -130,6 +167,7 @@ export class BadgesServices {
           networkorprotocol: badge.networkorprotocol,
           points: optimismPoints,
           id: badge.id,
+          favorite: params.favorite,
         });
         break;
       case 'Base User':
@@ -159,6 +197,7 @@ export class BadgesServices {
           networkorprotocol: badge.networkorprotocol,
           points: basePoints,
           id: badge.id,
+          favorite: params.favorite,
         });
         break;
     }
