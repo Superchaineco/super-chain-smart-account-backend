@@ -1,17 +1,20 @@
 import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/typechain-types/factories/contracts/EAS__factory';
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { ethers, JsonRpcProvider, Wallet } from 'ethers';
-import type { Badge, ResponseBadges } from './badges.service';
+import type { ResponseBadges } from './badges.service';
 import { createSupabaseClient } from './supabase.service';
+import {
+  ATTESTATOR_SIGNER_PRIVATE_KEY,
+  EAS_CONTRACT_ADDRESS,
+  JSON_RPC_PROVIDER,
+  SUPER_CHAIN_ATTESTATION_SCHEMA,
+} from '../config/superChain/constants';
 
 class AttestationsService {
-  private easContractAddress = process.env.EAS_CONTRACT_ADDRESS!;
-  private schemaString = 'uint256 DPGPoints';
-  private provider = new JsonRpcProvider(process.env.RPC_URL!);
-  private wallet = new Wallet(
-    process.env.ATTESTATOR_SIGNER_PRIVATE_KEY!,
-    this.provider
-  );
+  private easContractAddress = EAS_CONTRACT_ADDRESS;
+  private schemaString = 'uint256 SuperChainPoints';
+  private provider = new JsonRpcProvider(JSON_RPC_PROVIDER);
+  private wallet = new Wallet(ATTESTATOR_SIGNER_PRIVATE_KEY, this.provider);
   private eas = EAS__factory.connect(this.easContractAddress, this.wallet);
   private schemaEncoder = new SchemaEncoder(this.schemaString);
 
@@ -21,9 +24,8 @@ class AttestationsService {
     totalPoints: number,
     badges: ResponseBadges[]
   ) {
-    const schemaUID = process.env.SCHEMA_UID!;
     const encodedData = this.schemaEncoder.encodeData([
-      { name: 'DPGPoints', value: totalPoints, type: 'uint256' },
+      { name: 'SuperChainPoints', value: totalPoints, type: 'uint256' },
     ]);
 
     for (const badge of badges) {
@@ -71,7 +73,7 @@ class AttestationsService {
 
     try {
       const tx = await this.eas.attest({
-        schema: schemaUID,
+        schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
         data: {
           recipient: account,
           expirationTime: BigInt(0),
