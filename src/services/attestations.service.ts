@@ -1,14 +1,14 @@
 import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/typechain-types/factories/contracts/EAS__factory';
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
-import { ethers } from 'ethers';
-import type { Badge } from './badges.service';
+import { ethers, JsonRpcProvider, Wallet } from 'ethers';
+import type { Badge, ResponseBadges } from './badges.service';
 import { createSupabaseClient } from './supabase.service';
 
 class AttestationsService {
   private easContractAddress = process.env.EAS_CONTRACT_ADDRESS!;
   private schemaString = 'uint256 DPGPoints';
-  private provider = new ethers.JsonRpcProvider(process.env.RPC_URL!);
-  private wallet = new ethers.Wallet(
+  private provider = new JsonRpcProvider(process.env.RPC_URL!);
+  private wallet = new Wallet(
     process.env.ATTESTATOR_SIGNER_PRIVATE_KEY!,
     this.provider
   );
@@ -16,7 +16,11 @@ class AttestationsService {
   private schemaEncoder = new SchemaEncoder(this.schemaString);
 
   private supabase = createSupabaseClient();
-  public async attest(account: string, totalPoints: number, badges: Badge[]) {
+  public async attest(
+    account: string,
+    totalPoints: number,
+    badges: ResponseBadges[]
+  ) {
     const schemaUID = process.env.SCHEMA_UID!;
     const encodedData = this.schemaEncoder.encodeData([
       { name: 'DPGPoints', value: totalPoints, type: 'uint256' },
@@ -88,7 +92,7 @@ class AttestationsService {
   }
 
   private async upsertAccountBadge(
-    badge: Badge,
+    badge: ResponseBadges,
     account: string,
     timestamp: Date | null,
     blockNumber: number | null

@@ -3,6 +3,7 @@ import { BadgesServices } from '../services/badges.service';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { superChainAccountService } from '../services/superChainAccount.service';
 import { ZeroAddress } from 'ethers';
+import { attestationsService } from '../services/attestations.service';
 
 const routes = Router();
 
@@ -52,6 +53,32 @@ routes.put('/badge', async (req, res) => {
     return res.json(badge);
   } catch (error) {
     return res.json({ error });
+  }
+});
+
+routes.post('/attest-badges', async (req, res) => {
+  const body = req.body;
+  if (!body.account) {
+    return res.status(500).json({ error: 'Invalid request' });
+  }
+  const badgesService = new BadgesServices();
+  const eoas = await superChainAccountService.getEOAS(body.account);
+  const badges = await badgesService.getBadges(eoas, body.account);
+  const totalPoints = badges.reduce((acc, badge) => {
+    return acc + badge.points;
+  }, 0);
+
+  try {
+    const receipt = await attestationsService.attest(
+      body.account,
+      totalPoints,
+      badges
+    );
+
+    res.status(201).json({ hash: receipt?.hash });
+  } catch (error) {
+    console.error('Error attesting', error);
+    return res.status(500).json({ error });
   }
 });
 export default routes;

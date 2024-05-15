@@ -9,7 +9,7 @@ type _AccountBadge = Omit<
 >;
 type AccountBadge = Tables<'accountbadges'>;
 export type Badge = Tables<'badges'>;
-type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
+export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
   Omit<Badge, 'dataorigin' | 'isactive'>;
 
 export class BadgesServices {
