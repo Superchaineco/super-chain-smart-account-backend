@@ -7,7 +7,7 @@ import { ZeroAddress } from 'ethers';
 const routes = Router();
 
 routes.get('/', async (req, res) => {
-  res.json({
+  return res.json({
     some: process.env.SUPABASE_URL,
     other: process.env.SUPABASE_ANON_KEY,
   });
@@ -17,7 +17,7 @@ routes.get('/get-badges', async (req, res) => {
   const headers = req.headers;
   const account = headers.account as string;
   if (!account || account === ZeroAddress) {
-    res.json({ error: 'Invalid request' });
+    return res.status(500).json({ error: 'Invalid request' });
   }
 
   try {
@@ -28,7 +28,7 @@ routes.get('/get-badges', async (req, res) => {
     const totalPoints = currentBadges.reduce((acc, badge) => {
       return acc + badge.points;
     }, 0);
-    return res.json({
+    res.json({
       totalPoints,
       currentBadges,
     });
@@ -40,7 +40,7 @@ routes.get('/get-badges', async (req, res) => {
 routes.put('/badge', async (req, res) => {
   let query = req.query;
   if (!query.badgeid || !query.account) {
-    return res.json({ error: 'Invalid request' });
+    return res.status(500).json({ error: 'Invalid request' });
   }
   const badgeId = query.badgeid as string;
   const account = query.account as string;
