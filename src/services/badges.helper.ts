@@ -31,7 +31,6 @@ export class BadgesHelper {
           AssetTransfersCategory.ERC20,
           AssetTransfersCategory.ERC1155,
           AssetTransfersCategory.EXTERNAL,
-          AssetTransfersCategory.INTERNAL,
           AssetTransfersCategory.ERC721,
         ],
       });
@@ -59,14 +58,12 @@ export class BadgesHelper {
           AssetTransfersCategory.ERC20,
           AssetTransfersCategory.ERC1155,
           AssetTransfersCategory.EXTERNAL,
-          AssetTransfersCategory.INTERNAL,
           AssetTransfersCategory.ERC721,
         ],
       });
 
       return acc + res.transfers.length;
     }, Promise.resolve(0));
-
     return transactions;
   }
 

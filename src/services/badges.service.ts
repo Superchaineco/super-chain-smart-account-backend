@@ -35,7 +35,8 @@ export class BadgesServices {
       .from('account')
       .select('*')
       .eq('address', account)
-      .single();
+      .limit(1)
+      .maybeSingle();
 
     const activeBadges = await this.getActiveBadges();
     if (accountError) throw new Error('Error fetching account data');
@@ -89,7 +90,11 @@ export class BadgesServices {
                 favorite: accountBadge.favorite,
               };
       }
-      await this.updateBadgeDataForAccount(account, eoas, badge, params);
+      try {
+        await this.updateBadgeDataForAccount(account, eoas, badge, params);
+      } catch (e) {
+        console.error('Error updating badge data:', badge.name);
+      }
     }
 
     console.debug('Badges:', this.badges);
@@ -122,7 +127,6 @@ export class BadgesServices {
       .update({ ...params })
       .eq('id', accountBadge.id)
       .select();
-    console.log({ data });
     if (error) {
       console.error('Error updating badge:', error);
       throw new Error('Error updating badge');
@@ -142,11 +146,10 @@ export class BadgesServices {
     );
     switch (badge.name) {
       case 'OP Mainnet User':
-        // const optimismTransactions = await this.helper.getOptimisimTransactions(
-        //   eoas,
-        //   params.blockNumber
-        // );
-        const optimismTransactions = 100;
+        const optimismTransactions = await this.helper.getOptimisimTransactions(
+          eoas,
+          params.blockNumber
+        );
         let optimismPoints = 0;
         if (optimismTransactions > 250) {
           optimismPoints = 50;
@@ -171,11 +174,10 @@ export class BadgesServices {
         });
         break;
       case 'Base User':
-        // const baseTransactions = await this.helper.getBaseTransactions(
-        //   eoas,
-        //   params.blockNumber
-        // );
-        const baseTransactions = 100;
+        const baseTransactions = await this.helper.getBaseTransactions(
+          eoas,
+          params.blockNumber
+        );
 
         let basePoints = 0;
         if (baseTransactions > 250) {

@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { BadgesServices } from '../services/badges.service';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { superChainAccountService } from '../services/superChainAccount.service';
+import { ZeroAddress } from 'ethers';
 
 const routes = Router();
 
@@ -13,17 +15,16 @@ routes.get('/', async (req, res) => {
 
 routes.get('/get-badges', async (req, res) => {
   const headers = req.headers;
-  const eoas = (headers.address as string)?.split(',');
   const account = headers.account as string;
-
-  console.log(eoas, account);
-  if (!eoas || !account) {
+  if (!account || account === ZeroAddress) {
     res.json({ error: 'Invalid request' });
   }
 
   try {
     const badgesService = new BadgesServices();
+    const eoas = await superChainAccountService.getEOAS(account);
     const currentBadges = await badgesService.getBadges(eoas, account);
+    console.debug('currentBadges', currentBadges);
     const totalPoints = currentBadges.reduce((acc, badge) => {
       return acc + badge.points;
     }, 0);
@@ -32,7 +33,7 @@ routes.get('/get-badges', async (req, res) => {
       currentBadges,
     });
   } catch (error) {
-    return res.json({ error });
+    return res.status(500).json({ error });
   }
 });
 

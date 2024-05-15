@@ -1,0 +1,9 @@
+import SuperChainSetupABI from './abi/SuperChainSetup.json'
+import SuperChainModuleABI from './abi/SuperChainModule.json'
+export const SUPER_CHAIN_SETUP_ABI = SuperChainSetupABI
+export const SUPER_CHAIN_MODULE_ABI = SuperChainModuleABI
+export const SUPER_CHAIN_SETUP_ADDRESS = '0xFc9378915ceF4ca7aa4A180F0FDF119038Cf609a'
+export const SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS = '0xDC63249b0eebb91eF8B547F05ed036e721A8120C'
+export const SUPER_CHAIN_ACCOUNT_GUARD_ADDRESS = '0x94DCcd59c0a1877869c1eF91CCd3C0148158f626'
+export const ERC4337_MODULE_ADDRESS = '0xa581c4A4DB7175302464fF3C06380BC3270b4037'
+export const JSON_RPC_PROVIDER = process.env.NEXT_PUBLIC_JSON_RPC_PROVIDER
