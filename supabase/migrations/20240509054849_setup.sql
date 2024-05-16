@@ -9,7 +9,6 @@ CREATE TABLE AccountBadges(
     id SERIAL PRIMARY KEY,
     badgeId INT,
     account VARCHAR(42),
-    title TEXT not null,
     points INT not null,
     lastClaim timestamp,
     lastClaimBlock INT,
@@ -22,4 +21,4 @@ CREATE TABLE CITIZENS(
     claimed BOOLEAN DEFAULT FALSE,
     address VARCHAR(42) NOT NULL,
     ens VARCHAR(255)
-) a
+) 

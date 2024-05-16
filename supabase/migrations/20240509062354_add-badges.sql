@@ -4,7 +4,8 @@ INSERT INTO Badges (
         dataOrigin,
         description,
         networkOrProtocol,
-        image
+        image,
+        tiers
     )
 VALUES (
         'Base User',
@@ -12,7 +13,8 @@ VALUES (
         'onChain',
         'Number of transactions made on Base',
         'Base',
-        'https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/BaseUser.png'
+        'https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/BaseUser.png',
+        '[{"minValue": 0, "image": "https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Tiers/BaseUser.png"}]'
     );
 INSERT INTO Badges (
         name,
@@ -20,7 +22,8 @@ INSERT INTO Badges (
         dataOrigin,
         description,
         networkOrProtocol,
-        image
+        image,
+        tiers
     )
 VALUES (
         'OP Mainnet User',
@@ -28,5 +31,6 @@ VALUES (
         'onChain',
         'Number of transactions made on OP Mainnet',
         'Optimism',
-        'https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/OPUser.png'
+        'https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/OPUser.png',
+        '[{"minValue": 0, "image": "https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Tiers/BaseUser.png"}]'
     );
