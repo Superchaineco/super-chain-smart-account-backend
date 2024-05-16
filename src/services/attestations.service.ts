@@ -27,10 +27,11 @@ class AttestationsService {
     const encodedData = this.schemaEncoder.encodeData([
       { name: 'SuperChainPoints', value: totalPoints, type: 'uint256' },
     ]);
+    console.log({ totalPoints });
 
     for (const badge of badges) {
       const { data: badgeData, error: badgeError } = await this.supabase
-        .from('Badges')
+        .from('badges')
         .select('*')
         .eq('id', badge.id)
         .single();
@@ -99,15 +100,16 @@ class AttestationsService {
     timestamp: Date | null,
     blockNumber: number | null
   ) {
-    const { data, error } = await this.supabase.from('AccountBadges').upsert({
-      badgeId: badge.id,
-      account,
-      title: badge.name,
-      points: badge.points,
-      lastClaim: timestamp ? timestamp.toISOString() : null,
-      lastClaimBlock: blockNumber,
-      isDeleted: false,
-    });
+    const { data, error } = await this.supabase
+      .from('accountbadges')
+      .update({
+        points: badge.points,
+        lastclaim: timestamp ? timestamp.toISOString() : null,
+        lastclaimblock: blockNumber,
+      })
+      .eq('badgeid', badge.id)
+      .eq('account', account)
+      .select();
 
     return { data, error };
   }

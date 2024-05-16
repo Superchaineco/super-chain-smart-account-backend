@@ -57,25 +57,28 @@ routes.put('/badge', async (req, res) => {
 });
 
 routes.post('/attest-badges', async (req, res) => {
-  const body = req.body;
-  if (!body.account) {
+  const headers = req.headers;
+  const account = headers.account as string;
+  if (!account) {
     return res.status(500).json({ error: 'Invalid request' });
   }
   const badgesService = new BadgesServices();
-  const eoas = await superChainAccountService.getEOAS(body.account);
-  const badges = await badgesService.getBadges(eoas, body.account);
+  const eoas = await superChainAccountService.getEOAS(account);
+  const badges = await badgesService.getBadges(eoas, account);
   const totalPoints = badges.reduce((acc, badge) => {
     return acc + badge.points;
   }, 0);
+  // TODO: When the new contract migration happens, remove this line
+  const owners = await superChainAccountService.getEOAS(account);
 
   try {
     const receipt = await attestationsService.attest(
-      body.account,
+      owners[0],
       totalPoints,
       badges
     );
 
-    res.status(201).json({ hash: receipt?.hash });
+    return res.status(201).json({ hash: receipt?.hash });
   } catch (error) {
     console.error('Error attesting', error);
     return res.status(500).json({ error });

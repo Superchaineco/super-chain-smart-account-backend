@@ -81,12 +81,10 @@ export class BadgesServices {
           badge.dataOrigin === 'onChain'
             ? {
                 blockNumber: accountBadge.lastClaimBlock,
-                points: accountBadge.points,
                 favorite: accountBadge.favorite,
               }
             : {
                 timestamp: accountBadge.lastClaim,
-                points: accountBadge.points,
                 favorite: accountBadge.favorite,
               };
       }
@@ -121,7 +119,6 @@ export class BadgesServices {
       );
       throw new Error('Error fetching badge for account');
     }
-    console.log({ accountBadge: accountBadge.id, params });
     const { data, error } = await this.supabase
       .from('accountbadges')
       .update({ ...params })
@@ -162,7 +159,6 @@ export class BadgesServices {
         } else if (optimismTransactions > 10) {
           optimismPoints = 10;
         }
-        optimismPoints -= params.points;
         this.badges.push({
           name: badge.name,
           image: badge.image,
@@ -191,7 +187,6 @@ export class BadgesServices {
         } else if (baseTransactions > 10) {
           basePoints = 10;
         }
-        basePoints -= params.points;
         this.badges.push({
           name: badge.name,
           image: badge.image,

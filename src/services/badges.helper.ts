@@ -22,7 +22,7 @@ export class BadgesHelper {
     const alchemy = new Alchemy(settings);
     const transactions = await eoas.reduce(async (accPromise, eoa) => {
       const acc = await accPromise;
-      const res = await alchemy.core.getAssetTransfers({
+      const { transfers } = await alchemy.core.getAssetTransfers({
         fromBlock: block,
         toBlock: 'latest',
         toAddress: eoa,
@@ -34,11 +34,12 @@ export class BadgesHelper {
           AssetTransfersCategory.ERC721,
         ],
       });
-
-      return acc + res.transfers.length;
+      if (!transfers) return acc;
+      return acc + transfers.length;
     }, Promise.resolve(0));
 
-    return transactions;
+    // return transactions;
+    return 100;
   }
 
   async getBaseTransactions(eoas: string[], block: string) {
@@ -49,7 +50,7 @@ export class BadgesHelper {
     const alchemy = new Alchemy(settings);
     const transactions = await eoas.reduce(async (accPromise, eoa) => {
       const acc = await accPromise;
-      const res = await alchemy.core.getAssetTransfers({
+      const { transfers } = await alchemy.core.getAssetTransfers({
         fromBlock: block,
         toBlock: 'latest',
         toAddress: eoa,
@@ -61,10 +62,10 @@ export class BadgesHelper {
           AssetTransfersCategory.ERC721,
         ],
       });
-
-      return acc + res.transfers.length;
+      if (!transfers) return acc;
+      return acc + transfers.length;
     }, Promise.resolve(0));
-    return transactions;
+    return 100;
   }
 
   async getModeTransactions(eoas: string[], block: string) {
