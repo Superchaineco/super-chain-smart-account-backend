@@ -4,7 +4,6 @@ INSERT INTO Badges (
         dataOrigin,
         description,
         networkOrProtocol,
-        image,
         tiers,
         network,
         TierDescription
@@ -15,8 +14,7 @@ VALUES (
         'onChain',
         'Number of transactions made on Base',
         'Base',
-        'https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/BaseUser.png',
-        '[{"minValue": 0, "image": "https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Tiers/BaseUser.png"}]',
+        '[{"minValue": 0, "3DImage": "https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/3DImages/BaseUser-1.svg", "2DImage": "https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/2DImages/BaseUser-1.svg"}]',
         'Base',
         '{{variable}} transactions on Base'
     );
@@ -26,7 +24,6 @@ INSERT INTO Badges (
         dataOrigin,
         description,
         networkOrProtocol,
-        image,
         tiers,
         network,
         TierDescription
@@ -37,8 +34,7 @@ VALUES (
         'onChain',
         'Number of transactions made on OP Mainnet',
         'Optimism',
-        'https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/OPUser.png',
-        '[{"minValue": 0, "image": "https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Tiers/BaseUser.png"}]',
+        '[{"minValue": 0, "3DImage": "https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/3DImages/OPUser-1.svg", "2DImage":"https://ikjhtwwevrmwwjatccqi.supabase.co/storage/v1/object/public/Badges/2DImages/OPUser-1.svg"}]',
         'Optimism',
         '{{variable}} transactions on OP Mainnet'
     );
