@@ -160,12 +160,8 @@ export class BadgesServices {
           optimismPoints = 10;
         }
         this.badges.push({
-          name: badge.name,
-          image: badge.image,
-          description: badge.description,
-          networkorprotocol: badge.networkorprotocol,
+          ...badge,
           points: optimismPoints,
-          id: badge.id,
           favorite: params.favorite,
         });
         break;
@@ -188,12 +184,8 @@ export class BadgesServices {
           basePoints = 10;
         }
         this.badges.push({
-          name: badge.name,
-          image: badge.image,
-          description: badge.description,
-          networkorprotocol: badge.networkorprotocol,
+          ...badge,
           points: basePoints,
-          id: badge.id,
           favorite: params.favorite,
         });
         break;

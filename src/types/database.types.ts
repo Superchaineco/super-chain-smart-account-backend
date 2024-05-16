@@ -23,7 +23,7 @@ export type Database = {
       }
       accountbadges: {
         Row: {
-          account: string | null
+          account: string
           badgeid: number | null
           favorite: boolean | null
           id: number
@@ -33,7 +33,7 @@ export type Database = {
           points: number
         }
         Insert: {
-          account?: string | null
+          account: string
           badgeid?: number | null
           favorite?: boolean | null
           id?: number
@@ -43,7 +43,7 @@ export type Database = {
           points: number
         }
         Update: {
-          account?: string | null
+          account?: string
           badgeid?: number | null
           favorite?: boolean | null
           id?: number
@@ -72,46 +72,55 @@ export type Database = {
       badges: {
         Row: {
           dataorigin: string | null
-          description: string | null
+          description: string
           id: number
-          image: string | null
           isactive: boolean | null
           name: string
-          networkorprotocol: string | null
+          network: string
+          networkorprotocol: string
+          tierdescription: string
+          tiers: Json
         }
         Insert: {
           dataorigin?: string | null
-          description?: string | null
+          description: string
           id?: number
-          image?: string | null
           isactive?: boolean | null
           name: string
-          networkorprotocol?: string | null
+          network: string
+          networkorprotocol: string
+          tierdescription: string
+          tiers: Json
         }
         Update: {
           dataorigin?: string | null
-          description?: string | null
+          description?: string
           id?: number
-          image?: string | null
           isactive?: boolean | null
           name?: string
-          networkorprotocol?: string | null
+          network?: string
+          networkorprotocol?: string
+          tierdescription?: string
+          tiers?: Json
         }
         Relationships: []
       }
       citizens: {
         Row: {
           address: string
+          claimed: boolean | null
           ens: string | null
           id: number
         }
         Insert: {
           address: string
+          claimed?: boolean | null
           ens?: string | null
           id?: number
         }
         Update: {
           address?: string
+          claimed?: boolean | null
           ens?: string | null
           id?: number
         }
