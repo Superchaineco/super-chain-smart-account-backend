@@ -1,7 +1,7 @@
 import { createSupabaseClient } from './supabase.service';
 import { BadgesHelper, type IBadgesHelper } from './badges.helper';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '../types/database.types';
+import type { Database, Tables, Tiers } from '../types/database.types';
 
 type _AccountBadge = Omit<
   Tables<'accountbadges'>,
@@ -10,7 +10,7 @@ type _AccountBadge = Omit<
 type AccountBadge = Tables<'accountbadges'>;
 export type Badge = Tables<'badges'>;
 export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
-  Omit<Badge, 'dataorigin' | 'isactive'>;
+  Omit<Badge, 'dataorigin' | 'isactive'> & { currentTier: number };
 
 export class BadgesServices {
   private supabase = createSupabaseClient();
@@ -163,7 +163,9 @@ export class BadgesServices {
           ...badge,
           points: optimismPoints,
           favorite: params.favorite,
+          currentTier: this.getCurrentTier(optimismPoints, badge.tiers),
         });
+
         break;
       case 'Base User':
         const baseTransactions = await this.helper.getBaseTransactions(
@@ -187,6 +189,7 @@ export class BadgesServices {
           ...badge,
           points: basePoints,
           favorite: params.favorite,
+          currentTier: this.getCurrentTier(basePoints, badge.tiers),
         });
         break;
     }
@@ -258,5 +261,11 @@ export class BadgesServices {
     }
 
     return badges;
+  }
+
+  private getCurrentTier(points: number, tiers: Badge['tiers']) {
+    return (tiers as Tiers[])
+      .reverse()
+      .findIndex((tier) => tier.minValue <= points);
   }
 }

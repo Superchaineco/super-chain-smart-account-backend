@@ -5,6 +5,13 @@ export type Json =
   | null
   | { [key: string]: Json | undefined }
   | Json[]
+  | Tiers[]
+
+  export type Tiers = {
+    '2DImage' : string,
+    '3DImage': string,
+    minValue:number
+  }
 
 export type Database = {
   public: {
