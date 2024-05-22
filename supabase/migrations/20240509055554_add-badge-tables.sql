@@ -13,6 +13,9 @@ FOR i IN 0..jsonb_array_length(NEW.tiers) - 1 LOOP tier := NEW.tiers->i;
 IF tier->>'minValue' IS NULL THEN RAISE EXCEPTION 'minValue in tiers[%] cannot be NULL',
 i;
 END IF;
+IF tier->>'points' IS NULL THEN RAISE EXCEPTION 'points in tiers[%] cannot be NULL',
+i;
+END IF;
 IF tier->>'3DImage' IS NULL THEN RAISE EXCEPTION '3DImage in tiers[%] cannot be NULL',
 i;
 END IF;

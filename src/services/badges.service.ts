@@ -10,7 +10,7 @@ type _AccountBadge = Omit<
 type AccountBadge = Tables<'accountbadges'>;
 export type Badge = Tables<'badges'>;
 export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
-  Omit<Badge, 'dataorigin' | 'isactive'> & { currentTier: number };
+  Omit<Badge, 'dataorigin' | 'isactive'> & { claimableTier: number | null };
 
 export class BadgesServices {
   private supabase = createSupabaseClient();
@@ -50,7 +50,6 @@ export class BadgesServices {
           activeBadges.map((badge) => ({
             badgeid: badge.id,
             account,
-            points: 0,
             lastclaim: new Date(),
             lastclaimblock: 0,
           }))
@@ -77,15 +76,18 @@ export class BadgesServices {
 
       let params = {};
       if (accountBadge) {
+        console.debug('Account badge:', accountBadge);
         params =
           badge.dataOrigin === 'onChain'
             ? {
-                blockNumber: accountBadge.lastClaimBlock,
+                blockNumber: accountBadge.lastclaimblock,
                 favorite: accountBadge.favorite,
+                lastClaimTier: accountBadge.lastclaimtier,
               }
             : {
-                timestamp: accountBadge.lastClaim,
+                timestamp: accountBadge.lastclaim,
                 favorite: accountBadge.favorite,
+                lastClaimTier: accountBadge.lastclaimtier,
               };
       }
       try {
@@ -147,23 +149,19 @@ export class BadgesServices {
           eoas,
           params.blockNumber
         );
-        let optimismPoints = 0;
-        if (optimismTransactions > 250) {
-          optimismPoints = 50;
-        } else if (optimismTransactions > 100) {
-          optimismPoints = 40;
-        } else if (optimismTransactions > 50) {
-          optimismPoints = 30;
-        } else if (optimismTransactions > 20) {
-          optimismPoints = 20;
-        } else if (optimismTransactions > 10) {
-          optimismPoints = 10;
+        if (!badge.tiers) throw new Error('No tiers found for badge');
+        let optimismTier = null;
+        for (let i   = (badge.tiers as Tiers[]).length - 1; i >= 0 ; i--) {
+          if (optimismTransactions >= (badge.tiers as Tiers[])[i].minValue) {
+            optimismTier = i;
+            break;
+          }
         }
         this.badges.push({
           ...badge,
-          points: optimismPoints,
           favorite: params.favorite,
-          currentTier: this.getCurrentTier(optimismPoints, badge.tiers),
+          claimableTier: optimismTier,
+          lastclaimtier: params.lastClaimTier,
         });
 
         break;
@@ -173,23 +171,19 @@ export class BadgesServices {
           params.blockNumber
         );
 
-        let basePoints = 0;
-        if (baseTransactions > 250) {
-          basePoints = 50;
-        } else if (baseTransactions > 100) {
-          basePoints = 40;
-        } else if (baseTransactions > 50) {
-          basePoints = 30;
-        } else if (baseTransactions > 20) {
-          basePoints = 20;
-        } else if (baseTransactions > 10) {
-          basePoints = 10;
+        let baseTier = null;
+        for (let i   = (badge.tiers as Tiers[]).length - 1; i >= 0 ; i--) {
+          if (baseTransactions >= (badge.tiers as Tiers[])[i].minValue) {
+            optimismTier = i;
+            break;
+          }
         }
+        console.log({ params });
         this.badges.push({
           ...badge,
-          points: basePoints,
           favorite: params.favorite,
-          currentTier: this.getCurrentTier(basePoints, badge.tiers),
+          claimableTier: baseTier,
+          lastclaimtier: params.lastClaimTier,
         });
         break;
     }
@@ -249,6 +243,25 @@ export class BadgesServices {
     // }
   }
 
+  public getTotalPoints(badges: ResponseBadges[]) {
+    return badges.reduce((acc, badge) => {
+      if (!badge.claimableTier) return acc;
+      for (let i = 0; i < badge.claimableTier; i++) {
+        acc += (badge.tiers as Tiers[])[i].points;
+      }
+      return acc;
+    }, 0);
+  }
+
+  public getClaimablePoints = (badges: ResponseBadges[]) =>
+    badges.reduce((acc, badge) => {
+      if (!badge.claimableTier || !badge.lastclaimtier || badge.claimableTier < badge.lastclaimtier) return acc;
+      for (let i = badge.lastclaimtier  + 1; i < badge.claimableTier; i++) {
+        acc += (badge.tiers as Tiers[])[i].points;
+      }
+      return acc;
+    }, 0);
+
   private async getActiveBadges() {
     const { data: badges, error } = await this.supabase
       .from('badges')
@@ -261,11 +274,5 @@ export class BadgesServices {
     }
 
     return badges;
-  }
-
-  private getCurrentTier(points: number, tiers: Badge['tiers']) {
-    return (tiers as Tiers[])
-      .reverse()
-      .findIndex((tier) => tier.minValue <= points);
   }
 }

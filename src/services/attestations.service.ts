@@ -103,9 +103,9 @@ class AttestationsService {
     const { data, error } = await this.supabase
       .from('accountbadges')
       .update({
-        points: badge.points,
         lastclaim: timestamp ? timestamp.toISOString() : null,
         lastclaimblock: blockNumber,
+        lastclaimtier: badge.lastclaimtier,
       })
       .eq('badgeid', badge.id)
       .eq('account', account)

@@ -26,14 +26,9 @@ routes.get('/get-badges', async (req, res) => {
     const eoas = await superChainAccountService.getEOAS(account);
     const currentBadges = await badgesService.getBadges(eoas, account);
     console.debug('currentBadges', currentBadges);
-    const totalPoints = currentBadges.reduce((acc, badge) => {
-      return acc + badge.points;
-    }, 0);
-    res.json({
-      totalPoints,
-      currentBadges,
-    });
+    res.json(currentBadges,);
   } catch (error) {
+    console.error(error)
     return res.status(500).json({ error });
   }
 });
@@ -65,17 +60,15 @@ routes.post('/attest-badges', async (req, res) => {
   const badgesService = new BadgesServices();
   const eoas = await superChainAccountService.getEOAS(account);
   const badges = await badgesService.getBadges(eoas, account);
-  const totalPoints = badges.reduce((acc, badge) => {
-    return acc + badge.points;
-  }, 0);
+  const claimablePoints = badgesService.getClaimablePoints(badges);
   // TODO: When the new contract migration happens, remove this line
   const owners = await superChainAccountService.getEOAS(account);
 
   try {
     const receipt = await attestationsService.attest(
       owners[0],
-      totalPoints,
-      badges
+      claimablePoints,
+      badges,
     );
 
     return res.status(201).json({ hash: receipt?.hash });

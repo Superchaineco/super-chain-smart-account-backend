@@ -9,10 +9,10 @@ CREATE TABLE AccountBadges(
     id SERIAL PRIMARY KEY,
     badgeId INT,
     account VARCHAR(42),
-    points INT not null,
     lastClaim timestamp,
     lastClaimBlock INT,
     isDeleted BOOLEAN DEFAULT FALSE,
+    lastClaimTier INT,
     FOREIGN KEY (account) REFERENCES Account(address),
     FOREIGN KEY (badgeId) REFERENCES Badges(id)
 );
