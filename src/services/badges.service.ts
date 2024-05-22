@@ -10,7 +10,10 @@ type _AccountBadge = Omit<
 type AccountBadge = Tables<'accountbadges'>;
 export type Badge = Tables<'badges'>;
 export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
-  Omit<Badge, 'dataorigin' | 'isactive'> & { claimableTier: number | null };
+  Omit<Badge, 'dataorigin' | 'isactive'> & {
+    claimableTier: number | null;
+    points: number;
+  };
 
 export class BadgesServices {
   private supabase = createSupabaseClient();
@@ -73,7 +76,6 @@ export class BadgesServices {
         console.error(`Error fetching badge for account ${account}:`, error);
         continue;
       }
-
       let params = {};
       if (accountBadge) {
         console.debug('Account badge:', accountBadge);
@@ -151,17 +153,24 @@ export class BadgesServices {
         );
         if (!badge.tiers) throw new Error('No tiers found for badge');
         let optimismTier = null;
-        for (let i   = (badge.tiers as Tiers[]).length - 1; i >= 0 ; i--) {
+        for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (optimismTransactions >= (badge.tiers as Tiers[])[i].minValue) {
             optimismTier = i;
-            break;
+            break;optimismTier
           }
         }
+        const optimismPoints = this.getBadgeTotalPoints({
+          ...badge,
+          favorite: params.favorite,
+          claimableTier: optimismTier,
+          lastclaimtier: params.lastClaimTier,
+        });
         this.badges.push({
           ...badge,
           favorite: params.favorite,
           claimableTier: optimismTier,
           lastclaimtier: params.lastClaimTier,
+          points: optimismPoints
         });
 
         break;
@@ -172,18 +181,24 @@ export class BadgesServices {
         );
 
         let baseTier = null;
-        for (let i   = (badge.tiers as Tiers[]).length - 1; i >= 0 ; i--) {
+        for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (baseTransactions >= (badge.tiers as Tiers[])[i].minValue) {
             optimismTier = i;
             break;
           }
         }
-        console.log({ params });
+        const basePoints = this.getBadgeTotalPoints({
+          ...badge,
+          favorite: params.favorite,
+          claimableTier: baseTier,
+          lastclaimtier: params.lastClaimTier,
+        });
         this.badges.push({
           ...badge,
           favorite: params.favorite,
           claimableTier: baseTier,
           lastclaimtier: params.lastClaimTier,
+          points: basePoints
         });
         break;
     }
@@ -253,10 +268,24 @@ export class BadgesServices {
     }, 0);
   }
 
+  private getBadgeTotalPoints(badge: Omit<ResponseBadges, 'points'>) {
+    let points = 0;
+    if (!badge.claimableTier) return points;
+    for (let i = 0; i < badge.claimableTier; i++) {
+      points += (badge.tiers as Tiers[])[i].points;
+    }
+    return points;
+  }
+
   public getClaimablePoints = (badges: ResponseBadges[]) =>
     badges.reduce((acc, badge) => {
-      if (!badge.claimableTier || !badge.lastclaimtier || badge.claimableTier < badge.lastclaimtier) return acc;
-      for (let i = badge.lastclaimtier  + 1; i < badge.claimableTier; i++) {
+      if (
+        !badge.claimableTier ||
+        !badge.lastclaimtier ||
+        badge.claimableTier < badge.lastclaimtier
+      )
+        return acc;
+      for (let i = badge.lastclaimtier + 1; i < badge.claimableTier; i++) {
         acc += (badge.tiers as Tiers[])[i].points;
       }
       return acc;

@@ -25,10 +25,11 @@ routes.get('/get-badges', async (req, res) => {
     const badgesService = new BadgesServices();
     const eoas = await superChainAccountService.getEOAS(account);
     const currentBadges = await badgesService.getBadges(eoas, account);
+    const totalPoints = badgesService.getTotalPoints(currentBadges);
     console.debug('currentBadges', currentBadges);
-    res.json(currentBadges,);
+    res.json({ currentBadges, totalPoints });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return res.status(500).json({ error });
   }
 });
@@ -68,7 +69,7 @@ routes.post('/attest-badges', async (req, res) => {
     const receipt = await attestationsService.attest(
       owners[0],
       claimablePoints,
-      badges,
+      badges
     );
 
     return res.status(201).json({ hash: receipt?.hash });
