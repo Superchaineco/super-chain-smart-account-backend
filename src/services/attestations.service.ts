@@ -2,7 +2,7 @@ import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/t
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { ethers, JsonRpcProvider, Wallet } from 'ethers';
 import type { ResponseBadges } from './badges.service';
-import { createSupabaseClient } from './supabase.service';
+import { SBclient } from './supabase.service';
 import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
   EAS_CONTRACT_ADDRESS,
@@ -10,7 +10,7 @@ import {
   SUPER_CHAIN_ATTESTATION_SCHEMA,
 } from '../config/superChain/constants';
 
-class AttestationsService {
+export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
   private schemaString = 'uint256 SuperChainPoints';
   private provider = new JsonRpcProvider(JSON_RPC_PROVIDER);
@@ -18,11 +18,13 @@ class AttestationsService {
   private eas = EAS__factory.connect(this.easContractAddress, this.wallet);
   private schemaEncoder = new SchemaEncoder(this.schemaString);
 
-  private supabase = createSupabaseClient();
+  private supabase = SBclient;
   public async attest(
     account: string,
     totalPoints: number,
-    badges: ResponseBadges[]
+    badges: ResponseBadges[],
+    // This must be erased
+    _account: string
   ) {
     const encodedData = this.schemaEncoder.encodeData([
       { name: 'SuperChainPoints', value: totalPoints, type: 'uint256' },
@@ -45,11 +47,11 @@ class AttestationsService {
       }
 
       let updateResult;
-      if (badgeData.dataOrigin === 'onChain') {
+      if (badgeData.dataorigin === 'onChain') {
         const blockNumber = await this.provider.getBlockNumber();
         updateResult = await this.upsertAccountBadge(
           badge,
-          account,
+          _account,
           null,
           blockNumber
         );
@@ -57,7 +59,7 @@ class AttestationsService {
         const timestamp = new Date();
         updateResult = await this.upsertAccountBadge(
           badge,
-          account,
+          _account,
           timestamp,
           null
         );
@@ -73,21 +75,21 @@ class AttestationsService {
     }
 
     try {
-      const tx = await this.eas.attest({
-        schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
-        data: {
-          recipient: account,
-          expirationTime: BigInt(0),
-          refUID: ethers.ZeroHash,
-          revocable: false,
-          data: encodedData,
-          value: BigInt(0),
-        },
-      });
+      // const tx = await this.eas.attest({
+      //   schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
+      //   data: {
+      //     recipient: account,
+      //     expirationTime: BigInt(0),
+      //     refUID: ethers.ZeroHash,
+      //     revocable: false,
+      //     data: encodedData,
+      //     value: BigInt(0),
+      //   },
+      // });
 
-      const receipt = await tx.wait();
-      console.log(`Attestation successful. Transaction hash: ${receipt?.hash}`);
-      return receipt;
+      // const receipt = await tx.wait();
+      // console.log(`Attestation successful. Transaction hash: ${receipt?.hash}`);
+      return '0x';
     } catch (error: any) {
       console.error('Error attesting', error);
       throw new Error(error);
@@ -100,19 +102,17 @@ class AttestationsService {
     timestamp: Date | null,
     blockNumber: number | null
   ) {
+
     const { data, error } = await this.supabase
       .from('accountbadges')
       .update({
         lastclaim: timestamp ? timestamp.toISOString() : null,
         lastclaimblock: blockNumber,
-        lastclaimtier: badge.lastclaimtier,
+        lastclaimtier: badge.claimableTier,
       })
       .eq('badgeid', badge.id)
       .eq('account', account)
       .select();
-
     return { data, error };
   }
 }
-
-export const attestationsService = new AttestationsService();

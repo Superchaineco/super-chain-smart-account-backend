@@ -1,7 +1,7 @@
-import { createSupabaseClient } from './supabase.service';
 import { BadgesHelper, type IBadgesHelper } from './badges.helper';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables, Tiers } from '../types/database.types';
+import { SBclient } from './supabase.service';
 
 type _AccountBadge = Omit<
   Tables<'accountbadges'>,
@@ -16,7 +16,7 @@ export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
   };
 
 export class BadgesServices {
-  private supabase = createSupabaseClient();
+  private supabase = SBclient;
   private badges: ResponseBadges[] = [];
   private helper: IBadgesHelper;
 
@@ -141,22 +141,19 @@ export class BadgesServices {
     badge: Badge,
     params: any
   ) {
-    console.log(
-      `Actualizando datos para la badge ${badge.name} del usuario ${account} con parámetros:`,
-      params
-    );
     switch (badge.name) {
       case 'OP Mainnet User':
-        const optimismTransactions = await this.helper.getOptimisimTransactions(
-          eoas,
-          params.blockNumber
-        );
+        // const optimismTransactions = await this.helper.getOptimisimTransactions(
+        //   eoas,
+        //   params.blockNumber
+        // );
+        const optimismTransactions = 0;
         if (!badge.tiers) throw new Error('No tiers found for badge');
         let optimismTier = null;
         for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (optimismTransactions >= (badge.tiers as Tiers[])[i].minValue) {
             optimismTier = i;
-            break;optimismTier
+            break;
           }
         }
         const optimismPoints = this.getBadgeTotalPoints({
@@ -170,23 +167,25 @@ export class BadgesServices {
           favorite: params.favorite,
           claimableTier: optimismTier,
           lastclaimtier: params.lastClaimTier,
-          points: optimismPoints
+          points: optimismPoints,
         });
 
         break;
       case 'Base User':
-        const baseTransactions = await this.helper.getBaseTransactions(
-          eoas,
-          params.blockNumber
-        );
+        // const baseTransactions = await this.helper.getBaseTransactions(
+        //   eoas,
+        //   params.blockNumber
+        // );
+        const baseTransactions = 0;
 
-        let baseTier = null;
+        let baseTier = 0;
         for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (baseTransactions >= (badge.tiers as Tiers[])[i].minValue) {
-            optimismTier = i;
+            baseTier = i;
             break;
           }
         }
+
         const basePoints = this.getBadgeTotalPoints({
           ...badge,
           favorite: params.favorite,
@@ -198,7 +197,7 @@ export class BadgesServices {
           favorite: params.favorite,
           claimableTier: baseTier,
           lastclaimtier: params.lastClaimTier,
-          points: basePoints
+          points: basePoints,
         });
         break;
     }
@@ -280,12 +279,17 @@ export class BadgesServices {
   public getClaimablePoints = (badges: ResponseBadges[]) =>
     badges.reduce((acc, badge) => {
       if (
-        !badge.claimableTier ||
-        !badge.lastclaimtier ||
-        badge.claimableTier < badge.lastclaimtier
-      )
+        badge.claimableTier === null ||
+        badge.claimableTier < (badge.lastclaimtier ?? 0)
+      ) {
+        console.log(!badge.claimableTier);
         return acc;
-      for (let i = badge.lastclaimtier + 1; i < badge.claimableTier; i++) {
+      }
+      for (
+        let i = badge.lastclaimtier ? badge.lastclaimtier + 1 : 0;
+        i <= badge.claimableTier;
+        i++
+      ) {
         acc += (badge.tiers as Tiers[])[i].points;
       }
       return acc;

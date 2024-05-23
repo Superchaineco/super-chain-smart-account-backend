@@ -1,10 +1,8 @@
 import { Router } from 'express';
 import { BadgesServices } from '../services/badges.service';
-import { SupabaseClient } from '@supabase/supabase-js';
 import { superChainAccountService } from '../services/superChainAccount.service';
 import { ZeroAddress } from 'ethers';
-import { attestationsService } from '../services/attestations.service';
-
+import { AttestationsService } from '../services/attestations.service';
 const routes = Router();
 
 routes.get('/', async (req, res) => {
@@ -62,17 +60,17 @@ routes.post('/attest-badges', async (req, res) => {
   const eoas = await superChainAccountService.getEOAS(account);
   const badges = await badgesService.getBadges(eoas, account);
   const claimablePoints = badgesService.getClaimablePoints(badges);
-  // TODO: When the new contract migration happens, remove this line
+  // // TODO: When the new contract migration happens, remove this line
   const owners = await superChainAccountService.getEOAS(account);
-
+  const attestationsService = new AttestationsService();
   try {
     const receipt = await attestationsService.attest(
       owners[0],
       claimablePoints,
-      badges
+      badges,
+      account
     );
-
-    return res.status(201).json({ hash: receipt?.hash });
+    return res.status(201).json({ hash: receipt });
   } catch (error) {
     console.error('Error attesting', error);
     return res.status(500).json({ error });

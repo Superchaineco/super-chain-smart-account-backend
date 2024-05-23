@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import config from '../config';
 
-export function createSupabaseClient() {
-  console.log('Creating Supabase client');
+function createSupabaseClient() {
   return createClient(config.db.supabaseUrl, config.db.supabaseAnonKey);
 }
+
+export const SBclient = createSupabaseClient();
