@@ -13,6 +13,7 @@ export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
   Omit<Badge, 'dataorigin' | 'isactive'> & {
     claimableTier: number | null;
     points: number;
+    claimable?: boolean;
   };
 
 export class BadgesServices {
@@ -168,6 +169,7 @@ export class BadgesServices {
           claimableTier: optimismTier,
           lastclaimtier: params.lastClaimTier,
           points: optimismPoints,
+          claimable: params.lastClaimTier !== optimismTier,
         });
 
         break;
@@ -198,6 +200,8 @@ export class BadgesServices {
           claimableTier: baseTier,
           lastclaimtier: params.lastClaimTier,
           points: basePoints,
+          claimable: params.lastClaimTier !== baseTier,
+
         });
         break;
     }
