@@ -60,17 +60,15 @@ routes.post('/attest-badges', async (req, res) => {
   const eoas = await superChainAccountService.getEOAS(account);
   const badges = await badgesService.getBadges(eoas, account);
   const claimablePoints = badgesService.getClaimablePoints(badges);
-  // // TODO: When the new contract migration happens, remove this line
-  const owners = await superChainAccountService.getEOAS(account);
   const attestationsService = new AttestationsService();
   try {
-    const receipt = await attestationsService.attest(
-      owners[0],
-      claimablePoints,
+    const response = await attestationsService.attest(
+      account,
+      claimablePoints.totalPoints,
       badges,
-      account
+      claimablePoints.maxClaimedTiersImages
     );
-    return res.status(201).json({ hash: receipt });
+    return res.status(201).json(response);
   } catch (error) {
     console.error('Error attesting', error);
     return res.status(500).json({ error });

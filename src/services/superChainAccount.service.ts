@@ -16,7 +16,6 @@ export class SuperChainAccountService {
       new JsonRpcProvider(JSON_RPC_PROVIDER)
     );
   }
-
   async getEOAS(address: string): Promise<string[]> {
     const ethAdapter = new EthersAdapter({
       ethers: ethers,
@@ -26,9 +25,7 @@ export class SuperChainAccountService {
     return await protocolKit.getOwners();
   }
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
-    return await this.superChainAccount
-      .getFunction('simulateIncrementSuperChainPoints')
-      .call(points, recipent);
+    return await this.superChainAccount.simulateIncrementSuperChainPoints(points, recipent)
   }
 }
 const superChainAccountService = new SuperChainAccountService();

@@ -16,6 +16,11 @@ export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
     claimable?: boolean;
   };
 
+type ClaimablePointsResult = {
+  totalPoints: number;
+  maxClaimedTiersImages: string[];
+};
+
 export class BadgesServices {
   private supabase = SBclient;
   private badges: ResponseBadges[] = [];
@@ -201,7 +206,6 @@ export class BadgesServices {
           lastclaimtier: params.lastClaimTier,
           points: basePoints,
           claimable: params.lastClaimTier !== baseTier,
-
         });
         break;
     }
@@ -280,24 +284,34 @@ export class BadgesServices {
     return points;
   }
 
-  public getClaimablePoints = (badges: ResponseBadges[]) =>
-    badges.reduce((acc, badge) => {
-      if (
-        badge.claimableTier === null ||
-        badge.claimableTier < (badge.lastclaimtier ?? 0)
-      ) {
-        console.log(!badge.claimableTier);
+  public getClaimablePoints = (badges: ResponseBadges[]) => {
+    return badges.reduce(
+      (acc, badge) => {
+        if (
+          badge.claimableTier === null ||
+          badge.claimableTier < (badge.lastclaimtier ?? 0)
+        ) {
+          return acc;
+        }
+        let maxClaimedTier = badge.lastclaimtier ?? 0;
+        for (
+          let i = badge.lastclaimtier ? badge.lastclaimtier + 1 : 0;
+          i <= badge.claimableTier;
+          i++
+        ) {
+          acc.totalPoints += (badge.tiers as Tiers[])[i].points;
+          maxClaimedTier = i;
+        }
+        if (badge.tiers) {
+          acc.maxClaimedTiersImages.push(
+            (badge.tiers as Tiers[])[maxClaimedTier]['2DImage']
+          );
+        }
         return acc;
-      }
-      for (
-        let i = badge.lastclaimtier ? badge.lastclaimtier + 1 : 0;
-        i <= badge.claimableTier;
-        i++
-      ) {
-        acc += (badge.tiers as Tiers[])[i].points;
-      }
-      return acc;
-    }, 0);
+      },
+      { totalPoints: 0, maxClaimedTiersImages: [] } as ClaimablePointsResult
+    );
+  };
 
   private async getActiveBadges() {
     const { data: badges, error } = await this.supabase

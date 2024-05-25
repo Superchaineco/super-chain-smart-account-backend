@@ -24,13 +24,11 @@ export class AttestationsService {
     account: string,
     totalPoints: number,
     badges: ResponseBadges[],
-    // This must be erased
-    _account: string
+    badgeImages: string[]
   ) {
     const encodedData = this.schemaEncoder.encodeData([
       { name: 'SuperChainPoints', value: totalPoints, type: 'uint256' },
     ]);
-    console.log({ totalPoints });
 
     for (const badge of badges) {
       const { data: badgeData, error: badgeError } = await this.supabase
@@ -52,7 +50,7 @@ export class AttestationsService {
         const blockNumber = await this.provider.getBlockNumber();
         updateResult = await this.upsertAccountBadge(
           badge,
-          _account,
+          account,
           null,
           blockNumber
         );
@@ -60,7 +58,7 @@ export class AttestationsService {
         const timestamp = new Date();
         updateResult = await this.upsertAccountBadge(
           badge,
-          _account,
+          account,
           timestamp,
           null
         );
@@ -76,7 +74,10 @@ export class AttestationsService {
     }
 
     try {
-      const isLevelUp = superChainAccountService.getIsLevelUp(account, totalPoints)
+      const isLevelUp = await superChainAccountService.getIsLevelUp(
+        account,
+        totalPoints
+      );
       const tx = await this.eas.attest({
         schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
         data: {
@@ -88,9 +89,9 @@ export class AttestationsService {
           value: BigInt(0),
         },
       });
-
+      console.log({ isLevelUp });
       const receipt = await tx.wait();
-      return receipt
+      return { receipt, isLevelUp, badgeImages, totalPoints };
     } catch (error: any) {
       console.error('Error attesting', error);
       throw new Error(error);
@@ -103,7 +104,6 @@ export class AttestationsService {
     timestamp: Date | null,
     blockNumber: number | null
   ) {
-
     const { data, error } = await this.supabase
       .from('accountbadges')
       .update({
