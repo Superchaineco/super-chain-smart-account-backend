@@ -25,6 +25,11 @@ export class SuperChainAccountService {
     const protocolKit = await Safe.create({ ethAdapter, safeAddress: address });
     return await protocolKit.getOwners();
   }
+  async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
+    return await this.superChainAccount
+      .getFunction('simulateIncrementSuperChainPoints')
+      .call(points, recipent);
+  }
 }
 const superChainAccountService = new SuperChainAccountService();
 export { superChainAccountService };

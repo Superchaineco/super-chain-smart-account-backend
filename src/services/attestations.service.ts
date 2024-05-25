@@ -9,6 +9,7 @@ import {
   JSON_RPC_PROVIDER,
   SUPER_CHAIN_ATTESTATION_SCHEMA,
 } from '../config/superChain/constants';
+import { superChainAccountService } from './superChainAccount.service';
 
 export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
@@ -75,21 +76,21 @@ export class AttestationsService {
     }
 
     try {
-      // const tx = await this.eas.attest({
-      //   schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
-      //   data: {
-      //     recipient: account,
-      //     expirationTime: BigInt(0),
-      //     refUID: ethers.ZeroHash,
-      //     revocable: false,
-      //     data: encodedData,
-      //     value: BigInt(0),
-      //   },
-      // });
+      const isLevelUp = superChainAccountService.getIsLevelUp(account, totalPoints)
+      const tx = await this.eas.attest({
+        schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
+        data: {
+          recipient: account,
+          expirationTime: BigInt(0),
+          refUID: ethers.ZeroHash,
+          revocable: false,
+          data: encodedData,
+          value: BigInt(0),
+        },
+      });
 
-      // const receipt = await tx.wait();
-      // console.log(`Attestation successful. Transaction hash: ${receipt?.hash}`);
-      return '0x';
+      const receipt = await tx.wait();
+      return receipt
     } catch (error: any) {
       console.error('Error attesting', error);
       throw new Error(error);
