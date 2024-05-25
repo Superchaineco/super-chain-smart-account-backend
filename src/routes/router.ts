@@ -3,6 +3,7 @@ import { BadgesServices } from '../services/badges.service';
 import { superChainAccountService } from '../services/superChainAccount.service';
 import { ZeroAddress } from 'ethers';
 import { AttestationsService } from '../services/attestations.service';
+import { Tiers } from '../types/database.types';
 const routes = Router();
 
 routes.get('/', async (req, res) => {
@@ -64,9 +65,11 @@ routes.post('/attest-badges', async (req, res) => {
   try {
     const response = await attestationsService.attest(
       account,
-      claimablePoints.totalPoints,
+      claimablePoints,
       badges,
-      claimablePoints.maxClaimedTiersImages
+      badges.map(
+        (badge) => (badge.tiers as Tiers[])[badge.claimableTier!]['2DImage']
+      )
     );
     return res.status(201).json(response);
   } catch (error) {

@@ -89,9 +89,8 @@ export class AttestationsService {
           value: BigInt(0),
         },
       });
-      console.log({ isLevelUp });
       const receipt = await tx.wait();
-      return { receipt, isLevelUp, badgeImages, totalPoints };
+      return { hash: receipt?.hash, isLevelUp, badgeImages, totalPoints };
     } catch (error: any) {
       console.error('Error attesting', error);
       throw new Error(error);

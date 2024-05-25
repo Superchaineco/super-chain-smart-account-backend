@@ -16,11 +16,6 @@ export type ResponseBadges = Omit<_AccountBadge, 'lastclaimblock' | 'badgeid'> &
     claimable?: boolean;
   };
 
-type ClaimablePointsResult = {
-  totalPoints: number;
-  maxClaimedTiersImages: string[];
-};
-
 export class BadgesServices {
   private supabase = SBclient;
   private badges: ResponseBadges[] = [];
@@ -155,7 +150,7 @@ export class BadgesServices {
         // );
         const optimismTransactions = 0;
         if (!badge.tiers) throw new Error('No tiers found for badge');
-        let optimismTier = null;
+        let optimismTier = 1;
         for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (optimismTransactions >= (badge.tiers as Tiers[])[i].minValue) {
             optimismTier = i;
@@ -206,6 +201,7 @@ export class BadgesServices {
           lastclaimtier: params.lastClaimTier,
           points: basePoints,
           claimable: params.lastClaimTier !== baseTier,
+
         });
         break;
     }
@@ -284,34 +280,24 @@ export class BadgesServices {
     return points;
   }
 
-  public getClaimablePoints = (badges: ResponseBadges[]) => {
-    return badges.reduce(
-      (acc, badge) => {
-        if (
-          badge.claimableTier === null ||
-          badge.claimableTier < (badge.lastclaimtier ?? 0)
-        ) {
-          return acc;
-        }
-        let maxClaimedTier = badge.lastclaimtier ?? 0;
-        for (
-          let i = badge.lastclaimtier ? badge.lastclaimtier + 1 : 0;
-          i <= badge.claimableTier;
-          i++
-        ) {
-          acc.totalPoints += (badge.tiers as Tiers[])[i].points;
-          maxClaimedTier = i;
-        }
-        if (badge.tiers) {
-          acc.maxClaimedTiersImages.push(
-            (badge.tiers as Tiers[])[maxClaimedTier]['2DImage']
-          );
-        }
+  public getClaimablePoints = (badges: ResponseBadges[]) =>
+    badges.reduce((acc, badge) => {
+      if (
+        badge.claimableTier === null ||
+        badge.claimableTier < (badge.lastclaimtier ?? 0)
+      ) {
+        console.log(!badge.claimableTier);
         return acc;
-      },
-      { totalPoints: 0, maxClaimedTiersImages: [] } as ClaimablePointsResult
-    );
-  };
+      }
+      for (
+        let i = badge.lastclaimtier ? badge.lastclaimtier + 1 : 0;
+        i <= badge.claimableTier;
+        i++
+      ) {
+        acc += (badge.tiers as Tiers[])[i].points;
+      }
+      return acc;
+    }, 0);
 
   private async getActiveBadges() {
     const { data: badges, error } = await this.supabase
