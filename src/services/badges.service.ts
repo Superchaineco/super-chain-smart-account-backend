@@ -144,13 +144,12 @@ export class BadgesServices {
   ) {
     switch (badge.name) {
       case 'OP Mainnet User':
-        // const optimismTransactions = await this.helper.getOptimisimTransactions(
-        //   eoas,
-        //   params.blockNumber
-        // );
-        const optimismTransactions = 0;
+        const optimismTransactions = await this.helper.getOptimisimTransactions(
+          eoas,
+          params.blockNumber
+        );
         if (!badge.tiers) throw new Error('No tiers found for badge');
-        let optimismTier = 1;
+        let optimismTier = 0;
         for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (optimismTransactions >= (badge.tiers as Tiers[])[i].minValue) {
             optimismTier = i;
@@ -174,11 +173,10 @@ export class BadgesServices {
 
         break;
       case 'Base User':
-        // const baseTransactions = await this.helper.getBaseTransactions(
-        //   eoas,
-        //   params.blockNumber
-        // );
-        const baseTransactions = 0;
+        const baseTransactions = await this.helper.getBaseTransactions(
+          eoas,
+          params.blockNumber
+        );
 
         let baseTier = 0;
         for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {

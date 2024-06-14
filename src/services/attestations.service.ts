@@ -78,16 +78,16 @@ export class AttestationsService {
         account,
         totalPoints
       );
-      const tx = await this.eas.attest({
-        schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
-        data: {
-          recipient: account,
-          expirationTime: BigInt(0),
-          refUID: ethers.ZeroHash,
-          revocable: false,
-          data: encodedData,
-          value: BigInt(0),
-        },
+       const tx = await this.eas.attest({
+         schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
+         data: {
+           recipient: account,
+           expirationTime: BigInt(0),
+           refUID: ethers.ZeroHash,
+           revocable: false,
+           data: encodedData,
+           value: BigInt(0),
+         },
       });
       const receipt = await tx.wait();
       return { hash: receipt?.hash, isLevelUp, badgeImages, totalPoints };

@@ -37,9 +37,9 @@ export class BadgesHelper {
       if (!transfers) return acc;
       return acc + transfers.length;
     }, Promise.resolve(0));
+    console.debug('Optimism transactions:', transactions);
 
-    // return transactions;
-    return 100;
+    return transactions;
   }
 
   async getBaseTransactions(eoas: string[], block: string) {
@@ -65,7 +65,8 @@ export class BadgesHelper {
       if (!transfers) return acc;
       return acc + transfers.length;
     }, Promise.resolve(0));
-    return 100;
+    console.debug('Base transactions:', transactions);
+    return transactions;
   }
 
   async getModeTransactions(eoas: string[], block: string) {
