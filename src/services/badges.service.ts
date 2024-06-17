@@ -149,7 +149,7 @@ export class BadgesServices {
           params.blockNumber
         );
         if (!badge.tiers) throw new Error('No tiers found for badge');
-        let optimismTier = 0;
+        let optimismTier = null;
         for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (optimismTransactions >= (badge.tiers as Tiers[])[i].minValue) {
             optimismTier = i;
@@ -178,7 +178,7 @@ export class BadgesServices {
           params.blockNumber
         );
 
-        let baseTier = 0;
+        let baseTier = null;
         for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
           if (baseTransactions >= (badge.tiers as Tiers[])[i].minValue) {
             baseTier = i;
