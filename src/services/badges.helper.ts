@@ -37,7 +37,6 @@ export class BadgesHelper {
       if (!transfers) return acc;
       return acc + transfers.length;
     }, Promise.resolve(0));
-    console.debug('Optimism transactions:', transactions);
 
     return transactions;
   }
@@ -65,7 +64,6 @@ export class BadgesHelper {
       if (!transfers) return acc;
       return acc + transfers.length;
     }, Promise.resolve(0));
-    console.debug('Base transactions:', transactions);
     return transactions;
   }
 

@@ -79,7 +79,6 @@ export class BadgesServices {
       }
       let params = {};
       if (accountBadge) {
-        console.debug('Account badge:', accountBadge);
         params =
           badge.dataOrigin === 'onChain'
             ? {
@@ -100,7 +99,6 @@ export class BadgesServices {
       }
     }
 
-    console.debug('Badges:', this.badges);
     return this.badges;
   }
 
@@ -284,7 +282,6 @@ export class BadgesServices {
         badge.claimableTier === null ||
         badge.claimableTier < (badge.lastclaimtier ?? 0)
       ) {
-        console.log(!badge.claimableTier);
         return acc;
       }
       for (

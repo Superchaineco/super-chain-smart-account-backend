@@ -25,7 +25,6 @@ routes.get('/get-badges', async (req, res) => {
     const eoas = await superChainAccountService.getEOAS(account);
     const currentBadges = await badgesService.getBadges(eoas, account);
     const totalPoints = badgesService.getTotalPoints(currentBadges);
-    console.debug('currentBadges', currentBadges);
     res.json({ currentBadges, totalPoints });
   } catch (error) {
     console.error(error);
@@ -67,9 +66,9 @@ routes.post('/attest-badges', async (req, res) => {
       account,
       claimablePoints,
       badges,
-      badges.map(
-        (badge) => (badge.tiers as Tiers[])[badge.claimableTier!]['2DImage']
-      )
+      badges.filter(badge => badge.claimableTier).map((badge) => {
+        return (badge.tiers as Tiers[])[badge.claimableTier!]['2DImage'];
+      })
     );
     return res.status(201).json(response);
   } catch (error) {
