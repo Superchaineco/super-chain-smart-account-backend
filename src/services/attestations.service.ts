@@ -1,5 +1,8 @@
 import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/typechain-types/factories/contracts/EAS__factory';
-import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
+import {
+  SchemaEncoder,
+  SchemaRegistry,
+} from '@ethereum-attestation-service/eas-sdk';
 import { ethers, JsonRpcProvider, Wallet } from 'ethers';
 import type { ResponseBadges } from './badges.service';
 import { SBclient } from './supabase.service';
@@ -13,7 +16,7 @@ import { superChainAccountService } from './superChainAccount.service';
 
 export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
-  private schemaString = 'uint256 SuperChainPoints';
+  private schemaString = '(uint256 badgeId, uint256 level)[] badges';
   private provider = new JsonRpcProvider(JSON_RPC_PROVIDER);
   private wallet = new Wallet(ATTESTATOR_SIGNER_PRIVATE_KEY, this.provider);
   private eas = EAS__factory.connect(this.easContractAddress, this.wallet);
@@ -22,81 +25,59 @@ export class AttestationsService {
   private supabase = SBclient;
   public async attest(
     account: string,
-    totalPoints: number,
+    // totalPoints: number,
     badges: ResponseBadges[],
-    badgeImages: string[]
+    // badgeImages: string[],
+    badgeUpdates: { badgeId: number; level: number }[]
   ) {
+
     const encodedData = this.schemaEncoder.encodeData([
-      { name: 'SuperChainPoints', value: totalPoints, type: 'uint256' },
+      {
+        name: 'badges',
+        value: badgeUpdates,
+        type: '(uint256,uint256)[]'
+      },
     ]);
 
-    for (const badge of badges) {
-      const { data: badgeData, error: badgeError } = await this.supabase
-        .from('badges')
-        .select('*')
-        .eq('id', badge.id)
-        .single();
-
-      if (badgeError || !badgeData) {
-        console.error(
-          `Error fetching badge data for badge ID ${badge.id}:`,
-          badgeError
-        );
-        throw new Error(`Badge data fetch error for badge ID ${badge.id}`);
-      }
-
-      let updateResult;
-      if (badgeData.dataorigin === 'onChain') {
-        const blockNumber = await this.provider.getBlockNumber();
-        updateResult = await this.upsertAccountBadge(
-          badge,
-          account,
-          null,
-          blockNumber
-        );
-      } else {
-        const timestamp = new Date();
-        updateResult = await this.upsertAccountBadge(
-          badge,
-          account,
-          timestamp,
-          null
-        );
-      }
-
-      if (updateResult.error) {
-        console.error(
-          `Error updating AccountBadges for badge ID ${badge.id}:`,
-          updateResult.error
-        );
-        throw new Error(`AccountBadges update error for badge ID ${badge.id}`);
-      }
-    }
 
     try {
-      const isLevelUp = await superChainAccountService.getIsLevelUp(
-        account,
-        totalPoints
-      );
-       const tx = await this.eas.attest({
-         schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
-         data: {
-           recipient: account,
-           expirationTime: BigInt(0),
-           refUID: ethers.ZeroHash,
-           revocable: false,
-           data: encodedData,
-           value: BigInt(0),
-         },
+      // const isLevelUp = await superChainAccountService.getIsLevelUp(
+      //   account,
+      //   totalPoints
+      // );
+      const tx = await this.eas.attest({
+        schema:
+          SUPER_CHAIN_ATTESTATION_SCHEMA,
+        data: {
+          recipient: account,
+          data: encodedData,
+          expirationTime: BigInt(0), 
+          value: BigInt(0),
+          refUID: ethers.ZeroHash,
+          revocable: true,
+        },
       });
       const receipt = await tx.wait();
-      return { hash: receipt?.hash, isLevelUp, badgeImages, totalPoints };
+      return { hash: receipt?.hash };
     } catch (error: any) {
       console.error('Error attesting', error);
       throw new Error(error);
     }
   }
 
+  // public async createSchema() {
+  //   const schemaRegistryContractAddress =
+  //     '0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0';
+  //   const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
+  //   schemaRegistry.connect(this.wallet);
+  //   const transaction = await schemaRegistry.register({
+  //     schema: this.schemaString,
+  //   });
+  //   const receipt =  await transaction.wait();
+  //   return receipt;
+  // }
+
+  
   private async upsertAccountBadge(
     badge: ResponseBadges,
     account: string,

@@ -6,11 +6,10 @@ import { AttestationsService } from '../services/attestations.service';
 import { Tiers } from '../types/database.types';
 const routes = Router();
 
-routes.get('/', async (req, res) => {
-  return res.json({
-    some: process.env.SUPABASE_URL,
-    other: process.env.SUPABASE_ANON_KEY,
-  });
+routes.post('/', async (req, res) => {
+  const attestationsService = new AttestationsService();
+  const response = await attestationsService.dummy();
+  return res.json(response);
 });
 
 routes.get('/get-badges', async (req, res) => {
@@ -66,9 +65,11 @@ routes.post('/attest-badges', async (req, res) => {
       account,
       claimablePoints,
       badges,
-      badges.filter(badge => badge.claimableTier).map((badge) => {
-        return (badge.tiers as Tiers[])[badge.claimableTier!]['2DImage'];
-      })
+      badges
+        .filter((badge) => badge.claimableTier)
+        .map((badge) => {
+          return (badge.tiers as Tiers[])[badge.claimableTier!]['2DImage'];
+        })
     );
     return res.status(201).json(response);
   } catch (error) {
