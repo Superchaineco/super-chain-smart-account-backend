@@ -1,0 +1,22 @@
+query GetUserBadges($user: Bytes!) {
+  badges {
+    badgeId
+    badgeTiers {
+      points
+      tier
+      uri
+    }
+  }
+  accountBadges(where: { user: $user }) {
+    points
+    tier
+    badge {
+      badgeId
+      badgeTiers {
+        points
+        tier
+        uri
+      }
+    }
+  }
+}
