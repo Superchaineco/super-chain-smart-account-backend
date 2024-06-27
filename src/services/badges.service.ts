@@ -1,6 +1,7 @@
 import { BadgesHelper, type IBadgesHelper } from './badges.helper';
 import { GetUserBadgesDocument, GetUserBadgesQuery, GetUserBadgesQueryVariables, execute } from '../../.graphclient';
 import type { ExecutionResult } from 'graphql'
+import IpfsService from './ipfs.service';
 
 
 export type Badge = GetUserBadgesQuery['accountBadges'][number];
@@ -41,6 +42,22 @@ export class BadgesServices {
     }))
 
     const activeBadges = [...(data?.accountBadges ?? []), ...unclaimedBadges] as Badge[]
+    const promises = activeBadges.flatMap(badge =>
+      badge.badge.badgeTiers.map(tier => this.getBadgeLevelMetadata(tier))
+    )
+
+    
+    const results = await Promise.all(promises)
+
+  activeBadges.forEach(async badge => {
+    badge.badge['metadata'] = await this.getBadgeMetadata(badge)
+    badge.badge.badgeTiers.forEach(tier => {
+      const result = results.find(res => res.tier === tier)
+      if (result) {
+        tier['metadata'] = result.metadata
+      }
+    })
+  })
 
 
     for (const badge of activeBadges) {
@@ -55,44 +72,35 @@ export class BadgesServices {
   }
 
 
+  private async getBadgeMetadata(badge: Badge) {
+    const metadataJson = await IpfsService.getIPFSData(badge.badge.uri)
+    let metadata = null
+    try {
+      metadata = JSON.parse(metadataJson)
+    } catch (error) {
+      console.error(`Error parsing JSON from IPFS: ${error}`)
+      metadata = null
+    }
+    return metadata
+  }
 
-  // public async updateBadge(
-  //   account: string,
-  //   badgeId: string,
-  // ) {
-  //   const { data: accountBadge, error: accountBadgeError } = await this.supabase
-  //     .from('accountbadges')
-  //     .select('*')
-  //     .eq('badgeid', badgeId)
-  //     .eq('account', account)
-  //     .eq('isdeleted', false)
-  //     .single();
-
-  //   if (accountBadgeError) {
-  //     console.error(
-  //       `Error fetching badge for account ${account}:`,
-  //       accountBadgeError
-  //     );
-  //     throw new Error('Error fetching badge for account');
-  //   }
-  //   const { data, error } = await this.supabase
-  //     .from('accountbadges')
-  //     .update({ ...params })
-  //     .eq('id', accountBadge.id)
-  //     .select();
-  //   if (error) {
-  //     console.error('Error updating badge:', error);
-  //     throw new Error('Error updating badge');
-  //   }
-  //   return data;
-  // }
+  private async getBadgeLevelMetadata(badgeLevel: Badge['badge']['badgeTiers'][0]) {
+    const metadataJson = await IpfsService.getIPFSData(badgeLevel.uri)
+   let metadata = null
+    try {
+      metadata = JSON.parse(metadataJson)
+    } catch (error) {
+      console.error(`Error parsing JSON from IPFS: ${error}`)
+      metadata = null
+    }
+    return { tier: badgeLevel, metadata }
+  }
 
   private async updateBadgeDataForAccount(
     eoas: string[],
     badgeData: Badge,
   ) {
-    const dummy: string = 'OP Mainnet User'
-    switch (dummy) {
+    switch (badgeData.badge.metadata!.name) {
       case 'OP Mainnet User':
         const optimismTransactions = await this.helper.getOptimisimTransactions(
           eoas,
@@ -100,7 +108,7 @@ export class BadgesServices {
         if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
         let optimismTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
-          if (optimismTransactions >= 2) {
+          if (optimismTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
             optimismTier = i + 1;
             break;
           }
@@ -108,40 +116,30 @@ export class BadgesServices {
         this.badges.push({
           ...badgeData,
           claimableTier: optimismTier,
-          claimable:  optimismTier ?  badgeData.tier < optimismTier : false,
+          claimable: optimismTier ? badgeData.tier < optimismTier : false,
         });
 
         break;
-      // case 'Base User':
-      //   const baseTransactions = await this.helper.getBaseTransactions(
-      //     eoas,
-      //     params.blockNumber
-      //   );
+      case 'Base User':
+        const baseTransactions = await this.helper.getBaseTransactions(
+          eoas,
+        );
+        if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
+        let baseTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if (baseTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+            baseTier = i;
+            break;
+          }
+        }
 
-      //   let baseTier = null;
-      //   for (let i = (badge.tiers as Tiers[]).length - 1; i >= 0; i--) {
-      //     if (baseTransactions >= (badge.tiers as Tiers[])[i].minValue) {
-      //       baseTier = i;
-      //       break;
-      //     }
-      //   }
+        this.badges.push({
+          ...badgeData,
+          claimableTier: baseTier,
+          claimable: baseTier ? badgeData.tier < baseTier : false,
 
-      //   const basePoints = this.getBadgeTotalPoints({
-      //     ...badge,
-      //     favorite: params.favorite,
-      //     claimableTier: baseTier,
-      //     lastclaimtier: params.lastClaimTier,
-      //   });
-      //   this.badges.push({
-      //     ...badge,
-      //     favorite: params.favorite,
-      //     claimableTier: baseTier,
-      //     lastclaimtier: params.lastClaimTier,
-      //     points: basePoints,
-      //     claimable: params.lastClaimTier !== baseTier,
-
-      //   });
-      //   break;
+        });
+        break;
     }
 
     //   case 'Mode transactions':
@@ -199,54 +197,5 @@ export class BadgesServices {
     // }
   }
 
-  // public getTotalPoints(badges: ResponseBadges[]) {
-  //   return badges.reduce((acc, badge) => {
-  //     if (!badge.claimableTier) return acc;
-  //     for (let i = 0; i < badge.claimableTier; i++) {
-  //       acc += (badge.tiers as Tiers[])[i].points;
-  //     }
-  //     return acc;
-  //   }, 0);
-  // }
 
-  // private getBadgeTotalPoints(badge: Badge) {
-  //   let points = 0;
-  //   if (!badge.claimableTier) return points;
-  //   for (let i = 0; i < badge.claimableTier; i++) {
-  //     points += (badge.tiers as Tiers[])[i].points;
-  //   }
-  //   return points;
-  // }
-
-  // public getClaimablePoints = (badges: ResponseBadges[]) =>
-  //   badges.reduce((acc, badge) => {
-  //     if (
-  //       badge.claimableTier === null ||
-  //       badge.claimableTier < (badge.lastclaimtier ?? 0)
-  //     ) {
-  //       return acc;
-  //     }
-  //     for (
-  //       let i = badge.lastclaimtier ? badge.lastclaimtier + 1 : 0;
-  //       i <= badge.claimableTier;
-  //       i++
-  //     ) {
-  //       acc += (badge.tiers as Tiers[])[i].points;
-  //     }
-  //     return acc;
-  //   }, 0);
-
-  // private async getActiveBadges() {
-  //   const { data: badges, error } = await this.supabase
-  //     .from('badges')
-  //     .select('*')
-  //     .eq('isactive', true);
-
-  //   if (error) {
-  //     console.error('Error fetching active badges:', error);
-  //     return [];
-  //   }
-
-  //   return badges;
-  // }
 }

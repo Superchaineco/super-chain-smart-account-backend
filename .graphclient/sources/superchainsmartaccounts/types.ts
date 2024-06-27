@@ -103,6 +103,7 @@ export type AccountBadge_orderBy =
   | 'badge'
   | 'badge__id'
   | 'badge__badgeId'
+  | 'badge__uri'
   | 'tier'
   | 'points';
 
@@ -113,6 +114,7 @@ export type Aggregation_interval =
 export type Badge = {
   id: Scalars['String']['output'];
   badgeId: Scalars['BigInt']['output'];
+  uri: Scalars['String']['output'];
   badgeTiers: Array<BadgeTier>;
 };
 
@@ -214,6 +216,7 @@ export type BadgeTier_orderBy =
   | 'badge'
   | 'badge__id'
   | 'badge__badgeId'
+  | 'badge__uri'
   | 'uri';
 
 export type Badge_filter = {
@@ -245,6 +248,26 @@ export type Badge_filter = {
   badgeId_lte?: InputMaybe<Scalars['BigInt']['input']>;
   badgeId_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   badgeId_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  uri?: InputMaybe<Scalars['String']['input']>;
+  uri_not?: InputMaybe<Scalars['String']['input']>;
+  uri_gt?: InputMaybe<Scalars['String']['input']>;
+  uri_lt?: InputMaybe<Scalars['String']['input']>;
+  uri_gte?: InputMaybe<Scalars['String']['input']>;
+  uri_lte?: InputMaybe<Scalars['String']['input']>;
+  uri_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  uri_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  uri_contains?: InputMaybe<Scalars['String']['input']>;
+  uri_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_not_contains?: InputMaybe<Scalars['String']['input']>;
+  uri_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_starts_with?: InputMaybe<Scalars['String']['input']>;
+  uri_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  uri_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_ends_with?: InputMaybe<Scalars['String']['input']>;
+  uri_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  uri_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
   badgeTiers_?: InputMaybe<BadgeTier_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
@@ -255,6 +278,7 @@ export type Badge_filter = {
 export type Badge_orderBy =
   | 'id'
   | 'badgeId'
+  | 'uri'
   | 'badgeTiers';
 
 export type BlockChangedFilter = {

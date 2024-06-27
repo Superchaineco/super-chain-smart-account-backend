@@ -126,6 +126,7 @@ export type AccountBadge_orderBy =
   | 'badge'
   | 'badge__id'
   | 'badge__badgeId'
+  | 'badge__uri'
   | 'tier'
   | 'points';
 
@@ -136,6 +137,7 @@ export type Aggregation_interval =
 export type Badge = {
   id: Scalars['String']['output'];
   badgeId: Scalars['BigInt']['output'];
+  uri: Scalars['String']['output'];
   badgeTiers: Array<BadgeTier>;
 };
 
@@ -237,6 +239,7 @@ export type BadgeTier_orderBy =
   | 'badge'
   | 'badge__id'
   | 'badge__badgeId'
+  | 'badge__uri'
   | 'uri';
 
 export type Badge_filter = {
@@ -268,6 +271,26 @@ export type Badge_filter = {
   badgeId_lte?: InputMaybe<Scalars['BigInt']['input']>;
   badgeId_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   badgeId_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  uri?: InputMaybe<Scalars['String']['input']>;
+  uri_not?: InputMaybe<Scalars['String']['input']>;
+  uri_gt?: InputMaybe<Scalars['String']['input']>;
+  uri_lt?: InputMaybe<Scalars['String']['input']>;
+  uri_gte?: InputMaybe<Scalars['String']['input']>;
+  uri_lte?: InputMaybe<Scalars['String']['input']>;
+  uri_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  uri_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  uri_contains?: InputMaybe<Scalars['String']['input']>;
+  uri_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_not_contains?: InputMaybe<Scalars['String']['input']>;
+  uri_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_starts_with?: InputMaybe<Scalars['String']['input']>;
+  uri_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  uri_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_ends_with?: InputMaybe<Scalars['String']['input']>;
+  uri_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  uri_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  uri_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
   badgeTiers_?: InputMaybe<BadgeTier_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
@@ -278,6 +301,7 @@ export type Badge_filter = {
 export type Badge_orderBy =
   | 'id'
   | 'badgeId'
+  | 'uri'
   | 'badgeTiers';
 
 export type BlockChangedFilter = {
@@ -1612,7 +1636,7 @@ export type ResolversParentTypes = ResolversObject<{
   _Meta_: _Meta_;
 }>;
 
-export type entityDirectiveArgs = { };
+export type entityDirectiveArgs = {};
 
 export type entityDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = entityDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
@@ -1640,6 +1664,7 @@ export type AccountBadgeResolvers<ContextType = MeshContext, ParentType extends 
 export type BadgeResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Badge'] = ResolversParentTypes['Badge']> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   badgeId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  uri?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   badgeTiers?: Resolver<Array<ResolversTypes['BadgeTier']>, ParentType, ContextType, RequireFields<BadgebadgeTiersArgs, 'skip' | 'first'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1837,10 +1862,10 @@ const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/',
 
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
-  switch(relativeModuleId) {
+  switch (relativeModuleId) {
     case ".graphclient/sources/superchainsmartaccounts/introspectionSchema":
       return Promise.resolve(importedModule$0) as T;
-    
+
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
   }
@@ -1857,53 +1882,53 @@ const rootStore = new MeshStore('.graphclient', new FsStoreStorageAdapter({
 
 export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any
 export async function getMeshOptions(): Promise<GetMeshOptions> {
-const pubsub = new PubSub();
-const sourcesStore = rootStore.child('sources');
-const logger = new DefaultLogger("GraphClient");
-const cache = new (MeshCache as any)({
-      ...({} as any),
-      importFn,
-      store: rootStore.child('cache'),
-      pubsub,
-      logger,
-    } as any)
+  const pubsub = new PubSub();
+  const sourcesStore = rootStore.child('sources');
+  const logger = new DefaultLogger("GraphClient");
+  const cache = new (MeshCache as any)({
+    ...({} as any),
+    importFn,
+    store: rootStore.child('cache'),
+    pubsub,
+    logger,
+  } as any)
 
-const sources: MeshResolvedSource[] = [];
-const transforms: MeshTransform[] = [];
-const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
-const superchainsmartaccountsTransforms = [];
-const additionalTypeDefs = [] as any[];
-const superchainsmartaccountsHandler = new GraphqlHandler({
-              name: "superchainsmartaccounts",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/72352/superchainsmartaccount/v0.0.18"},
-              baseDir,
-              cache,
-              pubsub,
-              store: sourcesStore.child("superchainsmartaccounts"),
-              logger: logger.child("superchainsmartaccounts"),
-              importFn,
-            });
-sources[0] = {
-          name: 'superchainsmartaccounts',
-          handler: superchainsmartaccountsHandler,
-          transforms: superchainsmartaccountsTransforms
-        }
-const additionalResolvers = [] as any[]
-const merger = new(BareMerger as any)({
-        cache,
-        pubsub,
-        logger: logger.child('bareMerger'),
-        store: rootStore.child('bareMerger')
-      })
-const documentHashMap = {
-        "2e1c24f0fb0b519e3c56b2929ea6b7297aca3250e449fa23ceb0f17e810bbead": GetUserBadgesDocument
-      }
-additionalEnvelopPlugins.push(usePersistedOperations({
-        getPersistedOperation(key) {
-          return documentHashMap[key];
-        },
-        ...{}
-      }))
+  const sources: MeshResolvedSource[] = [];
+  const transforms: MeshTransform[] = [];
+  const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
+  const superchainsmartaccountsTransforms = [];
+  const additionalTypeDefs = [] as any[];
+  const superchainsmartaccountsHandler = new GraphqlHandler({
+    name: "superchainsmartaccounts",
+    config: { "endpoint": "https://api.studio.thegraph.com/query/72352/superchainsmartaccount/version/latest" },
+    baseDir,
+    cache,
+    pubsub,
+    store: sourcesStore.child("superchainsmartaccounts"),
+    logger: logger.child("superchainsmartaccounts"),
+    importFn,
+  });
+  sources[0] = {
+    name: 'superchainsmartaccounts',
+    handler: superchainsmartaccountsHandler,
+    transforms: superchainsmartaccountsTransforms
+  }
+  const additionalResolvers = [] as any[]
+  const merger = new (BareMerger as any)({
+    cache,
+    pubsub,
+    logger: logger.child('bareMerger'),
+    store: rootStore.child('bareMerger')
+  })
+  const documentHashMap = {
+    "008609423b6bcf8ca4e33fd37b4b5f53c60680a121a5094337844d631a2ec14d": GetUserBadgesDocument
+  }
+  additionalEnvelopPlugins.push(usePersistedOperations({
+    getPersistedOperation(key) {
+      return documentHashMap[key];
+    },
+    ...{}
+  }))
 
   return {
     sources,
@@ -1917,15 +1942,15 @@ additionalEnvelopPlugins.push(usePersistedOperations({
     additionalEnvelopPlugins,
     get documents() {
       return [
-      {
-        document: GetUserBadgesDocument,
-        get rawSDL() {
-          return printWithCache(GetUserBadgesDocument);
-        },
-        location: 'GetUserBadgesDocument.graphql',
-        sha256Hash: '2e1c24f0fb0b519e3c56b2929ea6b7297aca3250e449fa23ceb0f17e810bbead'
-      }
-    ];
+        {
+          document: GetUserBadgesDocument,
+          get rawSDL() {
+            return printWithCache(GetUserBadgesDocument);
+          },
+          location: 'GetUserBadgesDocument.graphql',
+          sha256Hash: '008609423b6bcf8ca4e33fd37b4b5f53c60680a121a5094337844d631a2ec14d'
+        }
+      ];
     },
     fetchFn,
   };
@@ -1949,15 +1974,15 @@ export function getBuiltGraphClient(): Promise<MeshInstance> {
     if (pollingInterval) {
       setInterval(() => {
         getMeshOptions()
-        .then(meshOptions => getMesh(meshOptions))
-        .then(newMesh =>
-          meshInstance$.then(oldMesh => {
-            oldMesh.destroy()
-            meshInstance$ = Promise.resolve(newMesh)
-          })
-        ).catch(err => {
-          console.error("Mesh polling failed so the existing version will be used:", err);
-        });
+          .then(meshOptions => getMesh(meshOptions))
+          .then(newMesh =>
+            meshInstance$.then(oldMesh => {
+              oldMesh.destroy()
+              meshInstance$ = Promise.resolve(newMesh)
+            })
+          ).catch(err => {
+            console.error("Mesh polling failed so the existing version will be used:", err);
+          });
       }, pollingInterval)
     }
     meshInstance$ = getMeshOptions().then(meshOptions => getMesh(meshOptions)).then(mesh => {
@@ -1982,23 +2007,44 @@ export type GetUserBadgesQueryVariables = Exact<{
   user: Scalars['Bytes']['input'];
 }>;
 
+export type BadgeLevelMetadata = {
+  "badgeId": number,
+  "level": number,
+  "minValue": number,
+  "2DImage": string,
+  "3DImage": string
 
-export type GetUserBadgesQuery = { badges: Array<(
-    Pick<Badge, 'badgeId'>
-    & { badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'>> }
+}
+export type BadgeMetadata = {
+  "name": string,
+  "description": string,
+  "platform": string,
+  "chain": string,
+  "condition": string
+}
+
+
+export type GetUserBadgesQuery = {
+  badges: Array<(
+    Pick<Badge, 'badgeId' | 'uri'> & { metadata?: BadgeMetadata }
+    & { badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'> & { metadata?: BadgeLevelMetadata }> }
   )>, accountBadges: Array<(
     Pick<AccountBadge, 'points' | 'tier'>
-    & { badge: (
-      Pick<Badge, 'badgeId'>
-      & { badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'>> }
-    ) }
-  )> };
+    & {
+      badge: (
+        Pick<Badge, 'badgeId' | 'uri'> & { metadata?: BadgeMetadata }
+        & { badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'> & { metadata?: BadgeLevelMetadata }> }
+      )
+    }
+  )>
+};
 
 
 export const GetUserBadgesDocument = gql`
     query GetUserBadges($user: Bytes!) {
   badges {
     badgeId
+    uri
     badgeTiers {
       points
       tier
@@ -2010,6 +2056,7 @@ export const GetUserBadgesDocument = gql`
     tier
     badge {
       badgeId
+      uri
       badgeTiers {
         points
         tier
