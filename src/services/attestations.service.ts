@@ -10,6 +10,7 @@ import {
   SUPER_CHAIN_ATTESTATION_SCHEMA,
 } from '../config/superChain/constants';
 import { superChainAccountService } from './superChainAccount.service';
+import { ResponseBadge } from './badges.service';
 
 export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
@@ -22,7 +23,7 @@ export class AttestationsService {
   public async attest(
     account: string,
     totalPoints: number,
-    badges: any[],
+    badges: ResponseBadge[],
     badgeUpdates: { badgeId: number; level: number }[]
   ) {
 
@@ -52,8 +53,17 @@ export class AttestationsService {
             revocable: false,
           },
         });
+        const badgeImages = []
+        for (const badge of badges) {
+          for(const update of badgeUpdates) {
+            if(badge.badge.badgeId === update.badgeId) {
+              badgeImages.push(badge.badge.badgeTiers.find(tier => tier.tier === update.level)?.metadata?.['2DImage'])
+            }
+          }
+        }
         const receipt = await tx.wait();
-        return { hash: receipt?.hash };
+        return { hash: receipt?.hash, isLevelUp, badgeImages, totalPoints };
+
       } catch (error: any) {
         console.error('Error attesting', error);
         throw new Error(error);
