@@ -2012,7 +2012,8 @@ export type BadgeLevelMetadata = {
   "level": number,
   "minValue": number,
   "2DImage": string,
-  "3DImage": string
+  "3DImage": string,
+  points: number
 
 }
 export type BadgeMetadata = {

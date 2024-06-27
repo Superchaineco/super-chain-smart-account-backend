@@ -46,21 +46,22 @@ export class BadgesServices {
       badge.badge.badgeTiers.map(tier => this.getBadgeLevelMetadata(tier))
     )
 
-    
+
     const results = await Promise.all(promises)
 
-  activeBadges.forEach(async badge => {
-    badge.badge['metadata'] = await this.getBadgeMetadata(badge)
-    badge.badge.badgeTiers.forEach(tier => {
-      const result = results.find(res => res.tier === tier)
-      if (result) {
-        tier['metadata'] = result.metadata
-      }
-    })
-  })
+    for (const badge of activeBadges) {
+      badge.badge['metadata'] = await this.getBadgeMetadata(badge)
+      badge.badge.badgeTiers.forEach(tier => {
+        const result = results.find(res => res.tier === tier)
+        if (result) {
+          tier['metadata'] = result.metadata
+        }
+      })
+    }
 
 
     for (const badge of activeBadges) {
+
       try {
         await this.updateBadgeDataForAccount(eoas, badge);
       } catch (e) {
@@ -69,6 +70,36 @@ export class BadgesServices {
     }
 
     return this.badges;
+  }
+
+
+  public getTotalPoints(badges: ResponseBadge[]): number {
+    return badges.reduce((totalSum, badge) => {
+      if (!badge.claimable || !badge.claimableTier) {
+        return totalSum;
+      }
+
+      const { tier, badge: { badgeTiers }, claimableTier } = badge;
+      const startIndex = badgeTiers.findIndex(t => t.tier === tier) + 1;
+      const endIndex = badgeTiers.findIndex(t => t.tier === claimableTier);
+
+      if (startIndex < 0 || endIndex < 0 || startIndex >= endIndex) {
+        return totalSum;
+      }
+
+      const tierPoints = badgeTiers.slice(startIndex, endIndex + 1).reduce((tierSum, { metadata }) => {
+        return tierSum + (metadata?.points ? metadata.points : 0);
+      }, 0);
+
+      return totalSum + tierPoints;
+    }, 0);
+  }
+
+  public getBadgeUpdates(badges: ResponseBadge[]): { badgeId: number; level: number }[] {
+    return badges
+      .filter(({ claimable }) => claimable)
+      .map(({ badge: { badgeId }, claimableTier }) => ({ badgeId, level: claimableTier! }))
+
   }
 
 
@@ -86,7 +117,7 @@ export class BadgesServices {
 
   private async getBadgeLevelMetadata(badgeLevel: Badge['badge']['badgeTiers'][0]) {
     const metadataJson = await IpfsService.getIPFSData(badgeLevel.uri)
-   let metadata = null
+    let metadata = null
     try {
       metadata = JSON.parse(metadataJson)
     } catch (error) {
@@ -108,7 +139,7 @@ export class BadgesServices {
         if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
         let optimismTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
-          if (optimismTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+          if ((optimismTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
             optimismTier = i + 1;
             break;
           }
@@ -128,7 +159,7 @@ export class BadgesServices {
         let baseTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (baseTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
-            baseTier = i;
+            baseTier = i + 1;
             break;
           }
         }
