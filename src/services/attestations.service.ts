@@ -1,8 +1,7 @@
 import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/typechain-types/factories/contracts/EAS__factory';
 
 import { ethers, JsonRpcProvider, Wallet } from 'ethers';
-import { SchemaEncoder, SchemaRegistry } from '@ethereum-attestation-service/eas-sdk'
-import { SBclient } from './supabase.service';
+import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk'
 import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
   EAS_CONTRACT_ADDRESS,
@@ -43,7 +42,7 @@ export class AttestationsService {
         );
         const tx = await this.eas.attest({
           schema:
-            '0x122c3c6df91fd195cf85905d956f092bac19fc91fa1a96e322af20a953dc0046',
+            SUPER_CHAIN_ATTESTATION_SCHEMA,
           data: {
             recipient: account,
             data: encodedData,
@@ -56,8 +55,8 @@ export class AttestationsService {
         const badgeImages = []
         for (const badge of badges) {
           for(const update of badgeUpdates) {
-            if(badge.badge.badgeId === update.badgeId) {
-              badgeImages.push(badge.badge.badgeTiers.find(tier => tier.tier === update.level)?.metadata?.['2DImage'])
+            if(badge.badgeId === update.badgeId) {
+              badgeImages.push(badge.badgeTiers.find(tier => tier.tier === update.level)?.metadata?.['2DImage'])
             }
           }
         }
@@ -70,21 +69,7 @@ export class AttestationsService {
       }
     }
 
-    // public async createSchema() {
-    //   const schemaRegistryContractAddress =
-    //     '0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0';
-    //   const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
-    //   schemaRegistry.connect(this.wallet);
-    //   const transaction = await schemaRegistry.register({
-    //     schema: this.schemaString,
-    //     resolverAddress:'0xadc9885E6774CD898DC418BE3E7EAf8C71CA1735',
-    //     revocable: false
-
-
-    //   });
-    //   const receipt =  await transaction.wait();
-    //   return receipt;
-    // }
+  
 
 
     // private async upsertAccountBadge(

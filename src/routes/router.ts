@@ -34,6 +34,7 @@ routes.get('/get-badges', async (req, res) => {
 });
 
 routes.post('/attest-badges', async (req, res) => {
+
   const headers = req.headers;
   const account = headers.account as string;
   if (!account) {
@@ -45,6 +46,7 @@ routes.post('/attest-badges', async (req, res) => {
   const attestationsService = new AttestationsService();
   const totalPoints = badgesService.getTotalPoints(badges)
   const badgeUpdates = badgesService.getBadgeUpdates(badges)
+
   try {
     const response = await attestationsService.attest(
       account,
@@ -53,10 +55,8 @@ routes.post('/attest-badges', async (req, res) => {
       badgeUpdates
 
     );
-    return res.status(201).json({
-      hash: response.hash,
-      
-    })
+    return res.status(201)
+      .json(response)
   } catch (error) {
     console.error('Error attesting', error);
     return res.status(500).json({ error });
