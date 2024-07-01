@@ -7,6 +7,7 @@ import router from "./routes/router";
 
 const app = express();
 
+
 // parse json request body
 app.use(express.json());
 

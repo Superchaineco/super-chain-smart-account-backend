@@ -16,17 +16,27 @@ export class SuperChainAccountService {
       new JsonRpcProvider(JSON_RPC_PROVIDER)
     );
   }
+
   async getEOAS(address: string): Promise<string[]> {
-    const ethAdapter = new EthersAdapter({
-      ethers: ethers,
-      signerOrProvider: new JsonRpcProvider(JSON_RPC_PROVIDER),
-    });
-    const protocolKit = await Safe.create({ ethAdapter, safeAddress: address });
-    return await protocolKit.getOwners();
+    try {
+      const ethAdapter = new EthersAdapter({
+        ethers: ethers,
+        signerOrProvider: new JsonRpcProvider(JSON_RPC_PROVIDER),
+      });
+      const protocolKit = await Safe.create({ ethAdapter, safeAddress: address });
+      return await protocolKit.getOwners();
+    }
+    catch (error) {
+      console.error(error);
+      throw new Error('Error getting EOAS');
+    }
   }
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
     return await this.superChainAccount.simulateIncrementSuperChainPoints(points, recipent)
   }
+
+      
+
 }
 const superChainAccountService = new SuperChainAccountService();
 export { superChainAccountService };

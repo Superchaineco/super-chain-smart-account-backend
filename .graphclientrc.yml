@@ -1,0 +1,8 @@
+# .graphclientrc.yml
+sources:
+  - name: superchainsmartaccounts
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/72352/superchainsmartaccount/version/latest
+documents:
+  - ./src/graphql/get-user-badges.gql
