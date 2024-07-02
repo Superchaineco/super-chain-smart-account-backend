@@ -24,14 +24,15 @@ routes.get('/get-badges', async (req, res) => {
 
   try {
     const badgesService = new BadgesServices();
-    // const eoas = await superChainAccountService.getEOAS(account);
-    const currentBadges = await badgesService.getBadges([account], account);
+    const eoas = await superChainAccountService.getEOAS(account);
+    const currentBadges = await badgesService.getBadges(eoas, account);
     res.json({ currentBadges });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error });
   }
 });
+
 
 routes.post('/attest-badges', async (req, res) => {
 
