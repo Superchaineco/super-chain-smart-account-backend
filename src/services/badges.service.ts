@@ -87,7 +87,7 @@ export class BadgesServices {
         return totalSum;
       }
 
-      const tierPoints = badgeTiers.slice(startIndex, endIndex + 1).reduce((tierSum, {metadata}) => {
+      const tierPoints = badgeTiers.slice(startIndex, endIndex + 1).reduce((tierSum, { metadata }) => {
         console.debug('tier', metadata)
         return tierSum + Number(metadata!.points);
       }, 0);
@@ -139,7 +139,7 @@ export class BadgesServices {
         if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
         let optimismTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
-          if ((optimismTransactions + 250) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+          if ((optimismTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
             optimismTier = i + 1;
             break;
           }
@@ -160,7 +160,7 @@ export class BadgesServices {
         if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
         let baseTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
-          if ((baseTransactions + 100) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+          if ((baseTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
             baseTier = i + 1;
             break;
           }
