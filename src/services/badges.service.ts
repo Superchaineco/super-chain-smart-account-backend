@@ -34,8 +34,8 @@ export class BadgesServices {
     }
     const accountBadgesIds = data?.accountBadges.map(accountBadge => accountBadge.badge.badgeId) ?? []
     const unclaimedBadges = (data!.badges?.filter(badge => !accountBadgesIds.includes(badge.badgeId)) ?? []).map(badge => ({
-      tier: '0',
-      points: '0',
+      tier: 0,
+      points: 0,
       badge: {
         ...badge
       }
@@ -175,33 +175,55 @@ export class BadgesServices {
 
         });
         break;
+
+      case 'Ethereum Sepolia User':
+        const sepoliaTransactions = await this.helper.getSepoliaTransactions(
+          eoas,
+        );
+
+        if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
+        let sepoliaTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if ((sepoliaTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+            sepoliaTier = i + 1;
+            break;
+          }
+        }
+
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: sepoliaTier,
+          claimable: sepoliaTier ? badgeData.tier < sepoliaTier : false,
+
+        });
+        break;
+
+      case 'Mode User':
+        const modeTransactions = await this.helper.getModeTransactions(
+          eoas,
+        );
+
+        if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
+        let modeTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if ((modeTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+            modeTier = i + 1;
+            break;
+          }
+        }
+
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: modeTier,
+          claimable: modeTier ? badgeData.tier < modeTier : false,
+
+        });
+        break;
     }
-
-    //   case 'Mode transactions':
-    //     const modeTransactions = await this.helper.getModeTransactions(
-    //       eoas,
-    //       params.blockNumber
-    //     );
-
-    //     let modePoints = 0;
-    //     if (modeTransactions > 250) {
-    //       modePoints = 50;
-    //     } else if (modeTransactions > 100) {
-    //       modePoints = 40;
-    //     } else if (modeTransactions > 50) {
-    //       modePoints = 30;
-    //     } else if (modeTransactions > 20) {
-    //       modePoints = 20;
-    //     } else if (modeTransactions > 10) {
-    //       modePoints = 10;
-    //     }
-    //     modePoints -= params.points;
-    //     this.badges.push({
-    //       name: badge.name,
-    //       points: modePoints,
-    //       id: badge.id,
-    //     });
-    //     break;
 
     //   case 'Citizen':
     //     let isCitizen = await this.helper.isCitizen(eoas);

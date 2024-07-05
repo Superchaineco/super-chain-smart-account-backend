@@ -59,6 +59,31 @@ export class BadgesHelper {
     return transactions;
   }
 
+  async getSepoliaTransactions(eoas: string[]) {
+    const settings = {
+      apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+      network: Network.ETH_SEPOLIA,
+    };
+    const alchemy = new Alchemy(settings);
+    const transactions = await eoas.reduce(async (accPromise, eoa) => {
+      const acc = await accPromise;
+      const { transfers } = await alchemy.core.getAssetTransfers({
+        toBlock: 'latest',
+        toAddress: eoa,
+        excludeZeroValue: true,
+        category: [
+          AssetTransfersCategory.ERC20,
+          AssetTransfersCategory.ERC1155,
+          AssetTransfersCategory.EXTERNAL,
+          AssetTransfersCategory.ERC721,
+        ],
+      });
+      if (!transfers) return acc;
+      return acc + transfers.length;
+    }, Promise.resolve(0));
+    return transactions;
+  }
+
   async getModeTransactions(eoas: string[]) {
     const transactions = eoas.reduce(async (accPromise, eoa) => {
       const resp =
@@ -73,7 +98,7 @@ export class BadgesHelper {
 
   async isCitizen(eoas: string[]) {
     for (const eoa of eoas) {
-     
+
       // if (data?.length > 0) {
       //   if (!data[0].claimed) return false
       //   return true
@@ -101,6 +126,7 @@ export class BadgesHelper {
 export interface IBadgesHelper {
   getOptimisimTransactions(eoas: string[]): Promise<number>;
   getBaseTransactions(eoas: string[]): Promise<number>;
+  getSepoliaTransactions(eoas: string[]): Promise<number>
   getModeTransactions(eoas: string[]): Promise<number>;
   isCitizen(eoas: string[]): Promise<boolean>;
   hasNouns(eoas: string[]): Promise<number>;
