@@ -28,6 +28,8 @@ export class BadgesServices {
       user: account
     } as GetUserBadgesQueryVariables)
 
+    console.debug(GetUserBadgesDocument)
+
     if (errors) {
       console.error('Error fetching badges:', errors)
       throw new Error('Error fetching badges')
@@ -223,36 +225,39 @@ export class BadgesServices {
 
         });
         break;
+      case 'Citizen':
+        let isCitizen = await this.helper.isCitizen(eoas);
+
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: isCitizen ? 1 : null,
+          claimable: isCitizen ? badgeData.tier != 1 : false,
+
+        });
+        break;
+
+      case 'Nouns':
+        const countNouns = await this.helper.hasNouns(eoas);
+        let nounsTier = null
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if ((countNouns) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+            nounsTier = i + 1;
+            break;
+          }
+        }
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: nounsTier,
+          claimable: nounsTier ? badgeData.tier < nounsTier : false,
+
+        });
     }
-
-    //   case 'Citizen':
-    //     let isCitizen = await this.helper.isCitizen(eoas);
-    //     isCitizen = isCitizen && !params.points;
-    //     this.badges.push({
-    //       name: badge.name,
-    //       points: isCitizen ? 100 : 0,
-    //       id: badge.id,
-    //     });
-    //     break;
-
-    //   case 'Nouns':
-    //     const countNouns = await this.helper.hasNouns(eoas);
-    //     let nounsPoints = 0;
-    //     if (countNouns > 5) {
-    //       nounsPoints = 30;
-    //     } else if (countNouns > 3) {
-    //       nounsPoints = 20;
-    //     } else if (countNouns > 1) {
-    //       nounsPoints = 10;
-    //     }
-    //     this.badges.push({
-    //       name: badge.name,
-    //       points: nounsPoints,
-    //       id: badge.id,
-    //     });
-    //     break;
-    // }
   }
 
 
 }
+

@@ -1,6 +1,18 @@
 import { Alchemy, AssetTransfersCategory, Network } from 'alchemy-sdk';
 import { ethers } from 'ethers';
 import { CovalentClient } from '@covalenthq/client-sdk';
+import  fs from 'fs';
+import csv from 'csv-parser';
+
+
+type CsvRow = {
+  Address: string;
+  ENS: string;
+}
+
+const CitizenFilePath = '../data/citizen.csv';
+
+
 
 export class BadgesHelper {
   covalent = new CovalentClient(process.env.COVALENT_API_KEY!);
@@ -97,18 +109,19 @@ export class BadgesHelper {
   }
 
   async isCitizen(eoas: string[]) {
-    for (const eoa of eoas) {
+    const csvData = await this.loadCsvData(CitizenFilePath);
 
-      // if (data?.length > 0) {
-      //   if (!data[0].claimed) return false
-      //   return true
-      // }
+    for (const eoa of eoas) {
+      const citizen = csvData.find((row) => row.Address.toLowerCase() === eoa.toLowerCase());
+      if (citizen) {
+        return true;
+      }
     }
     return false;
   }
 
   async hasNouns(eoas: string[]) {
-    const provider = new ethers.JsonRpcProvider(process.env.RPC_URL!);
+    const provider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth	');
     const contract = new ethers.Contract(
       process.env.NOUNS_ADDRESS!,
       ['function balanceOf(address owner) public view returns (uint256)'],
@@ -121,6 +134,17 @@ export class BadgesHelper {
     }
     return countNouns;
   }
+
+  private async loadCsvData(filePath: string): Promise<CsvRow[]> {
+  return new Promise((resolve, reject) => {
+    const results: CsvRow[] = [];
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (data: CsvRow) => results.push(data))
+      .on('end', () => resolve(results))
+  });
+}
+  
 }
 
 export interface IBadgesHelper {
