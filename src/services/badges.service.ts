@@ -5,7 +5,7 @@ import IpfsService from './ipfs.service';
 
 
 export type Badge = GetUserBadgesQuery['accountBadges'][number];
-export type ResponseBadge = Pick<Badge, 'points' | 'tier'> & Badge['badge'] & {
+export type ResponseBadge = { points: string, tier: string } & Badge['badge'] & {
   claimableTier: number | null;
   claimable: boolean;
 }
@@ -27,6 +27,8 @@ export class BadgesServices {
     const { data, errors }: ExecutionResult<GetUserBadgesQuery> = await execute(GetUserBadgesDocument, {
       user: account
     } as GetUserBadgesQueryVariables)
+
+    console.debug(GetUserBadgesDocument)
 
     if (errors) {
       console.error('Error fetching badges:', errors)
@@ -75,24 +77,22 @@ export class BadgesServices {
 
   public getTotalPoints(badges: ResponseBadge[]): number {
     return badges.reduce((totalSum, badge) => {
-      if (!badge.claimable || !badge.claimableTier) {
+      if (!badge.claimable) {
         return totalSum;
       }
 
       const { tier, badgeTiers, claimableTier } = badge;
-      const startIndex = badgeTiers.findIndex(t => t.tier === tier) + 1;
-      const endIndex = badgeTiers.findIndex(t => t.tier === claimableTier);
+      const startIndex = badgeTiers.findIndex(t => Number(t.tier) === Number(tier)) + 1;
+      const endIndex = badgeTiers.findIndex(t => Number(t.tier) === Number(claimableTier));
 
-      console.log(startIndex, endIndex, badgeTiers)
-
-      if (startIndex < 0 || endIndex < 0 || startIndex >= endIndex) {
+      if (startIndex < 0 || endIndex < 0 || startIndex > endIndex) {
         return totalSum;
       }
 
       const tierPoints = badgeTiers.slice(startIndex, endIndex + 1).reduce((tierSum, { metadata }) => {
-        return tierSum + (metadata?.points ? metadata.points : 0);
+        console.debug('tier', metadata)
+        return tierSum + Number(metadata!.points);
       }, 0);
-
       return totalSum + tierPoints;
     }, 0);
   }
@@ -141,7 +141,7 @@ export class BadgesServices {
         if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
         let optimismTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
-          if (optimismTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+          if ((optimismTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
             optimismTier = i + 1;
             break;
           }
@@ -162,7 +162,7 @@ export class BadgesServices {
         if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
         let baseTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
-          if (baseTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+          if ((baseTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
             baseTier = i + 1;
             break;
           }
@@ -177,62 +177,87 @@ export class BadgesServices {
 
         });
         break;
+
+      case 'Ethereum Sepolia User':
+        const sepoliaTransactions = await this.helper.getSepoliaTransactions(
+          eoas,
+        );
+
+        if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
+        let sepoliaTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if ((sepoliaTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+            sepoliaTier = i + 1;
+            break;
+          }
+        }
+
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: sepoliaTier,
+          claimable: sepoliaTier ? badgeData.tier < sepoliaTier : false,
+
+        });
+        break;
+
+      case 'Mode User':
+        const modeTransactions = await this.helper.getModeTransactions(
+          eoas,
+        );
+
+        if (!badgeData.badge.badgeTiers) throw new Error('No tiers found for badge');
+        let modeTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if ((modeTransactions) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+            modeTier = i + 1;
+            break;
+          }
+        }
+
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: modeTier,
+          claimable: modeTier ? badgeData.tier < modeTier : false,
+
+        });
+        break;
+      case 'Citizen':
+        let isCitizen = await this.helper.isCitizen(eoas);
+
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: isCitizen ? 1 : null,
+          claimable: isCitizen ? badgeData.tier != 1 : false,
+
+        });
+        break;
+
+      case 'Nouns':
+        const countNouns = await this.helper.hasNouns(eoas);
+        let nounsTier = null
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if ((countNouns) >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
+            nounsTier = i + 1;
+            break;
+          }
+        }
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: nounsTier,
+          claimable: nounsTier ? badgeData.tier < nounsTier : false,
+
+        });
     }
-
-    //   case 'Mode transactions':
-    //     const modeTransactions = await this.helper.getModeTransactions(
-    //       eoas,
-    //       params.blockNumber
-    //     );
-
-    //     let modePoints = 0;
-    //     if (modeTransactions > 250) {
-    //       modePoints = 50;
-    //     } else if (modeTransactions > 100) {
-    //       modePoints = 40;
-    //     } else if (modeTransactions > 50) {
-    //       modePoints = 30;
-    //     } else if (modeTransactions > 20) {
-    //       modePoints = 20;
-    //     } else if (modeTransactions > 10) {
-    //       modePoints = 10;
-    //     }
-    //     modePoints -= params.points;
-    //     this.badges.push({
-    //       name: badge.name,
-    //       points: modePoints,
-    //       id: badge.id,
-    //     });
-    //     break;
-
-    //   case 'Citizen':
-    //     let isCitizen = await this.helper.isCitizen(eoas);
-    //     isCitizen = isCitizen && !params.points;
-    //     this.badges.push({
-    //       name: badge.name,
-    //       points: isCitizen ? 100 : 0,
-    //       id: badge.id,
-    //     });
-    //     break;
-
-    //   case 'Nouns':
-    //     const countNouns = await this.helper.hasNouns(eoas);
-    //     let nounsPoints = 0;
-    //     if (countNouns > 5) {
-    //       nounsPoints = 30;
-    //     } else if (countNouns > 3) {
-    //       nounsPoints = 20;
-    //     } else if (countNouns > 1) {
-    //       nounsPoints = 10;
-    //     }
-    //     this.badges.push({
-    //       name: badge.name,
-    //       points: nounsPoints,
-    //       id: badge.id,
-    //     });
-    //     break;
-    // }
   }
 
 
 }
+

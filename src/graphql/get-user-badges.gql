@@ -2,7 +2,7 @@ query GetUserBadges($user: Bytes!) {
   badges {
     badgeId
     uri
-    badgeTiers {
+    badgeTiers(orderBy: tier, orderDirection: asc)  {
       points
       tier
       uri
@@ -14,7 +14,7 @@ query GetUserBadges($user: Bytes!) {
     badge {
       badgeId
       uri
-      badgeTiers {
+      badgeTiers(orderBy: tier, orderDirection: asc) {
         points
         tier
         uri

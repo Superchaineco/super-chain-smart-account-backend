@@ -52,14 +52,16 @@ export class AttestationsService {
             revocable: false,
           },
         });
-        const badgeImages = []
-        for (const badge of badges) {
-          for(const update of badgeUpdates) {
-            if(badge.badgeId === update.badgeId) {
-              badgeImages.push(badge.badgeTiers.find(tier => tier.tier === update.level)?.metadata?.['2DImage'])
-            }
-          }
-        }
+        const badgeImages = Array.from(
+          new Set(
+            badges.flatMap(badge =>
+              badgeUpdates
+                .filter(update => badge.badgeId === update.badgeId)
+                .map(update => badge.badgeTiers.find(tier => Number(tier.tier) === Number(update.level))?.metadata?.['2DImage'])
+                .filter(image => image)
+            )
+          )
+        );
         const receipt = await tx.wait();
         return { hash: receipt?.hash, isLevelUp, badgeImages, totalPoints };
 
