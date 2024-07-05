@@ -1,3 +1,3 @@
 {
-  "008609423b6bcf8ca4e33fd37b4b5f53c60680a121a5094337844d631a2ec14d": "query GetUserBadges($user: Bytes!) {\n  badges {\n    badgeId\n    uri\n    badgeTiers {\n      points\n      tier\n      uri\n    }\n  }\n  accountBadges(where: {user: $user}) {\n    points\n    tier\n    badge {\n      badgeId\n      uri\n      badgeTiers {\n        points\n        tier\n        uri\n      }\n    }\n  }\n}"
+  "392382040647e5b9bb2ca2c23fee993a7d819fff89d58458d4a3fee7714bb25f": "query GetUserBadges($user: Bytes!) {\n  badges {\n    badgeId\n    uri\n    badgeTiers(orderBy: tier, orderDirection: asc) {\n      points\n      tier\n      uri\n    }\n  }\n  accountBadges(where: {user: $user}) {\n    points\n    tier\n    badge {\n      badgeId\n      uri\n      badgeTiers(orderBy: tier, orderDirection: asc) {\n        points\n        tier\n        uri\n      }\n    }\n  }\n}"
 }
