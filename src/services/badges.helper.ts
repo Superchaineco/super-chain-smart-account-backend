@@ -9,8 +9,7 @@ type CsvRow = {
   Address: string;
   ENS: string;
 }
-
-const CitizenFilePath = '../data/citizen.csv';
+const CitizenFilePath = 'src/data/citizen.csv';
 
 
 
@@ -112,7 +111,7 @@ export class BadgesHelper {
     const csvData = await this.loadCsvData(CitizenFilePath);
 
     for (const eoa of eoas) {
-      const citizen = csvData.find((row) => row.Address.toLowerCase() === eoa.toLowerCase());
+      const citizen = csvData.find((row) =>  row.Address ? row.Address.toLocaleLowerCase() === eoa.toLowerCase(): false);
       if (citizen) {
         return true;
       }

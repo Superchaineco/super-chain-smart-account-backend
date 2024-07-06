@@ -28,7 +28,6 @@ export class BadgesServices {
       user: account
     } as GetUserBadgesQueryVariables)
 
-    console.debug(GetUserBadgesDocument)
 
     if (errors) {
       console.error('Error fetching badges:', errors)
@@ -67,7 +66,7 @@ export class BadgesServices {
       try {
         await this.updateBadgeDataForAccount(eoas, badge);
       } catch (e) {
-        console.error('Error updating badge data:', badge.badge.badgeId);
+        console.error('Error updating badge data:', badge.badge.badgeId, badge.badge.metadata, e);
       }
     }
 
@@ -90,7 +89,6 @@ export class BadgesServices {
       }
 
       const tierPoints = badgeTiers.slice(startIndex, endIndex + 1).reduce((tierSum, { metadata }) => {
-        console.debug('tier', metadata)
         return tierSum + Number(metadata!.points);
       }, 0);
       return totalSum + tierPoints;
@@ -227,7 +225,6 @@ export class BadgesServices {
         break;
       case 'Citizen':
         let isCitizen = await this.helper.isCitizen(eoas);
-
         this.badges.push({
           ...badgeData.badge,
           points: badgeData.points,
