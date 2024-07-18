@@ -3,6 +3,7 @@ import { BadgesServices } from '../services/badges.service';
 import { superChainAccountService } from '../services/superChainAccount.service';
 import { ZeroAddress } from 'ethers';
 import { AttestationsService } from '../services/attestations.service';
+import { isAbleToSponsor } from '../services/sponsorship.service';
 
 
 const routes = Router();
@@ -63,4 +64,13 @@ routes.post('/attest-badges', async (req, res) => {
     return res.status(500).json({ error });
   }
 });
+
+routes.get('/validate-sponsorship', async (req, res) => {
+  const headers = req.headers;
+
+  const isAble = isAbleToSponsor(headers.account as string)
+  return res.status(200).json({
+    "sponsor": isAble
+  })
+})
 export default routes;
