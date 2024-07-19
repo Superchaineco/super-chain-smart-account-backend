@@ -66,9 +66,10 @@ routes.post('/attest-badges', async (req, res) => {
 });
 
 routes.get('/validate-sponsorship', async (req, res) => {
-  const headers = req.headers;
+  const requestData = req.body.data.object;
+  console.debug(requestData)
 
-  const isAble = isAbleToSponsor(headers.account as string)
+  const isAble = await isAbleToSponsor('0x1726cf86DA996BC4B2F393E713f6F8ef83f2e4f6')
   return res.status(200).json({
     "sponsor": isAble
   })

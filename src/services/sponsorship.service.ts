@@ -1,36 +1,55 @@
 import { ETHERSCAN_API_KEY, JSON_RPC_PROVIDER } from "../config/superChain/constants";
 import axios from "axios";
 
+type Txn = {
+    gas: string,
+    gasPrice: string,
+    timestamp: string
+}
+
 /**
  * Function to get all the transactions of a user, based on a specific timestamp
  * @param {number} startTime - Timestamp in seconds
  * @param {string} account - User address
  * @returns {Promise<Array>} - List of all transactions
  */
-export async function getTransactions(startTime: number, account: string): Promise<any[]> {
+export async function getTransactions(startTime: number, account: string): Promise<{
+    gas: number,
+    gasPrice: number
+}> {
     const startBlock = await getBlockNumberFromTimestamp(startTime);
 
     try {
-        // const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
-        //     params: {
-        //         module: 'account',
-        //         action: 'txlist',
-        //         address: account,
-        //         startblock: startBlock,
-        //         endblock: 'latest',
-        //         sort: 'asc',
-        //         apikey: ETHERSCAN_API_KEY
-        //     }
-        // });
+        const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
+            params: {
+                module: 'account',
+                action: 'txlist',
+                address: account,
+                startblock: startBlock,
+                endblock: 'latest',
+                sort: 'asc',
+                apikey: ETHERSCAN_API_KEY
+            },
+            timeout: 50000
 
-        // const transactions = response.data.result;
-        // const filteredTransactions = transactions.filter((tx: any) => parseInt(tx.timeStamp) >= startTime);
+        });
 
-        // return filteredTransactions;
-        return []
+        const transactions = response.data.result as Txn[];
+        const filteredTransactions = transactions.filter((tx: any) => parseInt(tx.timeStamp) >= startTime);
+
+        return filteredTransactions.reduce((acc, transaction) => ({
+            gas: acc.gas + parseInt(transaction.gas),
+            gasPrice: acc.gasPrice + parseInt(transaction.gasPrice)
+        }), {
+            gas: 0,
+            gasPrice: 0
+        });
     } catch (error) {
         console.error('Error fetching transactions:', error);
-        return [];
+        return {
+            gas: 0,
+            gasPrice: 0
+        };
     }
 }
 
@@ -68,7 +87,7 @@ function getLastMondayTimestampCET(): number {
  */
 async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
     try {
-        console.debug(timestamp)    
+        console.debug(timestamp)
         const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
             params: {
                 module: 'block',
@@ -76,7 +95,8 @@ async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
                 timestamp: 1652459409,
                 closest: 'before',
                 apikey: ETHERSCAN_API_KEY
-            }
+            },
+            timeout: 50000
         });
 
         return parseInt(response.data.result);
