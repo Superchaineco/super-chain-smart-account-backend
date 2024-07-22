@@ -129,28 +129,27 @@ export async function isAbleToSponsor(account: string, level: number): Promise<b
 
 }
 
+export function getMaxGasInUSD(level: number): number {
+    switch (level) {
+        case 0:
+            return 0.20;
+        case 1:
+            return 0.30;
+        case 2:
+            return 0.40;
+        default:
+            return 0.20 + (level * 0.10);
+    }
+}
+
+
 async function validateMaxSponsorship(currentTransactionsGas: number, level: number): Promise<boolean> {
     const ethPriceInUSD = await getETHPriceInUSD();
     const gasUsedInUSD = currentTransactionsGas * ethPriceInUSD;
-
-    let maxGasInUSD;
-
-    switch (level) {
-        case 0:
-            maxGasInUSD = 0.20;
-            break;
-        case 1:
-            maxGasInUSD = 0.30;
-            break;
-        case 2:
-            maxGasInUSD = 0.40;
-            break;
-        default:
-            maxGasInUSD = 0.20 + (level * 0.10);
-            break;
-    }
+    const maxGasInUSD = getMaxGasInUSD(level);
 
     return gasUsedInUSD <= maxGasInUSD;
+
 }
 
 async function getETHPriceInUSD(): Promise<number> {

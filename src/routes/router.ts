@@ -3,7 +3,7 @@ import { BadgesServices } from '../services/badges.service';
 import { superChainAccountService } from '../services/superChainAccount.service';
 import { ZeroAddress } from 'ethers';
 import { AttestationsService } from '../services/attestations.service';
-import { isAbleToSponsor } from '../services/sponsorship.service';
+import { getMaxGasInUSD, isAbleToSponsor } from '../services/sponsorship.service';
 
 
 const routes = Router();
@@ -81,3 +81,22 @@ routes.post('/validate-sponsorship', async (req, res) => {
   }
 })
 export default routes;
+
+
+routes.get('/max-weekly-sponsorship', async (req, res) => {
+
+  const headers = req.headers;
+  const account = headers.account as string;
+
+  if (!account) {
+    return res.status(500).json({ error: 'Invalid request' });
+  }
+  const superChainSmartAccount = await superChainAccountService.getSuperChainSmartAccount(account)
+  const maxGas = getMaxGasInUSD(Number(superChainSmartAccount[3]))
+
+  return res.status(200).json({
+    "maxGas": maxGas
+  })
+
+
+})
