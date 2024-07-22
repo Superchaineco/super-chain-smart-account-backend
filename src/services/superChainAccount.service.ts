@@ -34,8 +34,14 @@ export class SuperChainAccountService {
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
     return await this.superChainAccount.simulateIncrementSuperChainPoints(points, recipent)
   }
+  async getSuperChainSmartAccount(address: string): Promise<string> {
+    console.log('getSuperChainSmartAccount', address);
+    const response = await this.superChainAccount.getSuperChainAccount(address);
+    console.log('getSuperChainSmartAccount', response);
+    return response
+  }
 
-      
+
 
 }
 const superChainAccountService = new SuperChainAccountService();

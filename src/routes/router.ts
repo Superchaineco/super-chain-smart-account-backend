@@ -68,11 +68,13 @@ routes.post('/attest-badges', async (req, res) => {
 routes.post('/validate-sponsorship', async (req, res) => {
   const requestData = req.body.data.object;
   try {
-    const isAble = await isAbleToSponsor(requestData.userOperation.sender)
+    const superChainSmartAccount = await superChainAccountService.getSuperChainSmartAccount(requestData.userOperation.sender)
+    const isAble = await isAbleToSponsor(requestData.userOperation.sender, Number(superChainSmartAccount[3]))
     return res.status(200).json({
       "sponsor": isAble
     })
   } catch (error) {
+    console.error('Error validating sponsorship', error);
     return res.status(200).json({
       "sponsor": false
     })
