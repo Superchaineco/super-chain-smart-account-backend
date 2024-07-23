@@ -21,25 +21,29 @@ export async function getTransactions(startTime: number, account: string): Promi
     const startBlock = await getBlockNumberFromTimestamp(startTime);
 
     try {
-        const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
-            params: {
-                module: 'account',
-                action: 'txlist',
-                address: account,
-                startblock: startBlock,
-                endblock: 'latest',
-                sort: 'asc',
-                apikey: ETHERSCAN_API_KEY
-            },
-            timeout: 50000
+        // const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
+        //     params: {
+        //         module: 'account',
+        //         action: 'txlist',
+        //         address: account,
+        //         startblock: startBlock,
+        //         endblock: 'latest',
+        //         sort: 'asc',
+        //         apikey: ETHERSCAN_API_KEY
+        //     },
+        //     timeout: 50000
 
-        });
+        // });
 
 
 
-        const transactions = response.data.result as Txn[];
+        // const transactions = response.data.result as Txn[];
+        const transactions: Txn[] = [];
+
         const badgeTransactions = await getBadgeTransactions(startBlock, account);
-        console.debug({ badgeTransactions })
+        console.debug({
+            transactions, badgeTransactions
+        })
         const badgeTransactionsGas = badgeTransactions.reduce((acc, transaction) => (
             acc + parseInt(transaction.gasUsed) * parseInt(transaction.gasPrice)
         ), 0);
@@ -145,7 +149,8 @@ export function getMaxGasInUSD(level: number): number {
 
 async function validateMaxSponsorship(currentTransactionsGas: number, level: number): Promise<boolean> {
     const ethPriceInUSD = await getETHPriceInUSD();
-    const gasUsedInUSD = currentTransactionsGas * ethPriceInUSD;
+    const gasUsedInUSD = currentTransactionsGas * ethPriceInUSD / 1e18;
+    console.log('gasUsedInUSD:', gasUsedInUSD);
     const maxGasInUSD = getMaxGasInUSD(level);
 
     return gasUsedInUSD <= maxGasInUSD;
@@ -183,7 +188,6 @@ function getLastMondayTimestampCET(): number {
  */
 async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
     try {
-        console.debug(timestamp)
         const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
             params: {
                 module: 'block',

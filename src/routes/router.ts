@@ -40,24 +40,26 @@ routes.post('/attest-badges', async (req, res) => {
   const headers = req.headers;
   const account = headers.account as string;
   if (!account) {
+    console.error('Invalid request');
     return res.status(500).json({ error: 'Invalid request' });
   }
-  const superChainSmartAccount = await superChainAccountService.getSuperChainSmartAccount(account)
-
-  const isAble = await isAbleToSponsor(account, Number(superChainSmartAccount[3]))
-
-  if(!isAble){
-    return res.status(500).json({ error: 'User is not able to sponsor' });
-  }
-
-  const badgesService = new BadgesServices();
-  const eoas = await superChainAccountService.getEOAS(account);
-  const badges = await badgesService.getBadges(eoas, account);
-  const attestationsService = new AttestationsService();
-  const totalPoints = badgesService.getTotalPoints(badges)
-  const badgeUpdates = badgesService.getBadgeUpdates(badges)
-
   try {
+    const superChainSmartAccount = await superChainAccountService.getSuperChainSmartAccount(account)
+
+    const isAble = await isAbleToSponsor(account, Number(superChainSmartAccount[3]))
+
+    if (!isAble) {
+      console.error('User is not able to sponsor');
+      return res.status(500).json({ error: 'User is not able to sponsor' });
+    }
+
+    const badgesService = new BadgesServices();
+    const eoas = await superChainAccountService.getEOAS(account);
+    const badges = await badgesService.getBadges(eoas, account);
+    const attestationsService = new AttestationsService();
+    const totalPoints = badgesService.getTotalPoints(badges)
+    const badgeUpdates = badgesService.getBadgeUpdates(badges)
+
     const response = await attestationsService.attest(
       account,
       totalPoints,
