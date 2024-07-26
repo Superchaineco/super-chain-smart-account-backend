@@ -1,5 +1,5 @@
 import { Interface, Wallet } from "ethers";
-import { ATTESTATOR_SIGNER_PRIVATE_KEY, EAS_CONTRACT_ADDRESS, ETHERSCAN_API_KEY, JSON_RPC_PROVIDER } from "../config/superChain/constants";
+import { ATTESTATOR_SIGNER_PRIVATE_KEY, EAS_CONTRACT_ADDRESS, ENV, ENVIRONMENTS, ETHERSCAN_API_KEY, JSON_RPC_PROVIDER } from "../config/superChain/constants";
 import axios from "axios";
 
 type Txn = {
@@ -69,7 +69,7 @@ async function getBadgeTransactions(startBlock: number, account: string) {
     try {
         const wallet = new Wallet(ATTESTATOR_SIGNER_PRIVATE_KEY);
 
-        const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
+        const response = await axios.get(`https://api-${ENV === ENVIRONMENTS.development ? 'sepolia' : 'optimistic'}.etherscan.io/api`, {
             params: {
                 module: 'account',
                 action: 'txlist',

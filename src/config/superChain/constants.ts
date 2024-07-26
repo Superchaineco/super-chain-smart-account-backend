@@ -1,12 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-enum ENVIRONMENTS {
+export enum ENVIRONMENTS {
   development = 'development',
   production = 'production'
 }
 
-const ENV = process.env.NODE_ENV as ENVIRONMENTS || ENVIRONMENTS.development;
+export const ENV = process.env.NODE_ENV as ENVIRONMENTS || ENVIRONMENTS.development;
 
 const requiredEnvVars = [
   'ATTESTATOR_SIGNER_PRIVATE_KEY',
@@ -31,9 +31,9 @@ const config = {
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY_TESTNET
   },
   production: {
-    SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS: '',
-    SUPER_CHAIN_ATTESTATION_SCHEMA: '',
-    EAS_CONTRACT_ADDRESS: '',
+    SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS: '0xC1c604C563C496973499EE356Bc36f5Bcd9124d0',
+    SUPER_CHAIN_ATTESTATION_SCHEMA: '0x69e0f81396d88e48fe714e548b852038e7d8f7e7afda38ce40e5ca0f84a435ea',
+    EAS_CONTRACT_ADDRESS: '0x4200000000000000000000000000000000000021',
     JSON_RPC_PROVIDER: process.env.JSON_RPC_PROVIDER,
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY
   }
