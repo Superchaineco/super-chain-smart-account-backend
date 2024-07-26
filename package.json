@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "NODE_ENV=development nodemon src/index.ts",
-    "start": "NODE_ENV=production ts-node src/index.ts"
+    "start": "ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
