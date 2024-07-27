@@ -83,6 +83,8 @@ async function getBadgeTransactions(startBlock: number, account: string) {
 
         });
 
+        console.debug(`https://api-${ENV === ENVIRONMENTS.development ? 'sepolia' : 'optimistic'}.etherscan.io/api`, ETHERSCAN_API_KEY, response)
+
         const transactions = response.data.result as Txn[];
         const abi = [
             "function attest((bytes32 schema, (address recipient, uint64 expirationTime, bool revocable, bytes32 refUID, bytes data, uint256 value) data) request)"
@@ -188,7 +190,7 @@ function getLastMondayTimestampCET(): number {
  */
 async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
     try {
-        const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
+        const response = await axios.get(`https://api-${ENV === ENVIRONMENTS.development ? 'sepolia' : 'optimistic'}.etherscan.io/api`, {
             params: {
                 module: 'block',
                 action: 'getblocknobytime',

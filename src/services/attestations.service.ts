@@ -36,10 +36,12 @@ export class AttestationsService {
 
 
       try {
+        console.debug(JSON_RPC_PROVIDER, this.provider, this.wallet, this.eas, SUPER_CHAIN_ATTESTATION_SCHEMA);
         const isLevelUp = await superChainAccountService.getIsLevelUp(
           account,
           totalPoints
         );
+
         const tx = await this.eas.attest({
           schema:
             SUPER_CHAIN_ATTESTATION_SCHEMA,
