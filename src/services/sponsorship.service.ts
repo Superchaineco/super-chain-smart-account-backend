@@ -41,9 +41,7 @@ export async function getTransactions(startTime: number, account: string): Promi
         const transactions: Txn[] = [];
 
         const badgeTransactions = await getBadgeTransactions(startBlock, account);
-        console.debug({
-            transactions, badgeTransactions
-        })
+      
         const badgeTransactionsGas = badgeTransactions.reduce((acc, transaction) => (
             acc + parseInt(transaction.gasUsed) * parseInt(transaction.gasPrice)
         ), 0);
@@ -83,7 +81,6 @@ async function getBadgeTransactions(startBlock: number, account: string) {
 
         });
 
-        console.debug(`https://api-${ENV === ENVIRONMENTS.development ? 'sepolia' : 'optimistic'}.etherscan.io/api`, ETHERSCAN_API_KEY, response)
 
         const transactions = response.data.result as Txn[];
         const abi = [

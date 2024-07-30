@@ -23,6 +23,7 @@ import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { SuperchainsmartaccountsTypes } from './sources/superchainsmartaccounts/types';
 import * as importedModule$0 from "./sources/superchainsmartaccounts/introspectionSchema";
+import { ENV, ENVIRONMENTS } from '../src/config/superChain/constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1900,7 +1901,7 @@ const superchainsmartaccountsTransforms = [];
 const additionalTypeDefs = [] as any[];
 const superchainsmartaccountsHandler = new GraphqlHandler({
               name: "superchainsmartaccounts",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/72352/superchainsmartaccount/version/latest"},
+              config: {"endpoint":ENV === ENVIRONMENTS.production ? "https://api.studio.thegraph.com/query/72352/superchainsmartaccount/version/latest" : "https://api.studio.thegraph.com/query/72352/superchainsmartaccount-testnet/version/latest"},
               baseDir,
               cache,
               pubsub,
