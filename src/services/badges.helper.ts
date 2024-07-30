@@ -1,7 +1,7 @@
 import { Alchemy, AssetTransfersCategory, Network } from 'alchemy-sdk';
 import { ethers } from 'ethers';
 import { CovalentClient } from '@covalenthq/client-sdk';
-import  fs from 'fs';
+import fs from 'fs';
 import csv from 'csv-parser';
 
 
@@ -29,7 +29,7 @@ export class BadgesHelper {
       const acc = await accPromise;
       const { transfers } = await alchemy.core.getAssetTransfers({
         toBlock: 'latest',
-        toAddress: eoa,
+        fromAddress: eoa,
         excludeZeroValue: true,
         category: [
           AssetTransfersCategory.ERC20,
@@ -55,7 +55,7 @@ export class BadgesHelper {
       const acc = await accPromise;
       const { transfers } = await alchemy.core.getAssetTransfers({
         toBlock: 'latest',
-        toAddress: eoa,
+        fromAddress: eoa,
         excludeZeroValue: true,
         category: [
           AssetTransfersCategory.ERC20,
@@ -79,17 +79,21 @@ export class BadgesHelper {
     const transactions = await eoas.reduce(async (accPromise, eoa) => {
       const acc = await accPromise;
       const { transfers } = await alchemy.core.getAssetTransfers({
+        fromBlock: "0x0",
         toBlock: 'latest',
-        toAddress: eoa,
-        excludeZeroValue: true,
+        fromAddress: eoa,
+        withMetadata: false,
+        excludeZeroValue: false,
         category: [
           AssetTransfersCategory.ERC20,
           AssetTransfersCategory.ERC1155,
           AssetTransfersCategory.EXTERNAL,
           AssetTransfersCategory.ERC721,
+          AssetTransfersCategory.INTERNAL
         ],
       });
       if (!transfers) return acc;
+
       return acc + transfers.length;
     }, Promise.resolve(0));
     return transactions;
@@ -111,7 +115,7 @@ export class BadgesHelper {
     const csvData = await this.loadCsvData(CitizenFilePath);
 
     for (const eoa of eoas) {
-      const citizen = csvData.find((row) =>  row.Address ? row.Address.toLocaleLowerCase() === eoa.toLowerCase(): false);
+      const citizen = csvData.find((row) => row.Address ? row.Address.toLocaleLowerCase() === eoa.toLowerCase() : false);
       if (citizen) {
         return true;
       }
@@ -135,15 +139,15 @@ export class BadgesHelper {
   }
 
   private async loadCsvData(filePath: string): Promise<CsvRow[]> {
-  return new Promise((resolve, reject) => {
-    const results: CsvRow[] = [];
-    fs.createReadStream(filePath)
-      .pipe(csv())
-      .on('data', (data: CsvRow) => results.push(data))
-      .on('end', () => resolve(results))
-  });
-}
-  
+    return new Promise((resolve, reject) => {
+      const results: CsvRow[] = [];
+      fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', (data: CsvRow) => results.push(data))
+        .on('end', () => resolve(results))
+    });
+  }
+
 }
 
 export interface IBadgesHelper {
