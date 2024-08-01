@@ -182,7 +182,6 @@ export async function getCurrentSponsorhipValue(
   const transactions = await getTransactions(startTime, account);
   const ethPriceInUSD = await getETHPriceInUSD();
   const gasUsedInUSD = (transactions * ethPriceInUSD) / 1e18;
-
   const maxGasInUSD = getMaxGasInUSD(level);
   return { gasUsedInUSD, maxGasInUSD };
 }
