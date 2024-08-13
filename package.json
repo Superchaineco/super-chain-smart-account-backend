@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "start": "ts-node src/index.ts"
+    "start": "sleep 3 && ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
