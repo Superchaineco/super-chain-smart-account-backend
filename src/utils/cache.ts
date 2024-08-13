@@ -7,12 +7,7 @@ import {
   REDIS_USER,
 } from "../config/superChain/constants";
 console.debug("REDIS_URL", REDIS_URL);
-const redis = new Redis({
-  host: REDIS_HOST,
-  port: REDIS_PORT,
-  username: REDIS_USER,
-  password: REDIS_PASSWORD,
-  family: 0,
-});
+
+const redis = new Redis(REDIS_URL);
 
 export { redis };
