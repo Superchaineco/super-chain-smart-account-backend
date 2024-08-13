@@ -41,3 +41,4 @@ export const ATTESTATOR_SIGNER_PRIVATE_KEY =
   process.env.ATTESTATOR_SIGNER_PRIVATE_KEY!;
 export const JSON_RPC_PROVIDER = config.JSON_RPC_PROVIDER!;
 export const ETHERSCAN_API_KEY = config.ETHERSCAN_API_KEY!;
+export const REDIS_URL = process.env.REDIS_URL!;
