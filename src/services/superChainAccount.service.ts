@@ -1,10 +1,18 @@
-import { Contract, ethers, JsonRpcProvider } from 'ethers';
+import { Contract, ethers, JsonRpcProvider } from "ethers";
 import {
   JSON_RPC_PROVIDER,
   SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS,
   SUPER_CHAIN_MODULE_ABI,
-} from '../config/superChain/constants';
-import Safe, { EthersAdapter } from '@safe-global/protocol-kit';
+} from "../config/superChain/constants";
+import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
+import { ExecutionResult } from "graphql";
+import {
+  GetUserBadgesDocument,
+  GetUserBadgesQuery,
+  GetUserBadgesQueryVariables,
+  execute,
+} from "../../.graphclient";
+import { BadgesServices } from "./badges.service";
 
 export class SuperChainAccountService {
   superChainAccount: Contract;
@@ -13,7 +21,7 @@ export class SuperChainAccountService {
     this.superChainAccount = new Contract(
       SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS,
       SUPER_CHAIN_MODULE_ABI,
-      new JsonRpcProvider(JSON_RPC_PROVIDER)
+      new JsonRpcProvider(JSON_RPC_PROVIDER),
     );
   }
 
@@ -23,24 +31,55 @@ export class SuperChainAccountService {
         ethers: ethers,
         signerOrProvider: new JsonRpcProvider(JSON_RPC_PROVIDER),
       });
-      const protocolKit = await Safe.create({ ethAdapter, safeAddress: address });
+      console.debug(JSON_RPC_PROVIDER);
+      const protocolKit = await Safe.create({
+        ethAdapter,
+        safeAddress: address,
+      });
       return await protocolKit.getOwners();
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
-      throw new Error('Error getting EOAS');
+      throw new Error("Error getting EOAS");
     }
   }
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
-    return await this.superChainAccount.simulateIncrementSuperChainPoints(points, recipent)
+    return await this.superChainAccount.simulateIncrementSuperChainPoints(
+      points,
+      recipent,
+    );
   }
   async getSuperChainSmartAccount(address: string): Promise<string> {
     const response = await this.superChainAccount.getSuperChainAccount(address);
-    return response
+    return response;
   }
+  async getSuperChainSmartAccountBadges(address: string) {
+    const { data, errors }: ExecutionResult<GetUserBadgesQuery> = await execute(
+      GetUserBadgesDocument,
+      {
+        user: address,
+      } as GetUserBadgesQueryVariables,
+    );
 
+    if (errors) return;
+    console.debug(data!.accountBadges);
 
-
+    const badgeServices = new BadgesServices();
+    const promises = data!.accountBadges.flatMap((badge) =>
+      badge.badge.badgeTiers.map((tier) =>
+        badgeServices.getBadgeLevelMetadata(tier),
+      ),
+    );
+    const results = await Promise.all(promises);
+    for (const badge of data!.accountBadges) {
+      badge.badge.badgeTiers.forEach((tier) => {
+        const result = results.find((res) => res.tier === tier);
+        if (result) {
+          tier["metadata"] = result.metadata;
+        }
+      });
+    }
+    return data!.accountBadges;
+  }
 }
 const superChainAccountService = new SuperChainAccountService();
 export { superChainAccountService };

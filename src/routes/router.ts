@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { BadgesServices } from "../services/badges.service";
-import { superChainAccountService } from "../services/superChainAccount.service";
+import {
+  SuperChainAccountService,
+  superChainAccountService,
+} from "../services/superChainAccount.service";
 import { ZeroAddress } from "ethers";
 import { AttestationsService } from "../services/attestations.service";
 import {
@@ -121,3 +124,30 @@ routes.get("/max-weekly-sponsorship", async (req, res) => {
   });
 });
 
+routes.get("/user", async (req, res) => {
+  const headers = req.headers;
+  const account = headers.account as string;
+
+  if (!account) {
+    return res.status(500).json({ error: "Invalid request" });
+  }
+
+  const superchainsmartaccount =
+    await superChainAccountService.getSuperChainSmartAccount(account);
+  const badges =
+    await superChainAccountService.getSuperChainSmartAccountBadges(account);
+  const replacer = (key: string, value: any) =>
+    typeof value === "bigint" ? value.toString() : value;
+
+  return res.status(200).json(
+    JSON.parse(
+      JSON.stringify(
+        {
+          superchainsmartaccount,
+          badges,
+        },
+        replacer,
+      ),
+    ),
+  );
+});

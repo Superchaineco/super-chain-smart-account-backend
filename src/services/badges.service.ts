@@ -128,7 +128,7 @@ export class BadgesServices {
       }));
   }
 
-  private async getBadgeMetadata(badge: Badge) {
+  public async getBadgeMetadata(badge: Badge) {
     const CACHE_KEY = `badge:${badge.badge.uri}`;
 
     // Intentar obtener datos del cache
@@ -158,7 +158,7 @@ export class BadgesServices {
     return metadata;
   }
 
-  private async getBadgeLevelMetadata(
+  public async getBadgeLevelMetadata(
     badgeLevel: Badge["badge"]["badgeTiers"][0],
   ) {
     const CACHE_KEY = `badgeLevel:${badgeLevel.uri}`;
