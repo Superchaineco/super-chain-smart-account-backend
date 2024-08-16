@@ -297,7 +297,8 @@ export class BadgesServices {
         });
         break;
 
-      case "Nouns":
+      case "Hold Nouns":
+        console.debug("Checking Nouns badge");
         const countNouns = await this.helper.hasNouns(eoas);
         let nounsTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
