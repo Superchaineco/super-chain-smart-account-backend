@@ -46,3 +46,5 @@ export const REDIS_PASSWORD = process.env.REDISPASSWORD!;
 export const REDIS_HOST = process.env.REDISHOST!;
 export const REDIS_PORT = Number(process.env.REDISPORT!);
 export const REDIS_USER = process.env.REDISUSER!;
+export const PRIVY_APP_ID = process.env.PRIVY_APP_ID!;
+export const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET!;

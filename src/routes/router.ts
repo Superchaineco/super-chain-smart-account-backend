@@ -11,6 +11,7 @@ import {
   getMaxGasInUSD,
   isAbleToSponsor,
 } from "../services/sponsorship.service";
+import privyService from "../services/privy.service";
 
 const routes = Router();
 
@@ -39,6 +40,23 @@ routes.get("/get-badges", async (req, res) => {
     return res.status(500).json({ error });
   }
 });
+
+// routes.get("/verifyAuthToken", async (req, res) => {
+//   const authHeader = req.headers.authorization;
+//
+//   // Verifica que el encabezado Authorization exista y esté en el formato correcto
+//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//     return res.status(401).json({ message: "Unauthorized" });
+//   }
+//   const token = authHeader.split(" ")[1];
+//   const claims = await privyService.verifyAuthToken(token);
+//   if (!claims) return res.status(401).json({ message: "Unauthorized" });
+//   const user = await privyService.getUserInfo(claims?.userId);
+//   console.log(claims, user);
+//   return res.status(200).json({
+//     message: "Dummy response",
+//   });
+// });
 
 routes.post("/attest-badges", async (req, res) => {
   const headers = req.headers;
