@@ -8,6 +8,7 @@ import {
   JSON_RPC_PROVIDER,
 } from "../config/superChain/constants";
 import axios from "axios";
+import { redis } from "../utils/cache";
 
 type Txn = {
   gas: string;
@@ -187,6 +188,13 @@ export async function getCurrentSponsorhipValue(
 }
 
 async function getETHPriceInUSD(): Promise<number> {
+  const CACHE_KEY = "ethPriceInUSD";
+  let cachedPrice = await redis.get(CACHE_KEY);
+
+  if (cachedPrice) {
+    console.log("ETH price retrieved from cache");
+    return parseFloat(cachedPrice);
+  }
   const response = await axios.get(
     "https://api.coingecko.com/api/v3/simple/price",
     {
@@ -196,6 +204,7 @@ async function getETHPriceInUSD(): Promise<number> {
       },
     },
   );
+  await redis.set(CACHE_KEY, response.data.ethereum.usd.toString(), "EX", 3600);
 
   return response.data.ethereum.usd;
 }

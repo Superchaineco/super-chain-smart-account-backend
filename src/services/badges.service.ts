@@ -298,7 +298,6 @@ export class BadgesServices {
         break;
 
       case "Hold Nouns":
-        console.debug("Checking Nouns badge");
         const countNouns = await this.helper.hasNouns(eoas);
         let nounsTier = null;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
@@ -314,6 +313,51 @@ export class BadgesServices {
           claimableTier: nounsTier,
           claimable: nounsTier ? badgeData.tier < nounsTier : false,
         });
+        break;
+
+      case "Giveth Donations Made":
+        const givethDonations = await this.helper.getGivethDonations(eoas);
+        let givethDonationsTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if (
+            givethDonations >= badgeData.badge.badgeTiers[i].metadata!.minValue
+          ) {
+            givethDonationsTier = i + 1;
+            break;
+          }
+        }
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: givethDonationsTier,
+          claimable: givethDonationsTier
+            ? badgeData.tier < givethDonationsTier
+            : false,
+        });
+        break;
+
+      case "Gitcoin Donations Made":
+        const gitcoinDonations = await this.helper.getGitcoinDonations(eoas);
+        let gitcoinDonationsTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if (
+            gitcoinDonations >= badgeData.badge.badgeTiers[i].metadata!.minValue
+          ) {
+            gitcoinDonationsTier = i + 1;
+            break;
+          }
+        }
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: gitcoinDonationsTier,
+          claimable: gitcoinDonationsTier
+            ? badgeData.tier < gitcoinDonationsTier
+            : false,
+        });
+        break;
     }
   }
 }

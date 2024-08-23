@@ -137,6 +137,73 @@ export class BadgesHelper {
     return countNouns;
   }
 
+  async getGivethDonations(eoas: string[]) {
+    const givethApiUrl = "https://mainnet.serve.giveth.io/graphql";
+
+    const donationsQuery = `
+      query AddressGivethDonations($fromWalletAddresses: [String!]!) {
+      donationsFromWallets(fromWalletAddresses: $fromWalletAddresses) {
+        valueUsd
+        createdAt
+        }
+      }
+      `;
+    const query = {
+      query: donationsQuery,
+      variables: {
+        fromWalletAddresses: [...eoas],
+      },
+    };
+
+    try {
+      const response = await fetch(givethApiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(query),
+      });
+
+      const res = await response.json();
+      if (!res?.data?.donationsFromWallets) return 0;
+
+      return (
+        res.data.donationsFromWallets as {
+          valueUsd: number;
+          createdAt: string;
+        }[]
+      ).reduce((total, d) => total + d.valueUsd, 0);
+    } catch (error) {
+      console.log(error);
+      return 0;
+    }
+  }
+
+  async getGitcoinDonations(eoas: string[]) {
+    const gitcoinIndexerUrl =
+      "https://grants-stack-indexer-v2.gitcoin.co/graphql";
+    const gitcoinDonationsQuery = `query getGitcoinDonations($fromWalletAddresses: [String!]) {
+  donations(filter: { donorAddress: {in: $fromWalletAddresses}}) {
+    amountInUsd
+  }
+}`;
+
+    try {
+      const res = await fetch(gitcoinIndexerUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: gitcoinDonationsQuery,
+          variables: { fromWalletAddresses: eoas },
+        }),
+      }).then((r) => r.json());
+
+      console.log(res);
+      const donations: { amountInUsd: number }[] = res.data?.donations || [];
+      return donations.reduce((sum, d) => sum + d.amountInUsd, 0);
+    } catch {
+      return 0;
+    }
+  }
+
   private async loadCsvData(filePath: string): Promise<CsvRow[]> {
     return new Promise((resolve, reject) => {
       const results: CsvRow[] = [];
@@ -155,4 +222,6 @@ export interface IBadgesHelper {
   getModeTransactions(eoas: string[]): Promise<number>;
   isCitizen(eoas: string[]): Promise<boolean>;
   hasNouns(eoas: string[]): Promise<number>;
+  getGivethDonations(eoas: string[]): Promise<number>;
+  getGitcoinDonations(eoas: string[]): Promise<number>;
 }
