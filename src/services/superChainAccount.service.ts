@@ -61,18 +61,19 @@ export class SuperChainAccountService {
     );
 
     if (errors) return;
-    console.debug(data!.accountBadges);
 
     const badgeServices = new BadgesServices();
-    const promises = data!.accountBadges.flatMap((badge) =>
+
+    const tierPromises = data!.accountBadges.flatMap((badge) =>
       badge.badge.badgeTiers.map((tier) =>
         badgeServices.getBadgeLevelMetadata(tier),
       ),
     );
-    const results = await Promise.all(promises);
+    const tierResults = await Promise.all(tierPromises);
     for (const badge of data!.accountBadges) {
+      badge.badge.metadata = await badgeServices.getBadgeMetadata(badge);
       badge.badge.badgeTiers.forEach((tier) => {
-        const result = results.find((res) => res.tier === tier);
+        const result = tierResults.find((res) => res.tier === tier);
         if (result) {
           tier["metadata"] = result.metadata;
         }
