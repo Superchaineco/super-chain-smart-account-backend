@@ -358,6 +358,36 @@ export class BadgesServices {
             : false,
         });
         break;
+      case "Talent Protocol score":
+        const talentScore = await this.helper.getTalentScore(eoas);
+        let talentScoreTier = null;
+        for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
+          if (
+            talentScore >= badgeData.badge.badgeTiers[i].metadata!.minValue
+          ) {
+            talentScoreTier = i + 1;
+            break;
+          }
+        }
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: talentScoreTier,
+          claimable: talentScoreTier ? badgeData.tier < talentScoreTier : false,
+        });
+        break;
+
+      case "Worldcoin Verification":
+        const isWorldcoinVerified = await this.helper.isWorldcoinVerified(eoas);
+        this.badges.push({
+          ...badgeData.badge,
+          points: badgeData.points,
+          tier: badgeData.tier,
+          claimableTier: isWorldcoinVerified ? 1 : null,
+          claimable: isWorldcoinVerified ? badgeData.tier != 1 : false,
+        });
+        break;
     }
   }
 }

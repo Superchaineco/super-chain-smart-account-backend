@@ -4,11 +4,29 @@ import { CovalentClient } from "@covalenthq/client-sdk";
 import fs from "fs";
 import csv from "csv-parser";
 import { redis } from "../utils/cache"; // Asegúrate de que la ruta sea correcta
+import axios from "axios";
+import { get } from "http";
+import { join } from "path";
+import { env } from "process";
 
 type CsvRow = {
   Address: string;
   ENS: string;
 };
+
+type TalentPassport = {
+  passport: {
+    score: number;
+  }
+}
+
+type PassportCredential = {
+  passport_credentials: {
+    name: string;
+    value: string;
+  }[]
+}
+
 const CitizenFilePath = "src/data/citizen.csv";
 
 export class BadgesHelper {
@@ -22,7 +40,7 @@ export class BadgesHelper {
     }
 
     const data = await fetchFunction();
-    await redis.set(key, JSON.stringify(data), "EX", 86400); 
+    await redis.set(key, JSON.stringify(data), "EX", 86400);
     return data;
   }
 
@@ -242,6 +260,47 @@ export class BadgesHelper {
   }
 
 
+  async isWorldcoinVerified(eoas: string[]) {
+    const cacheKey = `worldcoinVerified-${eoas.join(",")}`;
+    return this.getCachedData(cacheKey, async () => {
+      let isWorldcoinVerified = false;
+      for (const eoa of eoas) {
+        const passportCredentials = await axios.get<PassportCredential>('https://api.talentprotocol.com/api/v2/passport_credentials', {
+          headers: {
+            "x-api-key": process.env.TALENT_API_KEY!
+          },
+          params: {
+            passport_id: eoa,
+          }
+        })
+        if (passportCredentials.data.passport_credentials.find(c => c.name === "World ID" && c.value === "Verified")) {
+          return true;
+        }
+      }
+
+
+      return isWorldcoinVerified;
+    });
+  }
+
+  async getTalentScore(eoas: string[]) {
+    const cacheKey = `talentScore-${eoas.join(",")}`;
+    return this.getCachedData(cacheKey, async () => {
+      let highestTalentScore = 0;
+      for (const eoa of eoas) {
+        const talentPassport = await axios.get<TalentPassport>(`https://api.talentprotocol.com/v1/users/${eoa}`, {
+          headers: {
+            "x-api-key": process.env.TALENT_API_KEY!
+          }
+        })
+        if (talentPassport.data.passport.score > highestTalentScore) {
+          highestTalentScore = talentPassport.data.passport.score;
+        }
+      }
+      return highestTalentScore;
+    });
+  }
+
   private async loadCsvData(filePath: string): Promise<CsvRow[]> {
     return new Promise((resolve, reject) => {
       const results: CsvRow[] = [];
@@ -262,4 +321,6 @@ export interface IBadgesHelper {
   hasNouns(eoas: string[]): Promise<number>;
   getGivethDonations(eoas: string[]): Promise<number>;
   getGitcoinDonations(eoas: string[]): Promise<number>;
+  isWorldcoinVerified(eoas: string[]): Promise<boolean>;
+  getTalentScore(eoas: string[]): Promise<number>;
 }
