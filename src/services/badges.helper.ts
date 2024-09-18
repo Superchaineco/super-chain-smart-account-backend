@@ -288,7 +288,7 @@ export class BadgesHelper {
     return this.getCachedData(cacheKey, async () => {
       let highestTalentScore = 0;
       for (const eoa of eoas) {
-        const talentPassport = await axios.get<TalentPassport>(`https://api.talentprotocol.com/v1/users/${eoa}`, {
+        const talentPassport = await axios.get<TalentPassport>(`https://api.talentprotocol.com/api/v2/passports/${eoa}`, {
           headers: {
             "x-api-key": process.env.TALENT_API_KEY!
           }
