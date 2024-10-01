@@ -12,6 +12,7 @@ import {
   isAbleToSponsor,
 } from "../services/sponsorship.service";
 import privyService from "../services/privy.service";
+import { perksService } from "../services/perks.service";
 
 const routes = Router();
 
@@ -32,6 +33,17 @@ routes.get("/get-badges", async (req, res) => {
     console.error(error);
     return res.status(500).json({ error });
   }
+});
+
+routes.get("/get-perks", async (req, res) => {
+  const headers = req.headers;
+  const account = headers.account as string;
+  if (!account || account === ZeroAddress) {
+    return res.status(500).json({ error: "Invalid request" });
+  }
+  const eoas = await superChainAccountService.getEOAS(account);
+  const perks = await perksService.getPerks(eoas, account);
+  res.json({ perks });
 });
 
 // routes.get("/verifyAuthToken", async (req, res) => {

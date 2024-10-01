@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { CovalentClient } from "@covalenthq/client-sdk";
 import fs from "fs";
 import csv from "csv-parser";
-import { redis } from "../utils/cache"; // Asegúrate de que la ruta sea correcta
+import { redisService } from "./redis.service"; // Importar RedisService
 import axios from "axios";
 import { get } from "http";
 import { join } from "path";
@@ -32,21 +32,11 @@ const CitizenFilePath = "src/data/citizen.csv";
 export class BadgesHelper {
   covalent = new CovalentClient(process.env.COVALENT_API_KEY!);
 
-  private async getCachedData<T>(key: string, fetchFunction: () => Promise<T>): Promise<T> {
-    const cachedData = await redis.get(key);
-    if (cachedData) {
-      console.log(`Cache hit for key: ${key}`);
-      return JSON.parse(cachedData);
-    }
-
-    const data = await fetchFunction();
-    await redis.set(key, JSON.stringify(data), "EX", 86400);
-    return data;
-  }
-
   async getOptimisimTransactions(eoas: string[]): Promise<number> {
     const cacheKey = `optimisimTransactions-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       const settings = {
         apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
         network: Network.OPT_MAINNET,
@@ -71,12 +61,16 @@ export class BadgesHelper {
       }, Promise.resolve(0));
 
       return transactions;
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   async getBaseTransactions(eoas: string[]) {
     const cacheKey = `baseTransactions-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       const settings = {
         apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
         network: Network.BASE_MAINNET,
@@ -100,12 +94,16 @@ export class BadgesHelper {
       }, Promise.resolve(0));
 
       return transactions;
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   async getSepoliaTransactions(eoas: string[]) {
     const cacheKey = `sepoliaTransactions-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       const settings = {
         apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
         network: Network.ETH_SEPOLIA,
@@ -133,12 +131,16 @@ export class BadgesHelper {
       }, Promise.resolve(0));
 
       return transactions;
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   async getModeTransactions(eoas: string[]) {
     const cacheKey = `modeTransactions-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       const transactions = eoas.reduce(async (accPromise, eoa) => {
         const resp =
           await this.covalent.TransactionService.getAllTransactionsForAddressByPage(
@@ -149,7 +151,9 @@ export class BadgesHelper {
       }, Promise.resolve(0));
 
       return transactions;
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   async isCitizen(eoas: string[]) {
@@ -170,7 +174,9 @@ export class BadgesHelper {
 
   async hasNouns(eoas: string[]) {
     const cacheKey = `hasNouns-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       const provider = new ethers.JsonRpcProvider("https://rpc.ankr.com/eth");
       const contract = new ethers.Contract(
         process.env.NOUNS_CONTRACT_ADDRESS!,
@@ -183,12 +189,16 @@ export class BadgesHelper {
         if (balance > 0) countNouns++;
       }
       return countNouns;
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   async getGivethDonations(eoas: string[]) {
     const cacheKey = `givethDonations-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       const givethApiUrl = "https://mainnet.serve.giveth.io/graphql";
 
       const donationsQuery = `
@@ -226,12 +236,16 @@ export class BadgesHelper {
         console.log(error);
         return 0;
       }
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   async getGitcoinDonations(eoas: string[]) {
     const cacheKey = `gitcoinDonations-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       const gitcoinIndexerUrl =
         "https://grants-stack-indexer-v2.gitcoin.co/graphql";
       const gitcoinDonationsQuery = `query getGitcoinDonations($fromWalletAddresses: [String!]) {
@@ -256,13 +270,16 @@ export class BadgesHelper {
       } catch {
         return 0;
       }
-    });
-  }
+    };
 
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+  }
 
   async isWorldcoinVerified(eoas: string[]) {
     const cacheKey = `worldcoinVerified-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       let isWorldcoinVerified = false;
       for (const eoa of eoas) {
         const passportCredentials = await axios.get<PassportCredential>('https://api.talentprotocol.com/api/v2/passport_credentials', {
@@ -278,14 +295,17 @@ export class BadgesHelper {
         }
       }
 
-
       return isWorldcoinVerified;
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   async getTalentScore(eoas: string[]) {
     const cacheKey = `talentScore-${eoas.join(",")}`;
-    return this.getCachedData(cacheKey, async () => {
+    const ttl = 86400; // 1 día
+
+    const fetchFunction = async () => {
       let highestTalentScore = 0;
       for (const eoa of eoas) {
         const talentPassport = await axios.get<TalentPassport>(`https://api.talentprotocol.com/api/v2/passports/${eoa}`, {
@@ -298,7 +318,9 @@ export class BadgesHelper {
         }
       }
       return highestTalentScore;
-    });
+    };
+
+    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
   }
 
   private async loadCsvData(filePath: string): Promise<CsvRow[]> {

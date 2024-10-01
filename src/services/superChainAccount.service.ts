@@ -81,6 +81,11 @@ export class SuperChainAccountService {
     }
     return data!.accountBadges;
   }
+  async getAccountLevel(account: string): Promise<number> {
+    const superChainSmartAccount = await this.getSuperChainSmartAccount(account);
+    const accountLevel = Number(superChainSmartAccount[3]);
+    return accountLevel;
+  }
 }
 const superChainAccountService = new SuperChainAccountService();
 export { superChainAccountService };

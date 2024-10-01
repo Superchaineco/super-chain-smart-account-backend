@@ -7,7 +7,7 @@ import {
 } from "../../.graphclient";
 import type { ExecutionResult } from "graphql";
 import IpfsService from "./ipfs.service";
-import { redis } from "../utils/cache";
+import { redisService } from "./redis.service"; // Importar RedisService
 
 export type Badge = GetUserBadgesQuery["accountBadges"][number];
 export type ResponseBadge = {
@@ -130,62 +130,38 @@ export class BadgesServices {
 
   public async getBadgeMetadata(badge: Badge) {
     const CACHE_KEY = `badge:${badge.badge.uri}`;
+    const ttl = 3600; // 1 hora
 
-    // Intentar obtener datos del cache
-    let metadata = null;
-    metadata = await redis.get(CACHE_KEY);
-
-    if (metadata) {
-      // Si hay datos en el cache, parsearlos y retornarlos
+    const fetchFunction = async () => {
+      const metadataJson = await IpfsService.getIPFSData(badge.badge.uri);
       try {
-        metadata = JSON.parse(metadata);
+        const metadata = JSON.parse(metadataJson);
+        return metadata;
       } catch (error) {
         console.error(`Error parsing JSON from IPFS: ${error}`);
-        metadata = null;
+        return null;
       }
-      return metadata;
-    }
+    };
 
-    const metadataJson = await IpfsService.getIPFSData(badge.badge.uri);
-    try {
-      metadata = JSON.parse(metadataJson);
-
-      await redis.set(CACHE_KEY, JSON.stringify(metadata), "EX", 3600);
-    } catch (error) {
-      console.error(`Error parsing JSON from IPFS: ${error}`);
-      metadata = null;
-    }
-    return metadata;
+    return redisService.getCachedData(CACHE_KEY, fetchFunction, ttl);
   }
 
-  public async getBadgeLevelMetadata(
-    badgeLevel: Badge["badge"]["badgeTiers"][0],
-  ) {
+  public async getBadgeLevelMetadata(badgeLevel: Badge["badge"]["badgeTiers"][0]) {
     const CACHE_KEY = `badgeLevel:${badgeLevel.uri}`;
+    const ttl = 3600; // 1 hora
 
-    // Intentar obtener datos del cache
-    let metadata = null;
-    metadata = await redis.get(CACHE_KEY);
-    if (metadata) {
-      // Si hay datos en el cache, parsearlos y retornarlos
+    const fetchFunction = async () => {
+      const metadataJson = await IpfsService.getIPFSData(badgeLevel.uri);
       try {
-        metadata = JSON.parse(metadata);
-      } catch (e) {
-        console.error(`Error parsing JSON from cache: ${e}`);
-        metadata = null;
+        const metadata = JSON.parse(metadataJson);
+        return { tier: badgeLevel, metadata };
+      } catch (error) {
+        console.error(`Error parsing JSON from IPFS: ${error}`);
+        return { tier: badgeLevel, metadata: null };
       }
-      return { tier: badgeLevel, metadata };
-    }
+    };
 
-    const metadataJson = await IpfsService.getIPFSData(badgeLevel.uri);
-    try {
-      metadata = JSON.parse(metadataJson);
-      await redis.set(CACHE_KEY, JSON.stringify(metadata), "EX", 3600);
-    } catch (error) {
-      console.error(`Error parsing JSON from IPFS: ${error}`);
-      metadata = null;
-    }
-    return { tier: badgeLevel, metadata };
+    return redisService.getCachedData(CACHE_KEY, fetchFunction, ttl);
   }
 
   private async updateBadgeDataForAccount(eoas: string[], badgeData: Badge) {
