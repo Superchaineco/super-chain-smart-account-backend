@@ -15,13 +15,6 @@ import privyService from "../services/privy.service";
 
 const routes = Router();
 
-// routes.post('/', async (req, res) => {
-//   const attestationsService = new AttestationsService();
-//   const response = await attestationsService.attest('0x1726cf86DA996BC4B2F393E713f6F8ef83f2e4f6', [], [{
-//     badgeId: 1,level: 1
-//   }]);
-//   return res.json(response);
-// });
 
 routes.get("/get-badges", async (req, res) => {
   const headers = req.headers;
