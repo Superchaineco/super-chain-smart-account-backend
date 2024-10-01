@@ -35,7 +35,7 @@ routes.get("/get-badges", async (req, res) => {
   }
 });
 
-routes.get("/get-perks", async (req, res) => {
+routes.get("/get-user-perks", async (req, res) => {
   const headers = req.headers;
   const account = headers.account as string;
   if (!account || account === ZeroAddress) {
