@@ -23,6 +23,13 @@ class PerksService {
         perks.push(rafflePerks);
         return perks;
     }
+
+    public async getPerksPerLevel(level: number): Promise<Perk[]> {
+        const perks: Perk[] = [];
+        const rafflePerks = await this.perksHelper.getRafflePerks(level);
+        perks.push(rafflePerks);
+        return perks;
+    }
 }
 
 export const perksService = new PerksService();

@@ -46,6 +46,15 @@ routes.get("/get-user-perks", async (req, res) => {
   res.json({ perks });
 });
 
+routes.get("/get-perks/:level", async (req, res) => {
+  const level = parseInt(req.params.level);
+  if (isNaN(level)) {
+    return res.status(500).json({ error: "Invalid level" });
+  }
+  const perks = await perksService.getPerksPerLevel(level);
+  res.json({ perks });
+});
+
 // routes.get("/verifyAuthToken", async (req, res) => {
 //   const authHeader = req.headers.authorization;
 //
