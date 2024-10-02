@@ -68,7 +68,7 @@ export class BadgesServices {
     for (const badge of activeBadges) {
       badge.badge["metadata"] = await this.getBadgeMetadata(badge);
       badge.badge.badgeTiers.forEach((tier) => {
-        const result = results.find((res) => res.tier === tier);
+        const result = results.find((res) => res.tier.uri === tier.uri);
         if (result) {
           tier["metadata"] = result.metadata;
         }
@@ -149,7 +149,6 @@ export class BadgesServices {
   public async getBadgeLevelMetadata(badgeLevel: Badge["badge"]["badgeTiers"][0]) {
     const CACHE_KEY = `badgeLevel:${badgeLevel.uri}`;
     const ttl = 3600; // 1 hora
-
     const fetchFunction = async () => {
       const metadataJson = await IpfsService.getIPFSData(badgeLevel.uri);
       try {
@@ -157,7 +156,7 @@ export class BadgesServices {
         return { tier: badgeLevel, metadata };
       } catch (error) {
         console.error(`Error parsing JSON from IPFS: ${error}`);
-        return { tier: badgeLevel, metadata: null };
+        throw new Error("Error parsing JSON from IPFS");
       }
     };
 
