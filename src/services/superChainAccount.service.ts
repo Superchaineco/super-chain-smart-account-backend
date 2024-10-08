@@ -81,11 +81,19 @@ export class SuperChainAccountService {
     }
     return data!.accountBadges;
   }
+
+  public async isOwnerOfSmartAccount(wallet: string, account: string): Promise<boolean> {
+    const owners = await this.getEOAS(account);
+    return owners.includes(wallet);
+  }
+  
   async getAccountLevel(account: string): Promise<number> {
     const superChainSmartAccount = await this.getSuperChainSmartAccount(account);
     const accountLevel = Number(superChainSmartAccount[3]);
     return accountLevel;
   }
+
+
 }
 const superChainAccountService = new SuperChainAccountService();
 export { superChainAccountService };

@@ -1,3 +1,6 @@
+import { id } from "ethers";
+import { type } from "os";
+
 export type Json =
   | string
   | number
@@ -233,3 +236,26 @@ export type Enums<
   : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
   ? PublicSchema['Enums'][PublicEnumNameOrOptions]
   : never;
+
+
+  type LinkedAccount = {
+  type: string;
+  address: string;
+  chain_type: string;
+  chain_id: string;
+  wallet_client: string;
+  wallet_client_type: string;
+  connector_type: string;
+  verified_at: number;
+  first_verified_at: number;
+  latest_verified_at: number;
+};
+
+export type UserProfile = {
+  id: string;
+  created_at: number;
+  linked_accounts: LinkedAccount[];
+  mfa_methods: any[];
+  has_accepted_terms: boolean;
+  is_guest: boolean;
+};

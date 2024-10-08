@@ -13,6 +13,8 @@ import {
 } from "../services/sponsorship.service";
 import privyService from "../services/privy.service";
 import { perksService } from "../services/perks.service";
+import { UserProfile } from "../types/index.types";
+import { verifyOwner } from "../middleware/verifyOwner";
 
 const routes = Router();
 
@@ -55,26 +57,8 @@ routes.get("/get-perks/:level", async (req, res) => {
   res.json({ perks });
 });
 
-// routes.get("/verifyAuthToken", async (req, res) => {
-//   const authHeader = req.headers.authorization;
-//
-//   // Verifica que el encabezado Authorization exista y esté en el formato correcto
-//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-//     return res.status(401).json({ message: "Unauthorized" });
-//   }
-//   const token = authHeader.split(" ")[1];
-//   const claims = await privyService.verifyAuthToken(token);
-//   if (!claims) return res.status(401).json({ message: "Unauthorized" });
-//   const user = await privyService.getUserInfo(claims?.userId);
-//   console.log(claims, user);
-//   return res.status(200).json({
-//     message: "Dummy response",
-//   });
-// });
-
-routes.post("/attest-badges", async (req, res) => {
-  const headers = req.headers;
-  const account = headers.account as string;
+routes.post("/attest-badges", verifyOwner, async (req, res) => {
+  const account = req.headers.account as string;
   if (!account) {
     console.error("Invalid request");
     return res.status(500).json({ error: "Invalid request" });
