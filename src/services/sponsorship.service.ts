@@ -1,6 +1,7 @@
 import { Interface, Wallet } from "ethers";
 import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
+  COINGECKO_API_KEY,
   EAS_CONTRACT_ADDRESS,
   ENV,
   ENVIRONMENTS,
@@ -196,14 +197,17 @@ async function getETHPriceInUSD(): Promise<number> {
     return parseFloat(cachedPrice);
   }
   const response = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price",
+    "https://pro-api.coingecko.com/api/v3/simple/price",
     {
       params: {
         ids: "ethereum",
         vs_currencies: "usd",
+        x_cg_pro_api_key:COINGECKO_API_KEY
       },
     },
   );
+
+  console.debug(response)
   await redis.set(CACHE_KEY, response.data.ethereum.usd.toString(), "EX", 3600);
 
   return response.data.ethereum.usd;
