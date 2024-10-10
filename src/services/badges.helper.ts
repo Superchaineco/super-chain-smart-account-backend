@@ -260,7 +260,7 @@ export class BadgesHelper {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             query: gitcoinDonationsQuery,
-            variables: { fromWalletAddresses: eoas },
+            variables: { fromWalletAddresses: [...eoas.map(eoa => eoa.toLocaleLowerCase())] },
           }),
         }).then((r) => r.json());
 
