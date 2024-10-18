@@ -6,10 +6,12 @@ import {
   ENV,
   ENVIRONMENTS,
   ETHERSCAN_API_KEY,
+  GELATO_API_KEY,
   JSON_RPC_PROVIDER,
 } from "../config/superChain/constants";
 import axios from "axios";
 import { redis } from "../utils/cache";
+import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
 
 type Txn = {
   gas: string;
@@ -202,7 +204,7 @@ async function getETHPriceInUSD(): Promise<number> {
       params: {
         ids: "ethereum",
         vs_currencies: "usd",
-        x_cg_pro_api_key:COINGECKO_API_KEY
+        x_cg_pro_api_key: COINGECKO_API_KEY
       },
     },
   );
@@ -252,4 +254,18 @@ async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
     console.error("Error fetching block number:", error);
     return 0;
   }
+}
+
+
+
+export async function relayTransaction(target: string, data: string) {
+  const relay = new GelatoRelay();
+  const request: SponsoredCallRequest = {
+    chainId: BigInt(10),
+    target,
+    data,
+  };
+  const relayResponse = await relay.sponsoredCall(request, GELATO_API_KEY)
+  const taskId = relayResponse.taskId
+  return taskId
 }

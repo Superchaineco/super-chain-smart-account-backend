@@ -49,3 +49,4 @@ export const REDIS_USER = process.env.REDISUSER!;
 export const PRIVY_APP_ID = process.env.PRIVY_APP_ID!;
 export const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET!;
 export const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY!;
+export const GELATO_API_KEY = process.env.GELATO_API_KEY!;

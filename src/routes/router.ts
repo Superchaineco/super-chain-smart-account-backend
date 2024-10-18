@@ -10,6 +10,7 @@ import {
   getCurrentSponsorhipValue,
   getMaxGasInUSD,
   isAbleToSponsor,
+  relayTransaction,
 } from "../services/sponsorship.service";
 import privyService from "../services/privy.service";
 import { perksService } from "../services/perks.service";
@@ -126,16 +127,8 @@ routes.post("/validate-sponsorship", async (req, res) => {
 export default routes;
 
 routes.post("/relay", async (req, res) => {
-
   const data = req.body;
-  const relay = new GelatoRelay();
-  const request: SponsoredCallRequest = {
-    chainId: BigInt(10),
-    target: data.to,
-    data: data.data,
-  };
-  const relayResponse = await relay.sponsoredCall(request, "GoajbSgNs_MNjC0cV9gSi3zGrG6DTWVXDy9AUlBQ__c_")
-  const taskId = relayResponse.taskId
+  const taskId = await relayTransaction(data.to, data.data)
   console.debug({ taskId })
   return res.status(200).json({ taskId })
 })
