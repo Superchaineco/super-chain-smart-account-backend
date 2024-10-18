@@ -4,7 +4,7 @@ import {
   SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS,
   SUPER_CHAIN_MODULE_ABI,
 } from "../config/superChain/constants";
-import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
+import Safe from "@safe-global/protocol-kit";
 import { ExecutionResult } from "graphql";
 import {
   GetUserBadgesDocument,
@@ -27,13 +27,8 @@ export class SuperChainAccountService {
 
   async getEOAS(address: string): Promise<string[]> {
     try {
-      const ethAdapter = new EthersAdapter({
-        ethers: ethers,
-        signerOrProvider: new JsonRpcProvider(JSON_RPC_PROVIDER),
-      });
-      console.debug(JSON_RPC_PROVIDER);
-      const protocolKit = await Safe.create({
-        ethAdapter,
+      const protocolKit = await Safe.init({
+        provider: JSON_RPC_PROVIDER,
         safeAddress: address,
       });
       return await protocolKit.getOwners();

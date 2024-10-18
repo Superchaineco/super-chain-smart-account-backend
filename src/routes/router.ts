@@ -15,6 +15,11 @@ import privyService from "../services/privy.service";
 import { perksService } from "../services/perks.service";
 import { UserProfile } from "../types/index.types";
 import { verifyOwner } from "../middleware/verifyOwner";
+import { GelatoRelayPack } from '@safe-global/relay-kit'
+import Safe, { EthSafeTransaction } from '@safe-global/protocol-kit'
+import { JSON_RPC_PROVIDER } from "../config/superChain/constants";
+import { OperationType, SafeSignature } from "@safe-global/types-kit";
+import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
 
 const routes = Router();
 
@@ -119,6 +124,22 @@ routes.post("/validate-sponsorship", async (req, res) => {
   }
 });
 export default routes;
+
+routes.post("/relay", async (req, res) => {
+
+  const data = req.body;
+  const relay = new GelatoRelay();
+  const request: SponsoredCallRequest = {
+    chainId: BigInt(10),
+    target: data.to,
+    data: data.data,
+  };
+  const relayResponse = await relay.sponsoredCall(request, "GoajbSgNs_MNjC0cV9gSi3zGrG6DTWVXDy9AUlBQ__c_")
+  const taskId = relayResponse.taskId
+  console.debug({ taskId })
+  return res.status(200).json({ taskId })
+})
+
 
 routes.get("/max-weekly-sponsorship", async (req, res) => {
   const headers = req.headers;
