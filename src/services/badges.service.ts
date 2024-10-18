@@ -14,9 +14,9 @@ export type ResponseBadge = {
   points: string;
   tier: string;
 } & Badge["badge"] & {
-    claimableTier: number | null;
-    claimable: boolean;
-  };
+  claimableTier: number | null;
+  claimable: boolean;
+};
 
 export class BadgesServices {
   private badges: ResponseBadge[] = [];
@@ -170,7 +170,7 @@ export class BadgesServices {
           await this.helper.getOptimisimTransactions(eoas);
         if (!badgeData.badge.badgeTiers)
           throw new Error("No tiers found for badge");
-        let optimismTier = null;
+        let optimismTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (
             optimismTransactions >=
@@ -193,7 +193,7 @@ export class BadgesServices {
         const baseTransactions = await this.helper.getBaseTransactions(eoas);
         if (!badgeData.badge.badgeTiers)
           throw new Error("No tiers found for badge");
-        let baseTier = null;
+        let baseTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (
             baseTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue
@@ -218,7 +218,7 @@ export class BadgesServices {
 
         if (!badgeData.badge.badgeTiers)
           throw new Error("No tiers found for badge");
-        let sepoliaTier = null;
+        let sepoliaTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (
             sepoliaTransactions >=
@@ -243,7 +243,7 @@ export class BadgesServices {
 
         if (!badgeData.badge.badgeTiers)
           throw new Error("No tiers found for badge");
-        let modeTier = null;
+        let modeTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (
             modeTransactions >= badgeData.badge.badgeTiers[i].metadata!.minValue
@@ -274,7 +274,7 @@ export class BadgesServices {
 
       case "Hold Nouns":
         const countNouns = await this.helper.hasNouns(eoas);
-        let nounsTier = null;
+        let nounsTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (countNouns >= badgeData.badge.badgeTiers[i].metadata!.minValue) {
             nounsTier = i + 1;
@@ -292,7 +292,7 @@ export class BadgesServices {
 
       case "Giveth Donations Made":
         const givethDonations = await this.helper.getGivethDonations(eoas);
-        let givethDonationsTier = null;
+        let givethDonationsTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (
             givethDonations >= badgeData.badge.badgeTiers[i].metadata!.minValue
@@ -314,7 +314,7 @@ export class BadgesServices {
 
       case "Gitcoin Donations Made":
         const gitcoinDonations = await this.helper.getGitcoinDonations(eoas);
-        let gitcoinDonationsTier = null;
+        let gitcoinDonationsTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (
             gitcoinDonations >= badgeData.badge.badgeTiers[i].metadata!.minValue
@@ -335,7 +335,7 @@ export class BadgesServices {
         break;
       case "Talent Protocol score":
         const talentScore = await this.helper.getTalentScore(eoas);
-        let talentScoreTier = null;
+        let talentScoreTier = 0;
         for (let i = badgeData.badge.badgeTiers.length - 1; i >= 0; i--) {
           if (
             talentScore >= badgeData.badge.badgeTiers[i].metadata!.minValue

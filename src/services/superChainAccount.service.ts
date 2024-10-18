@@ -68,7 +68,7 @@ export class SuperChainAccountService {
     for (const badge of data!.accountBadges) {
       badge.badge.metadata = await badgeServices.getBadgeMetadata(badge);
       badge.badge.badgeTiers.forEach((tier) => {
-        const result = tierResults.find((res) => res.tier === tier);
+        const result = tierResults.find((res) => res.tier.uri === tier.uri);
         if (result) {
           tier["metadata"] = result.metadata;
         }
