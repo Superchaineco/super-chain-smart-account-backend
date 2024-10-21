@@ -28,43 +28,15 @@ type Txn = {
  * @param {string} account - User address
  * @returns {Promise<Array>} - List of all transactions
  */
-export async function getTransactions(
+export async function getTransactionsCount(
   startTime: number,
   account: string,
 ): Promise<number> {
   const startBlock = await getBlockNumberFromTimestamp(startTime);
 
   try {
-    // const response = await axios.get(`https://api-sepolia.etherscan.io/api`, {
-    //     params: {
-    //         module: 'account',
-    //         action: 'txlist',
-    //         address: account,
-    //         startblock: startBlock,
-    //         endblock: 'latest',
-    //         sort: 'asc',
-    //         apikey: ETHERSCAN_API_KEY
-    //     },
-    //     timeout: 50000
-
-    // });
-
-    // const transactions = response.data.result as Txn[];
-    const transactions: Txn[] = [];
-
     const badgeTransactions = await getBadgeTransactions(startBlock, account);
-
-    const badgeTransactionsGas = badgeTransactions.reduce(
-      (acc, transaction) =>
-        acc + parseInt(transaction.gasUsed) * parseInt(transaction.gasPrice),
-      0,
-    );
-    const transactionsGas = transactions.reduce(
-      (acc, transaction) =>
-        acc + parseInt(transaction.gasUsed) * parseInt(transaction.gasPrice),
-      0,
-    );
-    return badgeTransactionsGas + transactionsGas;
+    return badgeTransactions.length
   } catch (error) {
     console.error("Error fetching transactions:", error);
     return 0;
@@ -148,7 +120,7 @@ export async function isAbleToSponsor(
   level: number,
 ): Promise<boolean> {
   const startTime = getLastMondayTimestampCET();
-  const transactions = await getTransactions(startTime, account);
+  const transactions = await getTransactionsCount(startTime, account);
   const isValid = await validateMaxSponsorship(transactions, level);
   return isValid;
 }
@@ -171,11 +143,11 @@ async function validateMaxSponsorship(
   level: number,
 ): Promise<boolean> {
   const ethPriceInUSD = await getETHPriceInUSD();
-  const gasUsedInUSD = (currentTransactionsGas * ethPriceInUSD) / 1e18;
-  console.log("gasUsedInUSD:", gasUsedInUSD);
-  const maxGasInUSD = getMaxGasInUSD(level);
+  // const gasUsedInUSD = (currentTransactionsGas * ethPriceInUSD) / 1e18;
+  // console.log("gasUsedInUSD:", gasUsedInUSD);
+  // const maxGasInUSD = getMaxGasInUSD(level);
 
-  return gasUsedInUSD <= maxGasInUSD;
+  return false;
 }
 
 export async function getCurrentSponsorhipValue(
@@ -183,7 +155,7 @@ export async function getCurrentSponsorhipValue(
   level: number,
 ) {
   const startTime = getLastMondayTimestampCET();
-  const transactions = await getTransactions(startTime, account);
+  const transactions = await getTransactionsCount(startTime, account);
   const ethPriceInUSD = await getETHPriceInUSD();
   const gasUsedInUSD = (transactions * ethPriceInUSD) / 1e18;
   const maxGasInUSD = getMaxGasInUSD(level);
@@ -212,7 +184,7 @@ async function getETHPriceInUSD(): Promise<number> {
   console.debug(response)
   await redis.set(CACHE_KEY, response.data.ethereum.usd.toString(), "EX", 3600);
 
-  return response.data.ethereum.usd;
+  return 0;
 }
 
 /**
@@ -258,7 +230,11 @@ async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
 
 
 
-export async function relayTransaction(target: string, data: string) {
+export async function relayTransaction(target: string, data: string, account: string, level: number) {
+  const isSponsorAble = await isAbleToSponsor(account, level)
+  if (!isSponsorAble) {
+    throw new Error("User is not able to sponsor")
+  }
   const relay = new GelatoRelay();
   const request: SponsoredCallRequest = {
     chainId: BigInt(10),

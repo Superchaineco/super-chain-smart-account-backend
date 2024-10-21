@@ -128,9 +128,17 @@ export default routes;
 
 routes.post("/relay", async (req, res) => {
   const data = req.body;
-  const taskId = await relayTransaction(data.to, data.data)
-  console.debug({ taskId })
-  return res.status(200).json({ taskId })
+  try{
+
+    const superChainSmartAccount =
+    await superChainAccountService.getSuperChainSmartAccount(data.to);
+    const taskId = await relayTransaction(data.to, data.data, data.to, Number(superChainSmartAccount[3]))
+    console.debug({ taskId })
+    return res.status(200).json({ taskId })
+  } catch (error: any) {
+    console.error("Error relaying transaction", error)
+ return res.status(500).json({ error: error.message || 'An unknown error occurred' });
+  }
 })
 
 
