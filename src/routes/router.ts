@@ -8,7 +8,6 @@ import { ZeroAddress } from "ethers";
 import { AttestationsService } from "../services/attestations.service";
 import {
   getCurrentSponsorhipValue,
-  getMaxGasInUSD,
   isAbleToSponsor,
   relayTransaction,
 } from "../services/sponsorship.service";
@@ -124,12 +123,10 @@ routes.post("/validate-sponsorship", async (req, res) => {
     });
   }
 });
-export default routes;
 
 routes.post("/relay", async (req, res) => {
   const data = req.body;
   try{
-
     const superChainSmartAccount =
     await superChainAccountService.getSuperChainSmartAccount(data.to);
     const taskId = await relayTransaction(data.to, data.data, data.to, Number(superChainSmartAccount[3]))
@@ -151,14 +148,14 @@ routes.get("/max-weekly-sponsorship", async (req, res) => {
   }
   const superChainSmartAccount =
     await superChainAccountService.getSuperChainSmartAccount(account);
-  const { maxGasInUSD, gasUsedInUSD } = await getCurrentSponsorhipValue(
+  const { relayedTransactions, maxRelayedTransactions } = await getCurrentSponsorhipValue(
     account,
     Number(superChainSmartAccount[3]),
   );
 
   return res.status(200).json({
-    maxGasInUSD,
-    gasUsedInUSD,
+    relayedTransactions,
+    maxRelayedTransactions,
   });
 });
 

@@ -10,8 +10,9 @@ import {
   JSON_RPC_PROVIDER,
 } from "../config/superChain/constants";
 import axios from "axios";
-import { redis } from "../utils/cache";
 import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
+import { redisService } from "./redis.service";
+import sponsorshipValues from "../data/sponsorship.values.json";
 
 type Txn = {
   gas: string;
@@ -22,12 +23,29 @@ type Txn = {
   recipient: string;
 };
 
-/**
- * Function to get all the transactions of a user, based on a specific timestamp
- * @param {number} startTime - Timestamp in seconds
- * @param {string} account - User address
- * @returns {Promise<Array>} - List of all transactions
- */
+async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
+  try {
+    const response = await axios.get(
+      `https://api-${ENV === ENVIRONMENTS.development ? "sepolia" : "optimistic"}.etherscan.io/api`,
+      {
+        params: {
+          module: "block",
+          action: "getblocknobytime",
+          timestamp: 1652459409,
+          closest: "before",
+          apikey: ETHERSCAN_API_KEY,
+        },
+        timeout: 50000,
+      },
+    );
+
+    return parseInt(response.data.result);
+  } catch (error) {
+    console.error("Error fetching block number:", error);
+    return 0;
+  }
+}
+
 export async function getTransactionsCount(
   startTime: number,
   account: string,
@@ -36,23 +54,17 @@ export async function getTransactionsCount(
 
   try {
     const badgeTransactions = await getBadgeTransactions(startBlock, account);
-    return badgeTransactions.length
+    const relayCount = await getRelayCount(account);
+    return badgeTransactions.length + relayCount;
   } catch (error) {
     console.error("Error fetching transactions:", error);
     return 0;
   }
 }
 
-/**
- * Function to get all the transactions of a user related the claim badges flow
- * @param {number} startBlock - Timestamp in seconds
- * @param {string} account - User address
- * @returns {Promise<Array>} - List of all transactions
- */
 async function getBadgeTransactions(startBlock: number, account: string) {
   try {
     const wallet = new Wallet(ATTESTATOR_SIGNER_PRIVATE_KEY);
-
     const response = await axios.get(
       `https://api-${ENV === ENVIRONMENTS.development ? "sepolia" : "optimistic"}.etherscan.io/api`,
       {
@@ -110,138 +122,101 @@ async function getBadgeTransactions(startBlock: number, account: string) {
   }
 }
 
-/**
- * Function to validate the sponsorship of a specific user
- * @param {string} account - User address
- * @returns {Promise<boolean>} - List of all transactions
- */
 export async function isAbleToSponsor(
   account: string,
   level: number,
 ): Promise<boolean> {
-  const startTime = getLastMondayTimestampCET();
+  const startTime = getLastMondayTimestampUTC();
   const transactions = await getTransactionsCount(startTime, account);
   const isValid = await validateMaxSponsorship(transactions, level);
   return isValid;
 }
 
-export function getMaxGasInUSD(level: number): number {
-  switch (level) {
-    case 0:
-      return 0.2;
-    case 1:
-      return 0.3;
-    case 2:
-      return 0.4;
-    default:
-      return 0.2 + level * 0.1;
-  }
-}
-
 async function validateMaxSponsorship(
-  currentTransactionsGas: number,
+  transactions: number,
   level: number,
 ): Promise<boolean> {
-  const ethPriceInUSD = await getETHPriceInUSD();
-  // const gasUsedInUSD = (currentTransactionsGas * ethPriceInUSD) / 1e18;
-  // console.log("gasUsedInUSD:", gasUsedInUSD);
-  // const maxGasInUSD = getMaxGasInUSD(level);
-
-  return false;
+  const maxTransactions = sponsorshipValues.levels[level - 1].raffleTickets;
+  return transactions < maxTransactions;
 }
 
 export async function getCurrentSponsorhipValue(
   account: string,
   level: number,
 ) {
-  const startTime = getLastMondayTimestampCET();
-  const transactions = await getTransactionsCount(startTime, account);
-  const ethPriceInUSD = await getETHPriceInUSD();
-  const gasUsedInUSD = (transactions * ethPriceInUSD) / 1e18;
-  const maxGasInUSD = getMaxGasInUSD(level);
-  return { gasUsedInUSD, maxGasInUSD };
-}
-
-async function getETHPriceInUSD(): Promise<number> {
-  const CACHE_KEY = "ethPriceInUSD";
-  let cachedPrice = await redis.get(CACHE_KEY);
-
-  if (cachedPrice) {
-    console.log("ETH price retrieved from cache");
-    return parseFloat(cachedPrice);
-  }
-  const response = await axios.get(
-    "https://pro-api.coingecko.com/api/v3/simple/price",
-    {
-      params: {
-        ids: "ethereum",
-        vs_currencies: "usd",
-        x_cg_pro_api_key: COINGECKO_API_KEY
-      },
-    },
+  const maxRelayedTransactions = sponsorshipValues.levels[level - 1].raffleTickets;
+  const relayedTransactions = await getTransactionsCount(
+    getLastMondayTimestampUTC(),
+    account,
   );
-
-  console.debug(response)
-  await redis.set(CACHE_KEY, response.data.ethereum.usd.toString(), "EX", 3600);
-
-  return 0;
+  return { relayedTransactions, maxRelayedTransactions };
 }
 
-/**
- * Function to obtain the timestamp of the last Monday at 00:01 CET
- * @returns {number} - Timestamp in seconds
- */
-function getLastMondayTimestampCET(): number {
+
+export async function relayTransaction(
+  target: string,
+  data: string,
+  account: string,
+  level: number,
+) {
+  const isSponsorAble = await isAbleToSponsor(account, level);
+  if (!isSponsorAble) {
+    throw new Error("User is not able to sponsor");
+  }
+  try {
+    const relay = new GelatoRelay();
+    const request: SponsoredCallRequest = {
+      chainId: BigInt(10),
+      target,
+      data,
+    };
+    const relayResponse = await relay.sponsoredCall(request, GELATO_API_KEY);
+    const taskId = relayResponse.taskId;
+    // If the update fails, it will not affect the transaction
+    await updateRelayCount(account).catch((error) => {
+      console.error("Error updating relay count:", error);
+    });
+    return taskId;
+  } catch (error) {
+    console.error("Error relaying transaction:", error);
+    throw error;
+  }
+}
+
+async function updateRelayCount(account: string) {
+  const key = `relayCount:${account}`;
+  const relayCount = await getRelayCount(account);
+
+  if (relayCount < 5) {
+    const nextMondayTimestamp = getNextMondayTimestampUTC();
+    const currentTime = Math.floor(Date.now() / 1000);
+    const timeUntilNextMonday = nextMondayTimestamp - currentTime;
+    await redisService.setCachedData(key, relayCount + 1, timeUntilNextMonday);
+  } else {
+    throw new Error("User has reached the weekly limit of relayed transactions.");
+  }
+}
+
+async function getRelayCount(account: string) {
+  const key = `relayCount:${account}`;
+  const value = await redisService.getCachedData(key);
+  return value ? parseInt(value) : 0;
+}
+
+function getNextMondayTimestampUTC(): number {
   const now = new Date();
   const day = now.getUTCDay();
-  const diff = now.getUTCDate() - day + (day === 0 ? -6 : 1);
-  const lastMonday = new Date(now.setUTCDate(diff));
-  lastMonday.setUTCHours(23, 1, 0, 0); // 00:01 CET is 23:01 UTC of the previous day
+  const diff = 8 - day; 
+  const nextMonday = new Date(now.getTime() + diff * 24 * 60 * 60 * 1000);
+  nextMonday.setUTCHours(0, 1, 0, 0); 
+  return Math.floor(nextMonday.getTime() / 1000);
+}
+
+function getLastMondayTimestampUTC(): number {
+  const now = new Date();
+  const day = now.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const lastMonday = new Date(now.getTime() + diff * 24 * 60 * 60 * 1000);
+  lastMonday.setUTCHours(0, 1, 0, 0); 
   return Math.floor(lastMonday.getTime() / 1000);
-}
-
-/**
- * Function to get the nearest block to the timestamp
- * @param {number} timestamp - Timestamp in seconds
- * @returns {Promise<number>} - Block number
- */
-async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
-  try {
-    const response = await axios.get(
-      `https://api-${ENV === ENVIRONMENTS.development ? "sepolia" : "optimistic"}.etherscan.io/api`,
-      {
-        params: {
-          module: "block",
-          action: "getblocknobytime",
-          timestamp: 1652459409,
-          closest: "before",
-          apikey: ETHERSCAN_API_KEY,
-        },
-        timeout: 50000,
-      },
-    );
-
-    return parseInt(response.data.result);
-  } catch (error) {
-    console.error("Error fetching block number:", error);
-    return 0;
-  }
-}
-
-
-
-export async function relayTransaction(target: string, data: string, account: string, level: number) {
-  const isSponsorAble = await isAbleToSponsor(account, level)
-  if (!isSponsorAble) {
-    throw new Error("User is not able to sponsor")
-  }
-  const relay = new GelatoRelay();
-  const request: SponsoredCallRequest = {
-    chainId: BigInt(10),
-    target,
-    data,
-  };
-  const relayResponse = await relay.sponsoredCall(request, GELATO_API_KEY)
-  const taskId = relayResponse.taskId
-  return taskId
 }

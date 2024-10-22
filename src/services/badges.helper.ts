@@ -63,7 +63,7 @@ export class BadgesHelper {
       return transactions;
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async getBaseTransactions(eoas: string[]) {
@@ -96,7 +96,7 @@ export class BadgesHelper {
       return transactions;
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async getSepoliaTransactions(eoas: string[]) {
@@ -133,7 +133,7 @@ export class BadgesHelper {
       return transactions;
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async getModeTransactions(eoas: string[]) {
@@ -153,7 +153,7 @@ export class BadgesHelper {
       return transactions;
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async isCitizen(eoas: string[]) {
@@ -191,7 +191,7 @@ export class BadgesHelper {
       return countNouns;
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async getGivethDonations(eoas: string[]) {
@@ -238,7 +238,7 @@ export class BadgesHelper {
       }
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async getGitcoinDonations(eoas: string[]) {
@@ -272,7 +272,7 @@ export class BadgesHelper {
       }
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async isWorldcoinVerified(eoas: string[]) {
@@ -298,7 +298,7 @@ export class BadgesHelper {
       return isWorldcoinVerified;
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async getTalentScore(eoas: string[]) {
@@ -320,7 +320,7 @@ export class BadgesHelper {
       return highestTalentScore;
     };
 
-    return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   private async loadCsvData(filePath: string): Promise<CsvRow[]> {

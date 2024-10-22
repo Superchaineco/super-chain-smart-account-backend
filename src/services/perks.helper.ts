@@ -35,6 +35,6 @@ export class PerksHelper {
             };
         };
 
-        return redisService.getCachedData(cacheKey, fetchFunction, ttl);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
     }
 }

@@ -143,7 +143,7 @@ export class BadgesServices {
       }
     };
 
-    return redisService.getCachedData(CACHE_KEY, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(CACHE_KEY, fetchFunction, ttl);
   }
 
   public async getBadgeLevelMetadata(badgeLevel: Badge["badge"]["badgeTiers"][0]) {
@@ -160,7 +160,7 @@ export class BadgesServices {
       }
     };
 
-    return redisService.getCachedData(CACHE_KEY, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(CACHE_KEY, fetchFunction, ttl);
   }
 
   private async updateBadgeDataForAccount(eoas: string[], badgeData: Badge) {
