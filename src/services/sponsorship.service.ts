@@ -31,7 +31,7 @@ async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
         params: {
           module: "block",
           action: "getblocknobytime",
-          timestamp: 1652459409,
+          timestamp: timestamp,
           closest: "before",
           apikey: ETHERSCAN_API_KEY,
         },

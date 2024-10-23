@@ -312,9 +312,11 @@ export class BadgesHelper {
           headers: {
             "x-api-key": process.env.TALENT_API_KEY!
           }
-        })
-        if (talentPassport.data.passport.score > highestTalentScore) {
-          highestTalentScore = talentPassport.data.passport.score;
+        }).catch(error => {
+          console.error(`Error fetching talent passport for ${eoa}:`, error);
+        });
+        if (talentPassport?.data?.passport?.score && talentPassport?.data?.passport?.score > highestTalentScore) {
+          highestTalentScore = talentPassport?.data?.passport?.score;
         }
       }
       return highestTalentScore;
