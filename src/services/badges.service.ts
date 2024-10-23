@@ -85,6 +85,7 @@ export class BadgesServices {
           badge.badge.metadata,
           e,
         );
+        this.badges = this.badges.filter(b => b.badgeId !== badge.badge.badgeId);
       }
     }
 

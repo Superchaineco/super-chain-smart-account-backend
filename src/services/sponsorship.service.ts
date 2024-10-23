@@ -144,7 +144,7 @@ export async function getCurrentSponsorhipValue(
   account: string,
   level: number,
 ) {
-  const maxRelayedTransactions = sponsorshipValues.levels[level - 1].relayTransactions;
+  const maxRelayedTransactions = sponsorshipValues.levels[level].relayTransactions;
   const relayedTransactions = await getTransactionsCount(
     getLastMondayTimestampUTC(),
     account,

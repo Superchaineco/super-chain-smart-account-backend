@@ -147,12 +147,11 @@ routes.get("/max-weekly-sponsorship", async (req, res) => {
     return res.status(500).json({ error: "Invalid request" });
   }
   const superChainSmartAccount =
-    await superChainAccountService.getSuperChainSmartAccount(account);
+  await superChainAccountService.getSuperChainSmartAccount(account);
   const { relayedTransactions, maxRelayedTransactions } = await getCurrentSponsorhipValue(
     account,
     Number(superChainSmartAccount[3]),
   );
-
   return res.status(200).json({
     relayedTransactions,
     maxRelayedTransactions,

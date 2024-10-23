@@ -10,7 +10,6 @@ class PrivyService {
   }
 
   async verifyAuthToken(token: string) {
-    console.debug({ token });
     try {
       return this.privyClient.verifyAuthToken(token);
     } catch (e) {
