@@ -1,44 +1,49 @@
 {
   "levels": [
     {
+      "level": 0,
+      "relayTransactions": 3
+    },
+    {
       "level": 1,
-      "raffleTickets": 3
+      "relayTransactions": 5
     },
     {
       "level": 2,
-      "raffleTickets": 5
+      "relayTransactions": 7
     },
     {
       "level": 3,
-      "raffleTickets": 7
+      "relayTransactions": 10
     },
     {
       "level": 4,
-      "raffleTickets": 10
+      "relayTransactions": 12
     },
     {
       "level": 5,
-      "raffleTickets": 12
+      "relayTransactions": 15
     },
     {
       "level": 6,
-      "raffleTickets": 15
+      "relayTransactions": 18
     },
     {
       "level": 7,
-      "raffleTickets": 18
+      "relayTransactions": 20
     },
     {
       "level": 8,
-      "raffleTickets": 20
+      "relayTransactions": 20
     },
     {
       "level": 9,
-      "raffleTickets": 20
+      "relayTransactions": 20
     },
+
     {
       "level": 10,
-      "raffleTickets": 20
+      "relayTransactions": 20
     }
   ]
 }

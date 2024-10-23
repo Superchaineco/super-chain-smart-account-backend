@@ -136,7 +136,7 @@ async function validateMaxSponsorship(
   transactions: number,
   level: number,
 ): Promise<boolean> {
-  const maxTransactions = sponsorshipValues.levels[level - 1].raffleTickets;
+  const maxTransactions = sponsorshipValues.levels[level].relayTransactions;
   return transactions < maxTransactions;
 }
 
@@ -144,7 +144,7 @@ export async function getCurrentSponsorhipValue(
   account: string,
   level: number,
 ) {
-  const maxRelayedTransactions = sponsorshipValues.levels[level - 1].raffleTickets;
+  const maxRelayedTransactions = sponsorshipValues.levels[level - 1].relayTransactions;
   const relayedTransactions = await getTransactionsCount(
     getLastMondayTimestampUTC(),
     account,
