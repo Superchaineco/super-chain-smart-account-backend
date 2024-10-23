@@ -186,3 +186,6 @@ routes.get("/user", async (req, res) => {
     ),
   );
 });
+
+
+export default routes;
