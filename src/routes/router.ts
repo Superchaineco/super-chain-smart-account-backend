@@ -4,25 +4,16 @@ import {
   SuperChainAccountService,
   superChainAccountService,
 } from "../services/superChainAccount.service";
-import { id, ZeroAddress } from "ethers";
+import { ZeroAddress } from "ethers";
 import { AttestationsService } from "../services/attestations.service";
 import {
+  callPimlicoAPI,
   getCurrentSponsorhipValue,
   isAbleToSponsor,
   relayTransaction,
 } from "../services/sponsorship.service";
-import privyService from "../services/privy.service";
 import { perksService } from "../services/perks.service";
-import { UserProfile } from "../types/index.types";
-import { verifyOwner } from "../middleware/verifyOwner";
-import { GelatoRelayPack } from '@safe-global/relay-kit'
-import Safe, { EthSafeTransaction } from '@safe-global/protocol-kit'
-import { ENV, ENVIRONMENTS, JSON_RPC_PROVIDER } from "../config/superChain/constants";
-import { OperationType, SafeSignature } from "@safe-global/types-kit";
-import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
-import { error } from "console";
-import axios from "axios";
-import { env } from "process";
+import { verifyReverseProxy, verifyOwner } from "../middleware/auth";
 
 const routes = Router();
 
@@ -189,39 +180,21 @@ routes.get("/user", async (req, res) => {
   );
 });
 
-routes.post("/sponsor-transaction", async (req, res) => {
- const { jsonrpc, method, params, id } = req.body;
-
-  if (!jsonrpc || jsonrpc !== "2.0" || !method || !id) {
-    return res.status(400).json({
+routes.post("/pimlico-reverse-proxy", verifyReverseProxy, async (req, res) => {
+  try {
+    const { jsonrpc, method, params, id } = req.body;
+    const response = await callPimlicoAPI({ jsonrpc, method, params, id });
+    if (response.error) throw response.error;
+    return res.status(200).json(response);
+  } catch (error: any) {
+    return res.status(500).json({
       jsonrpc: "2.0",
       error: {
-        code: -32600,
-        message: "Invalid Request: The request object is missing required fields or has invalid fields.",
+        code: -32603,
+        message: error.message || "An unknown error occurred",
       },
-      id: id || null
+      id: error.id || null,
     });
-  }
-  try {
-    const response = await axios.post(
-      `https://api.pimlico.io/v2/${ENV === ENVIRONMENTS.production ? "10" : "1155"}/rpc`,
-       {
-        jsonrpc: "2.0",
-        method: method,
-        params: params,
-        id: id
-      },
-      {
-        params: {
-          'apikey': process.env.PIMLICO_API_KEY,
-        }
-      }
-    );
-
-    return res.status(200).json(response.data);
-  } catch (error: any) {
-    console.error("Error calling Pimlico API", error);
-    return res.status(500).json({ error: error.message || "An unknown error occurred" });
   }
 
 })
