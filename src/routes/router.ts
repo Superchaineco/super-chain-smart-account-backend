@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { json, Router } from "express";
 import { BadgesServices } from "../services/badges.service";
 import {
   SuperChainAccountService,
   superChainAccountService,
 } from "../services/superChainAccount.service";
-import { ZeroAddress } from "ethers";
+import { id, ZeroAddress } from "ethers";
 import { AttestationsService } from "../services/attestations.service";
 import {
   getCurrentSponsorhipValue,
@@ -17,9 +17,12 @@ import { UserProfile } from "../types/index.types";
 import { verifyOwner } from "../middleware/verifyOwner";
 import { GelatoRelayPack } from '@safe-global/relay-kit'
 import Safe, { EthSafeTransaction } from '@safe-global/protocol-kit'
-import { JSON_RPC_PROVIDER } from "../config/superChain/constants";
+import { ENV, ENVIRONMENTS, JSON_RPC_PROVIDER } from "../config/superChain/constants";
 import { OperationType, SafeSignature } from "@safe-global/types-kit";
 import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
+import { error } from "console";
+import axios from "axios";
+import { env } from "process";
 
 const routes = Router();
 
@@ -126,15 +129,15 @@ routes.post("/validate-sponsorship", async (req, res) => {
 
 routes.post("/relay", async (req, res) => {
   const data = req.body;
-  try{
+  try {
     const superChainSmartAccount =
-    await superChainAccountService.getSuperChainSmartAccount(data.to);
+      await superChainAccountService.getSuperChainSmartAccount(data.to);
     const taskId = await relayTransaction(data.to, data.data, data.to, Number(superChainSmartAccount[3]))
     console.debug({ taskId })
     return res.status(200).json({ taskId })
   } catch (error: any) {
     console.error("Error relaying transaction", error)
- return res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    return res.status(500).json({ error: error.message || 'An unknown error occurred' });
   }
 })
 
@@ -147,7 +150,7 @@ routes.get("/max-weekly-sponsorship", async (req, res) => {
     return res.status(500).json({ error: "Invalid request" });
   }
   const superChainSmartAccount =
-  await superChainAccountService.getSuperChainSmartAccount(account);
+    await superChainAccountService.getSuperChainSmartAccount(account);
   const { relayedTransactions, maxRelayedTransactions } = await getCurrentSponsorhipValue(
     account,
     Number(superChainSmartAccount[3]),
@@ -185,6 +188,43 @@ routes.get("/user", async (req, res) => {
     ),
   );
 });
+
+routes.post("/sponsor-transaction", async (req, res) => {
+ const { jsonrpc, method, params, id } = req.body;
+
+  if (!jsonrpc || jsonrpc !== "2.0" || !method || !id) {
+    return res.status(400).json({
+      jsonrpc: "2.0",
+      error: {
+        code: -32600,
+        message: "Invalid Request: The request object is missing required fields or has invalid fields.",
+      },
+      id: id || null
+    });
+  }
+  try {
+    const response = await axios.post(
+      `https://api.pimlico.io/v2/${ENV === ENVIRONMENTS.production ? "10" : "1155"}/rpc`,
+       {
+        jsonrpc: "2.0",
+        method: method,
+        params: params,
+        id: id
+      },
+      {
+        params: {
+          'apikey': process.env.PIMLICO_API_KEY,
+        }
+      }
+    );
+
+    return res.status(200).json(response.data);
+  } catch (error: any) {
+    console.error("Error calling Pimlico API", error);
+    return res.status(500).json({ error: error.message || "An unknown error occurred" });
+  }
+
+})
 
 
 export default routes;
