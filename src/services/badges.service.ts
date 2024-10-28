@@ -7,8 +7,7 @@ import {
 } from "../../.graphclient";
 import type { ExecutionResult } from "graphql";
 import IpfsService from "./ipfs.service";
-import { redisService } from "./redis.service"; // Importar RedisService
-
+import { redisService } from "./redis.service";
 export type Badge = GetUserBadgesQuery["accountBadges"][number];
 export type ResponseBadge = {
   points: string;
@@ -365,5 +364,10 @@ export class BadgesServices {
         });
         break;
     }
+    this.badges.forEach(badge => {
+      if(badge.claimableTier !== null && badge.claimableTier < Number(badge.tier)) {
+        badge.claimableTier = Number(badge.tier)
+      }
+    })
   }
 }
