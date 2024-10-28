@@ -36,14 +36,12 @@ routes.get("/get-badges", async (req, res) => {
   }
 });
 
-routes.get("/get-user-perks", async (req, res) => {
-  const headers = req.headers;
-  const account = headers.account as string;
+routes.get("/get-user-perks/:account", async (req, res) => {
+  const account = req.params.account as string;
   if (!account || account === ZeroAddress) {
     return res.status(500).json({ error: "Invalid request" });
   }
-  const eoas = await superChainAccountService.getEOAS(account);
-  const perks = await perksService.getPerks(eoas, account);
+  const perks = await perksService.getUserPerks(account);
   res.json({ perks });
 });
 

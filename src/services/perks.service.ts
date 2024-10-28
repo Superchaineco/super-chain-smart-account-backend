@@ -16,18 +16,21 @@ class PerksService {
         this.superChainAccountService = new SuperChainAccountService();
     }
 
-    public async getPerks(eoas: string[], account: string): Promise<Perk[]> {
-        const perks: Perk[] = [];
+    public async getUserPerks(account: string): Promise<Perk[]> {
         const accountLevel = await this.superChainAccountService.getAccountLevel(account);
-        const rafflePerks = await this.perksHelper.getRafflePerks(accountLevel);
-        perks.push(rafflePerks);
-        return perks;
+        return this.getPerks(accountLevel);
     }
 
     public async getPerksPerLevel(level: number): Promise<Perk[]> {
+        return this.getPerks(level);
+    }
+
+    private async getPerks(level: number): Promise<Perk[]> {
         const perks: Perk[] = [];
         const rafflePerks = await this.perksHelper.getRafflePerks(level);
+        const sponsorPerks = this.perksHelper.getSponsorPerks(level);
         perks.push(rafflePerks);
+        perks.push(sponsorPerks);
         return perks;
     }
 }
