@@ -97,16 +97,16 @@ routes.post("/attest-badges", verifyOwner, async (req, res) => {
 routes.post("/validate-sponsorship", async (req, res) => {
   const requestData = req.body.data.object;
   try {
-    const superChainSmartAccount =
-      await superChainAccountService.getSuperChainSmartAccount(
-        requestData.userOperation.sender,
-      );
-    const isAble = await isAbleToSponsor(
-      requestData.userOperation.sender,
-      Number(superChainSmartAccount[3]),
-    );
+    // const superChainSmartAccount =
+    //   await superChainAccountService.getSuperChainSmartAccount(
+    //     requestData.userOperation.sender,
+    //   );
+    // const isAble = await isAbleToSponsor(
+    //   requestData.userOperation.sender,
+    //   Number(superChainSmartAccount[3]),
+    // );
     return res.status(200).json({
-      sponsor: isAble,
+      sponsor: true,
     });
   } catch (error) {
     console.error("Error validating sponsorship", error);

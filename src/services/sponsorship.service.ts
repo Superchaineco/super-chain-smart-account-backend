@@ -41,10 +41,10 @@ export async function callPimlicoAPI({ jsonrpc, method, params, id }: any) {
     console.debug({ method, params })
     if (method === "eth_sendUserOperation") {
       const superChainAccount = await superChainAccountService.getAccountLevel(params[0].sender);
-      const isAble = await isAbleToSponsor(params[0].sender, superChainAccount);
-      if (!isAble) {
-        throw { message: "User is not able to sponsor" };
-      }
+      // const isAble = await isAbleToSponsor(params[0].sender, superChainAccount);
+      // if (!isAble) {
+      //   throw { message: "User is not able to sponsor" };
+      // }
     }
     const response = await axios.post(
       `https://api.pimlico.io/v2/${
@@ -65,9 +65,9 @@ export async function callPimlicoAPI({ jsonrpc, method, params, id }: any) {
       }
     );
     if (response.data.error) throw response.data.error;
-    if (method === "eth_sendUserOperation") {
-      await updateRelayCount(params[0].sender);
-    }
+    // if (method === "eth_sendUserOperation") {
+    //   await updateRelayCount(params[0].sender);
+    // }
 
     return response.data;
   } catch (error: any) {
@@ -90,7 +90,8 @@ export async function getTransactionsCount(
   const startBlock = await getBlockNumberFromTimestamp(startTime);
 
   try {
-    const badgeTransactions = await getBadgeTransactions(startBlock, account);
+    // const badgeTransactions = await getBadgeTransactions(startBlock, account);
+    const badgeTransactions = []
     const relayCount = await getRelayCount(account);
     return badgeTransactions.length + relayCount;
   } catch (error) {
