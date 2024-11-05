@@ -9,7 +9,7 @@ import {
   SUPER_CHAIN_ATTESTATION_SCHEMA,
 } from '../config/superChain/constants';
 import { superChainAccountService } from './superChainAccount.service';
-import { ResponseBadge } from './badges.service';
+import { ResponseBadge } from './badges/badges.service';
 
 export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
@@ -71,26 +71,4 @@ export class AttestationsService {
         throw new Error(error);
       }
     }
-
-  
-
-
-    // private async upsertAccountBadge(
-    //   badge: ResponseBadges,
-    //   account: string,
-    //   timestamp: Date | null,
-    //   blockNumber: number | null
-    // ) {
-    //   const { data, error } = await this.supabase
-    //     .from('accountbadges')
-    //     .update({
-    //       lastclaim: timestamp ? timestamp.toISOString() : null,
-    //       lastclaimblock: blockNumber,
-    //       lastclaimtier: badge.claimableTier,
-    //     })
-    //     .eq('badgeid', badge.id)
-    //     .eq('account', account)
-    //     .select();
-    //   return { data, error };
-    // }
   }

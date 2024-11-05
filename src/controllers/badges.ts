@@ -1,6 +1,6 @@
 import { ZeroAddress } from "ethers";
 import { Request, Response } from "express";
-import { BadgesServices } from "../services/badges.service";
+import { BadgesServices } from "../services/badges/badges.service";
 import { superChainAccountService } from "../services/superChainAccount.service";
 import { isAbleToSponsor } from "../services/sponsorship.service";
 import { AttestationsService } from "../services/attestations.service";

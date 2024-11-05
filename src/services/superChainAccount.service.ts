@@ -12,7 +12,7 @@ import {
   GetUserBadgesQueryVariables,
   execute,
 } from "../../.graphclient";
-import { BadgesServices } from "./badges.service";
+import { BadgesServices } from "./badges/badges.service";
 
 export class SuperChainAccountService {
   superChainAccount: Contract;
