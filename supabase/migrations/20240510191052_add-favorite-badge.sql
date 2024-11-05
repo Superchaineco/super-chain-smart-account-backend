@@ -1,1 +1,0 @@
-ALTER TABLE AccountBadges ADD COLUMN "favorite" BOOLEAN DEFAULT FALSE;

@@ -1,5 +1,0 @@
-ALTER TABLE Badges
-ALTER COLUMN description SET NOT NULL,
-ALTER COLUMN networkOrProtocol SET NOT NULL;
-ALTER TABLE AccountBadges
-ALTER COLUMN account SET NOT NULL;
