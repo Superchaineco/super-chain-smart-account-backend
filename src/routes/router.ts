@@ -1,7 +1,6 @@
-import { json, Router } from "express";
+import {  Router } from "express";
 import { BadgesServices } from "../services/badges.service";
 import {
-  SuperChainAccountService,
   superChainAccountService,
 } from "../services/superChainAccount.service";
 import { ZeroAddress } from "ethers";

@@ -3,11 +3,9 @@ import { ethers } from "ethers";
 import { CovalentClient } from "@covalenthq/client-sdk";
 import fs from "fs";
 import csv from "csv-parser";
-import { redisService } from "./redis.service"; // Importar RedisService
+import { redisService } from "./redis.service";
 import axios from "axios";
-import { get } from "http";
-import { join } from "path";
-import { env } from "process";
+
 
 type CsvRow = {
   Address: string;
@@ -174,7 +172,7 @@ export class BadgesHelper {
 
   async hasNouns(eoas: string[]) {
     const cacheKey = `hasNouns-${eoas.join(",")}`;
-    const ttl = 86400; // 1 día
+    const ttl = 86400; 
 
     const fetchFunction = async () => {
       const provider = new ethers.JsonRpcProvider("https://rpc.ankr.com/eth");
