@@ -1,7 +1,6 @@
 import Redis from "ioredis";
 import { REDIS_URL } from "../config/superChain/constants";
-
-const redis = new Redis(REDIS_URL);
+const redis = new Redis(REDIS_URL + '?family=0');
 
 redis
   .ping()
