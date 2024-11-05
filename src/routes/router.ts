@@ -16,10 +16,35 @@ import { verifyReverseProxy, verifyOwner } from "../middleware/auth";
 
 const routes = Router();
 
+routes.get("/user/:account", async (req, res) => {
+  const account = req.params.account as string;
 
-routes.get("/get-badges", async (req, res) => {
-  const headers = req.headers;
-  const account = headers.account as string;
+  if (!account) {
+    return res.status(500).json({ error: "Invalid request" });
+  }
+
+  const superchainsmartaccount =
+    await superChainAccountService.getSuperChainSmartAccount(account);
+  const badges =
+    await superChainAccountService.getSuperChainSmartAccountBadges(account);
+  const replacer = (key: string, value: any) =>
+    typeof value === "bigint" ? value.toString() : value;
+
+  return res.status(200).json(
+    JSON.parse(
+      JSON.stringify(
+        {
+          superchainsmartaccount,
+          badges,
+        },
+        replacer,
+      ),
+    ),
+  );
+});
+
+routes.get("/user/:account/badges", async (req, res) => {
+  const account = req.params.account as string;
   if (!account || account === ZeroAddress) {
     return res.status(500).json({ error: "Invalid request" });
   }
@@ -35,7 +60,7 @@ routes.get("/get-badges", async (req, res) => {
   }
 });
 
-routes.get("/get-user-perks/:account", async (req, res) => {
+routes.get("/user/:account/perks", async (req, res) => {
   const account = req.params.account as string;
   if (!account || account === ZeroAddress) {
     return res.status(500).json({ error: "Invalid request" });
@@ -44,7 +69,7 @@ routes.get("/get-user-perks/:account", async (req, res) => {
   res.json({ perks });
 });
 
-routes.get("/get-perks/:level", async (req, res) => {
+routes.get("/perks/:level", async (req, res) => {
   const level = parseInt(req.params.level);
   if (isNaN(level)) {
     return res.status(500).json({ error: "Invalid level" });
@@ -53,8 +78,8 @@ routes.get("/get-perks/:level", async (req, res) => {
   res.json({ perks });
 });
 
-routes.post("/attest-badges", verifyOwner, async (req, res) => {
-  const account = req.headers.account as string;
+routes.post("/user/:account/badges/claim", verifyOwner, async (req, res) => {
+  const account = req.params.account as string;
   if (!account) {
     console.error("Invalid request");
     return res.status(500).json({ error: "Invalid request" });
@@ -93,6 +118,26 @@ routes.post("/attest-badges", verifyOwner, async (req, res) => {
   }
 });
 
+
+routes.get("/user/:account/sponsorship-balance", async (req, res) => {
+  const account = req.params.account as string;
+
+  if (!account) {
+    return res.status(500).json({ error: "Invalid request" });
+  }
+  const superChainSmartAccount =
+    await superChainAccountService.getSuperChainSmartAccount(account);
+  const { relayedTransactions, maxRelayedTransactions } = await getCurrentSponsorhipValue(
+    account,
+    Number(superChainSmartAccount[3]),
+  );
+  return res.status(200).json({
+    relayedTransactions,
+    maxRelayedTransactions,
+  });
+});
+
+
 routes.post("/validate-sponsorship", async (req, res) => {
   const requestData = req.body.data.object;
   try {
@@ -121,7 +166,6 @@ routes.post("/relay", async (req, res) => {
     const superChainSmartAccount =
       await superChainAccountService.getSuperChainSmartAccount(data.to);
     const taskId = await relayTransaction(data.to, data.data, data.to, Number(superChainSmartAccount[3]))
-    console.debug({ taskId })
     return res.status(200).json({ taskId })
   } catch (error: any) {
     console.error("Error relaying transaction", error)
@@ -130,54 +174,7 @@ routes.post("/relay", async (req, res) => {
 })
 
 
-routes.get("/max-weekly-sponsorship", async (req, res) => {
-  const headers = req.headers;
-  const account = headers.account as string;
-
-  if (!account) {
-    return res.status(500).json({ error: "Invalid request" });
-  }
-  const superChainSmartAccount =
-    await superChainAccountService.getSuperChainSmartAccount(account);
-  const { relayedTransactions, maxRelayedTransactions } = await getCurrentSponsorhipValue(
-    account,
-    Number(superChainSmartAccount[3]),
-  );
-  return res.status(200).json({
-    relayedTransactions,
-    maxRelayedTransactions,
-  });
-});
-
-routes.get("/user", async (req, res) => {
-  const headers = req.headers;
-  const account = headers.account as string;
-
-  if (!account) {
-    return res.status(500).json({ error: "Invalid request" });
-  }
-
-  const superchainsmartaccount =
-    await superChainAccountService.getSuperChainSmartAccount(account);
-  const badges =
-    await superChainAccountService.getSuperChainSmartAccountBadges(account);
-  const replacer = (key: string, value: any) =>
-    typeof value === "bigint" ? value.toString() : value;
-
-  return res.status(200).json(
-    JSON.parse(
-      JSON.stringify(
-        {
-          superchainsmartaccount,
-          badges,
-        },
-        replacer,
-      ),
-    ),
-  );
-});
-
-routes.post("/pimlico-reverse-proxy", verifyReverseProxy, async (req, res) => {
+routes.post("/user-op-reverse-proxy", verifyReverseProxy, async (req, res) => {
   try {
     const { jsonrpc, method, params, id } = req.body;
     const response = await callPimlicoAPI({ jsonrpc, method, params, id });
