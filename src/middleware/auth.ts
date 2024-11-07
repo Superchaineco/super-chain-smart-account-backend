@@ -14,7 +14,7 @@ export async function verifyOwner(req: Request, res: Response, next: NextFunctio
             return res.status(401).json({ message: "No wallet linked to user" });
         }
 
-        const account = req.headers.account as string;
+        const account = req.params.account as string;
 
         if (!account) {
             return res.status(400).json({ message: "Invalid request, account is missing" });
