@@ -1,10 +1,9 @@
 import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
-import { CovalentClient } from "@covalenthq/client-sdk";
+import axios from "axios";
 
 export class ModeTransactionsStrategy extends BaseBadgeStrategy {
 
-  covalent = new CovalentClient(process.env.COVALENT_API_KEY!);
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `modeTransactions-${eoas.join(",")}`;
@@ -12,12 +11,9 @@ export class ModeTransactionsStrategy extends BaseBadgeStrategy {
 
     const fetchFunction = async () => {
       const transactions = eoas.reduce(async (accPromise, eoa) => {
-        const resp =
-          await this.covalent.TransactionService.getAllTransactionsForAddressByPage(
-            "mode-testnet",
-            eoa,
-          );
-        return (await accPromise) + resp.data.items.length;
+        const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/34443/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc`)
+        const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
+        return (await accPromise) + transactions;
       }, Promise.resolve(0));
 
       return transactions;
