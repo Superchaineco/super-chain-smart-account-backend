@@ -23,7 +23,7 @@ import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { SuperchainsmartaccountsTypes } from './sources/superchainsmartaccounts/types';
 import * as importedModule$0 from "./sources/superchainsmartaccounts/introspectionSchema";
-import { ENV, ENVIRONMENTS } from '../src/config/superChain/constants';
+import { ENV, ENVIRONMENTS, SUBGRAPH_API_KEY } from '../src/config/superChain/constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1901,7 +1901,7 @@ const superchainsmartaccountsTransforms = [];
 const additionalTypeDefs = [] as any[];
 const superchainsmartaccountsHandler = new GraphqlHandler({
               name: "superchainsmartaccounts",
-              config: {"endpoint":ENV === ENVIRONMENTS.production ? "https://gateway.thegraph.com/api/00ebf42f37ee2faa3f02f5ca587b1717/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt" : "https://api.studio.thegraph.com/query/72352/superchainsmartaccount-testnet/version/latest"},
+              config: {"endpoint":ENV === ENVIRONMENTS.production ? `https://gateway.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt` : "https://api.studio.thegraph.com/query/72352/superchainsmartaccount-testnet/version/latest"},
               baseDir,
               cache,
               pubsub,

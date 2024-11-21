@@ -3,6 +3,6 @@ sources:
   - name: superchainsmartaccounts
     handler:
       graphql:
-        endpoint: https://gateway.thegraph.com/api/00ebf42f37ee2faa3f02f5ca587b1717/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt
+        # endpoint: https://gateway.thegraph.com/api/c6403f4080a355c720e7c7df9cb74917/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt
 documents:
   - ./src/graphql/get-user-badges.gql
