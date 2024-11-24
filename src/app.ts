@@ -6,15 +6,18 @@ import morgan from "morgan";
 import * as middleware from "./utils/middleware";
 import router from "./routes/router";
 import authRouter from "./routes/auth";
+import { SuperChainAccountService } from "./services/superChainAccount.service";
 
 const app = express();
 
 
-app.use(express.json());
 
 app.use(cors({
+  origin: "http://localhost:3000",
   credentials: true,
 }));
+
+app.use(express.json());
 app.use(Session({
   name: 'siwe-quickstart',
   secret: "siwe-quickstart-secret",
