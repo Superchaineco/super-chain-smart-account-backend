@@ -38,7 +38,7 @@ authRouter.post('/verify', async (req, res) => {
       req.session.siwe = { address, chainId };
       req.session.save(() => res.status(200).send(true));
 
-    } catch (e) {
+    } catch (e: any) {
       req.session.siwe = null;
       req.session.nonce = null;
       req.session.save(() => res.status(500).json({ message: e.message }));

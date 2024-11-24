@@ -4,7 +4,7 @@ declare module "express-session" {
   interface SessionData {
     siwe: {
       address: string;
-      chainId: number;
+      chainId: string;
     } | null;
     nonce: string | null;
   }
