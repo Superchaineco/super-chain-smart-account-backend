@@ -1,10 +1,12 @@
 {
-  "name": "super-chain-smart-account-backend",
+  "name": "super-accounts-backend",
   "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "start": "sleep 3 && ts-node --files src/index.ts"
+    "dev": "sleep 3 && tsx --watch src/index.ts",
+    "start": "sleep 3 && tsx src/index.ts"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -14,8 +16,9 @@
     "@ethereum-attestation-service/eas-sdk": "^2.3.0",
     "@gelatonetwork/relay-sdk": "^5.5.6",
     "@privy-io/server-auth": "^1.11.0",
+    "@reown/appkit-siwe": "^1.5.1",
     "@safe-global/api-kit": "^2.3.1",
-    "@safe-global/protocol-kit": "^5.0.1",
+    "@safe-global/protocol-kit": "^5.0.4",
     "@safe-global/relay-kit": "^3.2.1",
     "@safe-global/safe-core-sdk-types": "^4.1.0",
     "@safe-global/types-kit": "^1.0.0",
@@ -27,19 +30,25 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.12.1",
     "express": "^4.19.2",
+    "express-session": "^1.18.1",
     "graphql": "^16.9.0",
     "http": "^0.0.1-security",
     "ioredis": "^5.4.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "siwe": "^2.3.2"
+  },
+  "engines": {
+    "node": ">=16"
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^3.0.3",
     "@types/cors": "^2.8.17",
     "@types/express": "4.17.21",
+    "@types/express-session": "^1.18.0",
     "@types/morgan": "^1.9.9",
-    "@types/node": "20.12.11",
-    "nodemon": "^3.1.0",
-    "ts-node": "10.9.2",
-    "typescript": "5.4.5"
+    "@types/node": "^20.17.7",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }
