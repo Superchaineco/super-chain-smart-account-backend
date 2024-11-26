@@ -21,9 +21,9 @@ app.use(express.json());
 app.use(Session({
   name: 'siwe-quickstart',
   secret: "siwe-quickstart-secret",
-  resave: true,
-  saveUninitialized: true,
-  cookie: { secure: ENV  === ENVIRONMENTS.production, sameSite: "none" }
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: ENV === ENVIRONMENTS.production,  sameSite: true }
 }));
 
 app.use(morgan("tiny"));

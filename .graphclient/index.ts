@@ -1901,7 +1901,7 @@ const superchainsmartaccountsTransforms = [];
 const additionalTypeDefs = [] as any[];
 const superchainsmartaccountsHandler = new GraphqlHandler({
               name: "superchainsmartaccounts",
-              config: {"endpoint":ENV === ENVIRONMENTS.production ? `https://gateway.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt` : "https://api.studio.thegraph.com/query/72352/superchainsmartaccount-testnet/version/latest"},
+              config: {"endpoint":ENV === ENVIRONMENTS.production ? `https://gateway.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt` : "https://api.studio.thegraph.com/query/72352/super-accounts/version/latest"},
               baseDir,
               cache,
               pubsub,

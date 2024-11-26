@@ -46,11 +46,7 @@ export async function callPimlicoAPI({ jsonrpc, method, params, id }: any) {
       // }
     }
     const response = await axios.post(
-      `https://api.pimlico.io/v2/${
-        ENV === ENVIRONMENTS.production
-          ? config.constants.OPTIMISM_CHAIN_ID
-          : config.constants.SEPOLIA_CHAIN_ID
-      }/rpc`,
+      `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc`,
       {
         jsonrpc: "2.0",
         method: method,
@@ -155,7 +151,7 @@ export async function isAbleToSponsor(
 async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
   try {
     const response = await axios.get(
-      `https://api-${ENV === ENVIRONMENTS.development ? "sepolia" : "optimistic"}.etherscan.io/api`,
+      'https://api-optimistic.etherscan.io/api',
       {
         params: {
           module: "block",
@@ -179,7 +175,7 @@ async function getBadgeTransactions(startBlock: number, account: string) {
   try {
     const wallet = new Wallet(ATTESTATOR_SIGNER_PRIVATE_KEY);
     const response = await axios.get(
-      `https://api-${ENV === ENVIRONMENTS.development ? "sepolia" : "optimistic"}.etherscan.io/api`,
+      `https://api-optimistic.etherscan.io/api`,
       {
         params: {
           module: "account",
