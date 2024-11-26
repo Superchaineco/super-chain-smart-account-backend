@@ -1,4 +1,4 @@
-import { Contract, JsonRpcProvider } from "ethers";
+import { Contract, ethers, JsonRpcProvider } from "ethers";
 import {
   JSON_RPC_PROVIDER,
   SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS,
@@ -25,10 +25,9 @@ export class SuperChainAccountService {
     );
   }
 
-async getEOAS(address: string): Promise<string[]> {
+  async getEOAS(address: string): Promise<string[]> {
     try {
-      // @ts-expect-error ESM import
-      const protocolKit = await Safe.default.init({
+      const protocolKit = await Safe.init({
         provider: JSON_RPC_PROVIDER,
         safeAddress: address,
       });
@@ -79,8 +78,8 @@ async getEOAS(address: string): Promise<string[]> {
   }
 
   public async isOwnerOfSmartAccount(wallet: string, account: string): Promise<boolean> {
-    const owners = (await this.getEOAS(account)).map((owner) => owner.toLowerCase());
-    return owners.includes(wallet.toLocaleLowerCase());
+    const owners = await this.getEOAS(account);
+    return owners.includes(wallet);
   }
   
   async getAccountLevel(account: string): Promise<number> {

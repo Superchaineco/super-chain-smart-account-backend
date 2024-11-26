@@ -1,4 +1,4 @@
-import { Router } from "express";
+import {  Router } from "express";
 import { verifyReverseProxy, verifyOwner } from "../middleware/auth";
 import { getUser } from "../controllers/user";
 import { claimBadges, getBadges } from "../controllers/badges";
