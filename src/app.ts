@@ -19,13 +19,14 @@ app.use(cors({
 
 app.use(express.json());
 app.use(Session({
-  name: 'siwe-quickstart',
+  name: 'Super-account-SIWE',
   secret: "siwe-quickstart-secret",
   resave: false,
-  saveUninitialized: false,
-  cookie: { secure: ENV === ENVIRONMENTS.production,  sameSite: true }
+  saveUninitialized: true,
+  cookie: { secure: ENV === ENVIRONMENTS.production,  sameSite: 'none' }
 }));
 
+app.set('trust proxy', 1); 
 app.use(morgan("tiny"));
 
 app.get("/", (req, res) => {
