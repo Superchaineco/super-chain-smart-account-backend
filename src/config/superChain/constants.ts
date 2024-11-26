@@ -18,6 +18,7 @@ const config = {
     EAS_CONTRACT_ADDRESS: "0xC2679fBD37d54388Ce493F1DB75320D236e1815e",
     JSON_RPC_PROVIDER: process.env.JSON_RPC_PROVIDER_TESTNET,
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY_TESTNET,
+    DOMAIN: "http://localhost:3000",
   },
   production: {
     SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS:
@@ -27,6 +28,7 @@ const config = {
     EAS_CONTRACT_ADDRESS: "0x4200000000000000000000000000000000000021",
     JSON_RPC_PROVIDER: process.env.JSON_RPC_PROVIDER,
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
+    DOMAIN: "https://account.superchain.eco",
   },
 }[ENV];
 
@@ -52,3 +54,4 @@ export const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY!;
 export const GELATO_API_KEY = process.env.GELATO_API_KEY!;
 export const SUBGRAPH_API_KEY = process.env.SUBGRAPH_API_KEY!;
 export const WC_PROJECT_ID = process.env.WC_PROJECT_ID!;
+export const DOMAIN = config.DOMAIN;

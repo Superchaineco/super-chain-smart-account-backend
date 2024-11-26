@@ -6,14 +6,14 @@ import morgan from "morgan";
 import * as middleware from "./utils/middleware";
 import router from "./routes/router";
 import authRouter from "./routes/auth";
-import { SuperChainAccountService } from "./services/superChainAccount.service";
+import { DOMAIN } from "./config/superChain/constants";
 
 const app = express();
 
 
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: DOMAIN,
   credentials: true,
 }));
 
