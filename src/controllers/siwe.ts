@@ -38,6 +38,7 @@ export async function verifySignature(req, res) {
         req.session.save(() => res.status(200).send(true));
 
     } catch (e: any) {
+        console.error(e)
         req.session.siwe = null;
         req.session.nonce = null;
         req.session.save(() => res.status(500).json({ message: e.message }));
