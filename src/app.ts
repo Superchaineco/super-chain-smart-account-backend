@@ -6,7 +6,7 @@ import morgan from "morgan";
 import * as middleware from "./utils/middleware";
 import router from "./routes/router";
 import authRouter from "./routes/auth";
-import { DOMAIN } from "./config/superChain/constants";
+import { DOMAIN, ENV, ENVIRONMENTS } from "./config/superChain/constants";
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use(Session({
   secret: "siwe-quickstart-secret",
   resave: true,
   saveUninitialized: true,
-  cookie: { secure: false, sameSite: true }
+  cookie: { secure: ENV  === ENVIRONMENTS.production, sameSite: "none" }
 }));
 
 app.use(morgan("tiny"));
