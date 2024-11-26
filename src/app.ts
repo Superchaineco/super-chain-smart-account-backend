@@ -9,7 +9,7 @@ import authRouter from "./routes/auth";
 import { DOMAIN, ENV, ENVIRONMENTS } from "./config/superChain/constants";
 
 const app = express();
-
+console.debug("ENV", ENV);
 
 
 app.use(cors({
