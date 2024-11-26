@@ -1,8 +1,11 @@
-import { UserProfile } from "../index.types";
+import "express-session";
 
-declare module "express-serve-static-core" {
-  interface Request {
-    user?: UserProfile;
-    wallet?: { address: string };
+declare module "express-session" {
+  interface SessionData {
+    siwe: {
+      address: string;
+      chainId: string;
+    } | null;
+    nonce: string | null;
   }
 }
