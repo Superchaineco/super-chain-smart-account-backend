@@ -7,6 +7,7 @@ import { GivethDonationsStrategy } from './givethDonations';
 import { ModeTransactionsStrategy } from './modeTransactions';
 import { NounsCheckStrategy } from './nounsCheck';
 import { OpTransactionsStrategy } from './opTransactions';
+import { SuperCohort0Strategy } from './superCohort0Strategy';
 import { TalentScoreStrategy } from './talentScore';
 import { WorldCoinCheckStrategy } from './worldCoinCheck';
 
@@ -42,6 +43,8 @@ export class BadgeStrategyContext {
 
             case "Worldcoin Verification":
                 return new WorldCoinCheckStrategy()
+            case "Super Cohort 24":
+                return new SuperCohort0Strategy()
 
             default:
                 throw new Error(`Badge strategy ${badgeName} not found`);
