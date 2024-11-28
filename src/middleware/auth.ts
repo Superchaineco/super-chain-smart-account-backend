@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, json } from "express";
+import { Request, Response, NextFunction } from "express";
 import { superChainAccountService } from "../services/superChainAccount.service";
 
 export async function verifyOwner(req: Request, res: Response, next: NextFunction) {

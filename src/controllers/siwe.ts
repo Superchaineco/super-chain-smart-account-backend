@@ -15,7 +15,7 @@ async function validateSignature(req, res) {
 
     const message = req.body.message;
     const address = getAddressFromMessage(message);
-    const chainId = getChainIdFromMessage(message);
+    let chainId = getChainIdFromMessage(message);
 
 
     const isValid = await veriftSiweSignature({
@@ -30,10 +30,21 @@ async function validateSignature(req, res) {
 
 export async function verifySignature(req, res) {
     try {
-        const { isValid, address, chainId } = await validateSignature(req, res);
+        let { isValid, address, chainId } = await validateSignature(req, res);
         if (!isValid) {
             throw new Error('Invalid signature');
         }
+        if (chainId.includes(":")) {
+
+            chainId = chainId.split(":")[1];
+        }
+
+        chainId = Number(chainId);
+
+        if (isNaN(chainId)) {
+            throw new Error("Invalid chainId");
+        }
+
         req.session.siwe = { address, chainId };
         req.session.save(() => res.status(200).send(true));
 
@@ -48,6 +59,7 @@ export async function verifySignature(req, res) {
 
 export async function getSession(req, res) {
     res.setHeader('Content-Type', 'application/json');
+    console.debug('Session', req.session);
     res.send(req.session.siwe);
 }
 
