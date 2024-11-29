@@ -16,6 +16,7 @@ import { BadgesServices } from "./badges/badges.service";
 
 export class SuperChainAccountService {
   superChainAccount: Contract;
+  badgesService: BadgesServices
 
   constructor() {
     this.superChainAccount = new Contract(
@@ -23,6 +24,7 @@ export class SuperChainAccountService {
       SUPER_CHAIN_MODULE_ABI,
       new JsonRpcProvider(JSON_RPC_PROVIDER),
     );
+    this.badgesService = new BadgesServices();
   }
 
 async getEOAS(address: string): Promise<string[]> {
@@ -48,15 +50,10 @@ async getEOAS(address: string): Promise<string[]> {
     const response = await this.superChainAccount.getSuperChainAccount(address);
     return response;
   }
-  async getSuperChainSmartAccountBadges(address: string) {
-    const { data, errors }: ExecutionResult<GetUserBadgesQuery> = await execute(
-      GetUserBadgesDocument,
-      {
-        user: address,
-      } as GetUserBadgesQueryVariables,
-    );
 
-    if (errors) return;
+  
+  async getSuperChainSmartAccountBadges(address: string) {
+    const data = await this.badgesService.fetchBadges(address);
 
     const badgeServices = new BadgesServices();
 

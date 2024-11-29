@@ -24,6 +24,9 @@ export class RedisService {
         }
         return null;
     }
+    public async deleteCachedData(key: string) {
+        await redis.del(key);
+    }
 }
 
 export const redisService = new RedisService();

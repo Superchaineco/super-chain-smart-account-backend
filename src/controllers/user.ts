@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
 import { superChainAccountService } from "../services/superChainAccount.service";
-import { ZeroAddress } from "ethers";
-import { routes } from "../routes/router";
-import { perksService } from "../services/perks.service";
-import { BadgesServices } from "../services/badges/badges.service";
 
 export async function getUser(req: Request, res: Response) {
 

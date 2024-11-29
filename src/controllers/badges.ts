@@ -4,6 +4,7 @@ import { BadgesServices } from "../services/badges/badges.service";
 import { superChainAccountService } from "../services/superChainAccount.service";
 import { isAbleToSponsor } from "../services/sponsorship.service";
 import { AttestationsService } from "../services/attestations.service";
+import { redisService } from "@/services/redis.service";
 
 export async function getBadges(req: Request, res: Response) {
     const account = req.params.account as string;
@@ -56,6 +57,9 @@ export async function claimBadges(req: Request, res: Response) {
             badges,
             badgeUpdates,
         );
+        const cacheKey = `user_badges:${account}`;
+        await redisService.deleteCachedData(cacheKey);
+
         return res.status(201).json(response);
     } catch (error) {
         console.error("Error attesting", error);

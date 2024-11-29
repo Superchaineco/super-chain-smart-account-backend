@@ -21,17 +21,31 @@ export class BadgesServices {
   private badges: ResponseBadge[] = [];
 
 
-  public async getBadges(eoas: string[], account: string): Promise<any[]> {
-    const { data, errors }: ExecutionResult<GetUserBadgesQuery> = await execute(
-      GetUserBadgesDocument,
-      {
-        user: account,
-      } as GetUserBadgesQueryVariables,
-    );
-    if (errors) {
-      console.error("Error fetching badges:", errors);
-      throw new Error("Error fetching badges");
+ public async fetchBadges(account: string) {
+    const CACHE_KEY = `user_badges:${account}`;
+    const ttl = 3600;
+
+    const fetchFunction = async () => {
+
+      const { data, errors }: ExecutionResult<GetUserBadgesQuery> = await execute(
+        GetUserBadgesDocument,
+        {
+          user: account,
+        } as GetUserBadgesQueryVariables,
+      );
+      if (errors) {
+        console.error("Error fetching badges:", errors);
+        throw new Error("Error fetching badges");
+      }
+      return data
     }
+
+    return redisService.getCachedDataWithCallback(CACHE_KEY, fetchFunction, ttl);
+  }
+
+  public async getBadges(eoas: string[], account: string): Promise<any[]> {
+
+    const data = await this.fetchBadges(account);
     const accountBadgesIds =
       data?.accountBadges.map((accountBadge) => accountBadge.badge.badgeId) ??
       [];
@@ -124,7 +138,8 @@ export class BadgesServices {
         const metadata = JSON.parse(metadataJson);
         return metadata;
       } catch (error) {
-        console.error(`Error parsing JSON from IPFS: ${error}`);
+        console.debug(badge.badge.uri);
+        console.error(`Error parsing JSON from IPFS (Badge metadata): ${error}`);
         return null;
       }
     };
@@ -141,7 +156,8 @@ export class BadgesServices {
         const metadata = JSON.parse(metadataJson);
         return { tier: badgeLevel, metadata };
       } catch (error) {
-        console.error(`Error parsing JSON from IPFS: ${error}`);
+        console.debug(badgeLevel.uri);
+        console.error(`Error parsing JSON from IPFS (Badge Tier metadata): ${error}`);
         throw new Error("Error parsing JSON from IPFS");
       }
     };
@@ -150,7 +166,7 @@ export class BadgesServices {
   }
 
   private async updateBadgeDataForAccount(eoas: string[], badgeData: Badge) {
-   
+
     try {
       const strategy = BadgeStrategyContext.getBadgeStrategy(badgeData.badge.metadata!.name);
       const badgeResponse = await strategy.calculateTier(eoas, badgeData);
