@@ -7,7 +7,7 @@ export class ModeTransactionsStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `modeTransactions-${eoas.join(",")}`;
-    const ttl = 86400; // 1 day
+    const ttl = 3600
 
     const fetchFunction = async () => {
       const transactions = eoas.reduce(async (accPromise, eoa) => {

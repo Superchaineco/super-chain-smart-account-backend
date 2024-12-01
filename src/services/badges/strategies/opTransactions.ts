@@ -6,7 +6,7 @@ export class OpTransactionsStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `optimisimTransactions-${eoas.join(",")}`;
-    const ttl = 86400; // 1 day
+    const ttl = 3600
 
     const fetchFunction = async () => {
       const settings = {
@@ -17,19 +17,8 @@ export class OpTransactionsStrategy extends BaseBadgeStrategy {
       const alchemy = new Alchemy(settings);
       const transactions = await eoas.reduce(async (accPromise, eoa) => {
         const acc = await accPromise;
-        const { transfers } = await alchemy.core.getAssetTransfers({
-          toBlock: "latest",
-          fromAddress: eoa,
-          excludeZeroValue: true,
-          category: [
-            AssetTransfersCategory.ERC20,
-            AssetTransfersCategory.ERC1155,
-            AssetTransfersCategory.EXTERNAL,
-            AssetTransfersCategory.ERC721,
-          ],
-        });
-        if (!transfers) return acc;
-        return acc + transfers.length;
+        const result = await alchemy.core.getTransactionCount(eoa);
+        return acc + result;
       }, Promise.resolve(0));
 
       return transactions;

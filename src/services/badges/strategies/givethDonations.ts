@@ -5,7 +5,7 @@ export class GivethDonationsStrategy extends BaseBadgeStrategy {
 
     async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `givethDonations-${eoas.join(",")}`;
-    const ttl = 86400; // 1 día
+    const ttl = 3600
 
     const fetchFunction = async () => {
       const givethApiUrl = "https://mainnet.serve.giveth.io/graphql";

@@ -18,7 +18,7 @@ export class WorldCoinCheckStrategy extends BaseBadgeStrategy {
 
     async getValue(eoas: string[]): Promise<boolean> {
         const cacheKey = `worldcoinVerified-${eoas.join(",")}`;
-        const ttl = 86400; // 1 day
+        const ttl = 3600
 
         const fetchFunction = async () => {
             let isWorldcoinVerified = false;
