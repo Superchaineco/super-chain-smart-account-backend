@@ -40,7 +40,8 @@ export class BadgesServices {
       return data
     }
 
-    return redisService.getCachedDataWithCallback(CACHE_KEY, fetchFunction, ttl);
+    // return redisService.getCachedDataWithCallback(CACHE_KEY, fetchFunction, ttl);
+    return fetchFunction();
   }
 
   public async getBadges(eoas: string[], account: string): Promise<any[]> {
@@ -182,4 +183,5 @@ export class BadgesServices {
       this.badges = this.badges.filter(b => b.badgeId !== badgeData.badge.badgeId);
     }
   }
+
 }
