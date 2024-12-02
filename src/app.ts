@@ -6,7 +6,7 @@ import morgan from "morgan";
 import * as middleware from "./utils/middleware";
 import router from "./routes/router";
 import authRouter from "./routes/auth";
-import { DOMAIN, ENV, ENVIRONMENTS } from "./config/superChain/constants";
+import { DOMAIN, ENV, ENVIRONMENTS, SESSION_SECRET } from "./config/superChain/constants";
 
 const app = express();
 console.debug("ENV", ENV);
@@ -20,7 +20,7 @@ app.use(cors({
 app.use(express.json());
 app.use(Session({
   name: 'Super-account-SIWE',
-  secret: "siwe-quickstart-secret",
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: ENV === ENVIRONMENTS.production,  sameSite: 'none' }
