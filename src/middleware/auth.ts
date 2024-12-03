@@ -49,6 +49,7 @@ export async function verifyReverseProxy(req: Request, res: Response, next: Next
 
 function verifySession(req: Request, res: Response) {
     if (!req.session.siwe || !req.session.siwe.address) {
+        console.debug("Session", req.session);
         throw new Error('Unauthorized');
     }
     return { address: req.session.siwe.address, chainId: req.session.siwe.chainId };
