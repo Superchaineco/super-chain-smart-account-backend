@@ -1,8 +1,9 @@
 # .graphclientrc.yml
 sources:
-  - name: superchainsmartaccounts
+  - name: super-accounts
     handler:
       graphql:
-        # endpoint: https://gateway.thegraph.com/api/c6403f4080a355c720e7c7df9cb74917/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt
+        endpoint: https://gateway.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt
 documents:
   - ./src/graphql/get-user-badges.gql
+  - ./src/graphql/get-first-100-users-level-3.gql

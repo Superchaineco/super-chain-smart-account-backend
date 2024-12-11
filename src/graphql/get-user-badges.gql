@@ -1,4 +1,4 @@
-query GetUserBadges($user: Bytes!) {
+query GetUserBadges($user: String!) {
   badges {
     badgeId
     uri

@@ -4,10 +4,10 @@ export interface BadgeStrategy {
 }
 
 export abstract class BaseBadgeStrategy implements BadgeStrategy {
-    abstract getValue(eoas: string[]): Promise<number | boolean>;
+    abstract getValue(eoas: string[], account?: string): Promise<number | boolean>;
 
-    async calculateTier(eoas: string[], badgeData: Badge): Promise<ResponseBadge> {
-        const value = await this.getValue(eoas);
+    async calculateTier(eoas: string[], badgeData: Badge, account?: string): Promise<ResponseBadge> {
+        const value = await this.getValue(eoas, account);
 
         let claimableTier: number | null = null;
         let claimable = false;

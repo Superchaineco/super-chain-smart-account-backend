@@ -86,7 +86,7 @@ export class BadgesServices {
     }
 
     for (const badge of activeBadges) {
-      await this.updateBadgeDataForAccount(eoas, badge);
+      await this.updateBadgeDataForAccount(eoas, badge, account);
     }
 
     return this.badges;
@@ -166,11 +166,11 @@ export class BadgesServices {
     return redisService.getCachedDataWithCallback(CACHE_KEY, fetchFunction, ttl);
   }
 
-  private async updateBadgeDataForAccount(eoas: string[], badgeData: Badge) {
+  private async updateBadgeDataForAccount(eoas: string[], badgeData: Badge, account: string) {
 
     try {
       const strategy = BadgeStrategyContext.getBadgeStrategy(badgeData.badge.metadata!.name);
-      const badgeResponse = await strategy.calculateTier(eoas, badgeData);
+      const badgeResponse = await strategy.calculateTier(eoas, badgeData, account);
       this.badges.push(badgeResponse);
     }
     catch (error) {

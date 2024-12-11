@@ -3,7 +3,7 @@
 import { InContextSdkMethod } from '@graphql-mesh/types';
 import { MeshContext } from '@graphql-mesh/runtime';
 
-export namespace SuperchainsmartaccountsTypes {
+export namespace SuperAccountsTypes {
   export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -27,7 +27,7 @@ export type Scalars = {
 
 export type AccountBadge = {
   id: Scalars['Bytes']['output'];
-  user: Scalars['Bytes']['output'];
+  user: SuperChainSmartAccount;
   badge: Badge;
   tier: Scalars['BigInt']['output'];
   points: Scalars['BigInt']['output'];
@@ -44,16 +44,27 @@ export type AccountBadge_filter = {
   id_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
   id_contains?: InputMaybe<Scalars['Bytes']['input']>;
   id_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  user?: InputMaybe<Scalars['Bytes']['input']>;
-  user_not?: InputMaybe<Scalars['Bytes']['input']>;
-  user_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  user_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  user_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  user_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  user_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  user_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  user_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  user_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+  user_not?: InputMaybe<Scalars['String']['input']>;
+  user_gt?: InputMaybe<Scalars['String']['input']>;
+  user_lt?: InputMaybe<Scalars['String']['input']>;
+  user_gte?: InputMaybe<Scalars['String']['input']>;
+  user_lte?: InputMaybe<Scalars['String']['input']>;
+  user_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  user_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  user_contains?: InputMaybe<Scalars['String']['input']>;
+  user_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  user_not_contains?: InputMaybe<Scalars['String']['input']>;
+  user_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  user_starts_with?: InputMaybe<Scalars['String']['input']>;
+  user_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  user_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  user_ends_with?: InputMaybe<Scalars['String']['input']>;
+  user_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  user_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  user_?: InputMaybe<SuperChainSmartAccount_filter>;
   badge?: InputMaybe<Scalars['String']['input']>;
   badge_not?: InputMaybe<Scalars['String']['input']>;
   badge_gt?: InputMaybe<Scalars['String']['input']>;
@@ -100,6 +111,20 @@ export type AccountBadge_filter = {
 export type AccountBadge_orderBy =
   | 'id'
   | 'user'
+  | 'user__id'
+  | 'user__safe'
+  | 'user__initialOwner'
+  | 'user__superChainId'
+  | 'user__noun_background'
+  | 'user__noun_body'
+  | 'user__noun_accessory'
+  | 'user__noun_head'
+  | 'user__noun_glasses'
+  | 'user__blockNumber'
+  | 'user__blockTimestamp'
+  | 'user__transactionHash'
+  | 'user__level'
+  | 'user__points'
   | 'badge'
   | 'badge__id'
   | 'badge__badgeId'
@@ -128,7 +153,7 @@ export type BadgebadgeTiersArgs = {
 };
 
 export type BadgeTier = {
-  id: Scalars['Bytes']['output'];
+  id: Scalars['String']['output'];
   points: Scalars['BigInt']['output'];
   tier: Scalars['BigInt']['output'];
   badge: Badge;
@@ -136,16 +161,26 @@ export type BadgeTier = {
 };
 
 export type BadgeTier_filter = {
-  id?: InputMaybe<Scalars['Bytes']['input']>;
-  id_not?: InputMaybe<Scalars['Bytes']['input']>;
-  id_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  id_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  id_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  id_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  id_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  id_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  id_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  id_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
   points?: InputMaybe<Scalars['BigInt']['input']>;
   points_not?: InputMaybe<Scalars['BigInt']['input']>;
   points_gt?: InputMaybe<Scalars['BigInt']['input']>;
@@ -347,6 +382,131 @@ export type EIP712DomainChanged_orderBy =
   | 'blockTimestamp'
   | 'transactionHash';
 
+export type LevelClaim = {
+  id: Scalars['Bytes']['output'];
+  account: SuperChainSmartAccount;
+  level: Scalars['BigInt']['output'];
+  timestamp: Scalars['BigInt']['output'];
+};
+
+export type LevelClaim_filter = {
+  id?: InputMaybe<Scalars['Bytes']['input']>;
+  id_not?: InputMaybe<Scalars['Bytes']['input']>;
+  id_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  id_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  id_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  id_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  account?: InputMaybe<Scalars['String']['input']>;
+  account_not?: InputMaybe<Scalars['String']['input']>;
+  account_gt?: InputMaybe<Scalars['String']['input']>;
+  account_lt?: InputMaybe<Scalars['String']['input']>;
+  account_gte?: InputMaybe<Scalars['String']['input']>;
+  account_lte?: InputMaybe<Scalars['String']['input']>;
+  account_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  account_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  account_contains?: InputMaybe<Scalars['String']['input']>;
+  account_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  account_not_contains?: InputMaybe<Scalars['String']['input']>;
+  account_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  account_starts_with?: InputMaybe<Scalars['String']['input']>;
+  account_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  account_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  account_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  account_ends_with?: InputMaybe<Scalars['String']['input']>;
+  account_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  account_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  account_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  account_?: InputMaybe<SuperChainSmartAccount_filter>;
+  level?: InputMaybe<Scalars['BigInt']['input']>;
+  level_not?: InputMaybe<Scalars['BigInt']['input']>;
+  level_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  level_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  level_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  level_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  level_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  level_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<LevelClaim_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<LevelClaim_filter>>>;
+};
+
+export type LevelClaim_orderBy =
+  | 'id'
+  | 'account'
+  | 'account__id'
+  | 'account__safe'
+  | 'account__initialOwner'
+  | 'account__superChainId'
+  | 'account__noun_background'
+  | 'account__noun_body'
+  | 'account__noun_accessory'
+  | 'account__noun_head'
+  | 'account__noun_glasses'
+  | 'account__blockNumber'
+  | 'account__blockTimestamp'
+  | 'account__transactionHash'
+  | 'account__level'
+  | 'account__points'
+  | 'level'
+  | 'timestamp';
+
+export type Meta = {
+  id: Scalars['String']['output'];
+  count: Scalars['BigInt']['output'];
+};
+
+export type Meta_filter = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  count?: InputMaybe<Scalars['BigInt']['input']>;
+  count_not?: InputMaybe<Scalars['BigInt']['input']>;
+  count_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  count_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  count_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  count_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  count_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  count_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Meta_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Meta_filter>>>;
+};
+
+export type Meta_orderBy =
+  | 'id'
+  | 'count';
+
 /** Defines the order direction, either ascending or descending */
 export type OrderDirection =
   | 'asc'
@@ -487,7 +647,9 @@ export type OwnerAdded_orderBy =
   | 'superChainSmartAccount__noun_glasses'
   | 'superChainSmartAccount__blockNumber'
   | 'superChainSmartAccount__blockTimestamp'
-  | 'superChainSmartAccount__transactionHash';
+  | 'superChainSmartAccount__transactionHash'
+  | 'superChainSmartAccount__level'
+  | 'superChainSmartAccount__points';
 
 export type OwnerPopulated = {
   id: Scalars['Bytes']['output'];
@@ -624,7 +786,9 @@ export type OwnerPopulated_orderBy =
   | 'superChainSmartAccount__noun_glasses'
   | 'superChainSmartAccount__blockNumber'
   | 'superChainSmartAccount__blockTimestamp'
-  | 'superChainSmartAccount__transactionHash';
+  | 'superChainSmartAccount__transactionHash'
+  | 'superChainSmartAccount__level'
+  | 'superChainSmartAccount__points';
 
 export type OwnerPopulationRemoved = {
   id: Scalars['Bytes']['output'];
@@ -761,12 +925,15 @@ export type OwnerPopulationRemoved_orderBy =
   | 'superChainSmartAccount__noun_glasses'
   | 'superChainSmartAccount__blockNumber'
   | 'superChainSmartAccount__blockTimestamp'
-  | 'superChainSmartAccount__transactionHash';
+  | 'superChainSmartAccount__transactionHash'
+  | 'superChainSmartAccount__level'
+  | 'superChainSmartAccount__points';
 
 export type PointsIncremented = {
   id: Scalars['Bytes']['output'];
   recipient: Scalars['Bytes']['output'];
   points: Scalars['BigInt']['output'];
+  levelUp: Scalars['Boolean']['output'];
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
   transactionHash: Scalars['Bytes']['output'];
@@ -802,6 +969,10 @@ export type PointsIncremented_filter = {
   points_lte?: InputMaybe<Scalars['BigInt']['input']>;
   points_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   points_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  levelUp?: InputMaybe<Scalars['Boolean']['input']>;
+  levelUp_not?: InputMaybe<Scalars['Boolean']['input']>;
+  levelUp_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  levelUp_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
   blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_not?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
@@ -859,6 +1030,7 @@ export type PointsIncremented_orderBy =
   | 'id'
   | 'recipient'
   | 'points'
+  | 'levelUp'
   | 'blockNumber'
   | 'blockTimestamp'
   | 'transactionHash'
@@ -874,7 +1046,9 @@ export type PointsIncremented_orderBy =
   | 'superChainSmartAccount__noun_glasses'
   | 'superChainSmartAccount__blockNumber'
   | 'superChainSmartAccount__blockTimestamp'
-  | 'superChainSmartAccount__transactionHash';
+  | 'superChainSmartAccount__transactionHash'
+  | 'superChainSmartAccount__level'
+  | 'superChainSmartAccount__points';
 
 export type Query = {
   eip712DomainChanged?: Maybe<EIP712DomainChanged>;
@@ -895,6 +1069,12 @@ export type Query = {
   badges: Array<Badge>;
   accountBadge?: Maybe<AccountBadge>;
   accountBadges: Array<AccountBadge>;
+  tierTresholds?: Maybe<TierTresholds>;
+  tierTresholds_collection: Array<TierTresholds>;
+  levelClaim?: Maybe<LevelClaim>;
+  levelClaims: Array<LevelClaim>;
+  meta?: Maybe<Meta>;
+  metas: Array<Meta>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -1062,6 +1242,60 @@ export type QueryaccountBadgesArgs = {
 };
 
 
+export type QuerytierTresholdsArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytierTresholds_collectionArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<TierTresholds_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TierTresholds_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerylevelClaimArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerylevelClaimsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<LevelClaim_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<LevelClaim_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerymetaArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerymetasArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Meta_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Meta_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
@@ -1085,6 +1319,12 @@ export type Subscription = {
   badges: Array<Badge>;
   accountBadge?: Maybe<AccountBadge>;
   accountBadges: Array<AccountBadge>;
+  tierTresholds?: Maybe<TierTresholds>;
+  tierTresholds_collection: Array<TierTresholds>;
+  levelClaim?: Maybe<LevelClaim>;
+  levelClaims: Array<LevelClaim>;
+  meta?: Maybe<Meta>;
+  metas: Array<Meta>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -1252,6 +1492,60 @@ export type SubscriptionaccountBadgesArgs = {
 };
 
 
+export type SubscriptiontierTresholdsArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontierTresholds_collectionArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<TierTresholds_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TierTresholds_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionlevelClaimArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionlevelClaimsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<LevelClaim_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<LevelClaim_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionmetaArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionmetasArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Meta_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Meta_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type Subscription_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
@@ -1269,6 +1563,28 @@ export type SuperChainSmartAccount = {
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
   transactionHash: Scalars['Bytes']['output'];
+  level: Scalars['BigInt']['output'];
+  points: Scalars['BigInt']['output'];
+  badges: Array<AccountBadge>;
+  levels: Array<LevelClaim>;
+};
+
+
+export type SuperChainSmartAccountbadgesArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<AccountBadge_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<AccountBadge_filter>;
+};
+
+
+export type SuperChainSmartAccountlevelsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<LevelClaim_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<LevelClaim_filter>;
 };
 
 export type SuperChainSmartAccount_filter = {
@@ -1388,6 +1704,24 @@ export type SuperChainSmartAccount_filter = {
   transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
   transactionHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
   transactionHash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  level?: InputMaybe<Scalars['BigInt']['input']>;
+  level_not?: InputMaybe<Scalars['BigInt']['input']>;
+  level_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  level_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  level_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  level_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  level_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  level_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  points?: InputMaybe<Scalars['BigInt']['input']>;
+  points_not?: InputMaybe<Scalars['BigInt']['input']>;
+  points_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  points_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  points_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  points_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  points_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  points_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  badges_?: InputMaybe<AccountBadge_filter>;
+  levels_?: InputMaybe<LevelClaim_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<SuperChainSmartAccount_filter>>>;
@@ -1406,7 +1740,41 @@ export type SuperChainSmartAccount_orderBy =
   | 'noun_glasses'
   | 'blockNumber'
   | 'blockTimestamp'
-  | 'transactionHash';
+  | 'transactionHash'
+  | 'level'
+  | 'points'
+  | 'badges'
+  | 'levels';
+
+export type TierTresholds = {
+  id: Scalars['ID']['output'];
+  tresholds: Array<Scalars['BigInt']['output']>;
+};
+
+export type TierTresholds_filter = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_not?: InputMaybe<Scalars['ID']['input']>;
+  id_gt?: InputMaybe<Scalars['ID']['input']>;
+  id_lt?: InputMaybe<Scalars['ID']['input']>;
+  id_gte?: InputMaybe<Scalars['ID']['input']>;
+  id_lte?: InputMaybe<Scalars['ID']['input']>;
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  tresholds?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  tresholds_not?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  tresholds_contains?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  tresholds_contains_nocase?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  tresholds_not_contains?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  tresholds_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<TierTresholds_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TierTresholds_filter>>>;
+};
+
+export type TierTresholds_orderBy =
+  | 'id'
+  | 'tresholds';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -1478,6 +1846,18 @@ export type _SubgraphErrorPolicy_ =
   accountBadge: InContextSdkMethod<Query['accountBadge'], QueryaccountBadgeArgs, MeshContext>,
   /** null **/
   accountBadges: InContextSdkMethod<Query['accountBadges'], QueryaccountBadgesArgs, MeshContext>,
+  /** null **/
+  tierTresholds: InContextSdkMethod<Query['tierTresholds'], QuerytierTresholdsArgs, MeshContext>,
+  /** null **/
+  tierTresholds_collection: InContextSdkMethod<Query['tierTresholds_collection'], QuerytierTresholds_collectionArgs, MeshContext>,
+  /** null **/
+  levelClaim: InContextSdkMethod<Query['levelClaim'], QuerylevelClaimArgs, MeshContext>,
+  /** null **/
+  levelClaims: InContextSdkMethod<Query['levelClaims'], QuerylevelClaimsArgs, MeshContext>,
+  /** null **/
+  meta: InContextSdkMethod<Query['meta'], QuerymetaArgs, MeshContext>,
+  /** null **/
+  metas: InContextSdkMethod<Query['metas'], QuerymetasArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Query['_meta'], Query_metaArgs, MeshContext>
   };
@@ -1523,12 +1903,24 @@ export type _SubgraphErrorPolicy_ =
   accountBadge: InContextSdkMethod<Subscription['accountBadge'], SubscriptionaccountBadgeArgs, MeshContext>,
   /** null **/
   accountBadges: InContextSdkMethod<Subscription['accountBadges'], SubscriptionaccountBadgesArgs, MeshContext>,
+  /** null **/
+  tierTresholds: InContextSdkMethod<Subscription['tierTresholds'], SubscriptiontierTresholdsArgs, MeshContext>,
+  /** null **/
+  tierTresholds_collection: InContextSdkMethod<Subscription['tierTresholds_collection'], SubscriptiontierTresholds_collectionArgs, MeshContext>,
+  /** null **/
+  levelClaim: InContextSdkMethod<Subscription['levelClaim'], SubscriptionlevelClaimArgs, MeshContext>,
+  /** null **/
+  levelClaims: InContextSdkMethod<Subscription['levelClaims'], SubscriptionlevelClaimsArgs, MeshContext>,
+  /** null **/
+  meta: InContextSdkMethod<Subscription['meta'], SubscriptionmetaArgs, MeshContext>,
+  /** null **/
+  metas: InContextSdkMethod<Subscription['metas'], SubscriptionmetasArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
   };
 
   export type Context = {
-      ["superchainsmartaccounts"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
+      ["super-accounts"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
       
     };
 }

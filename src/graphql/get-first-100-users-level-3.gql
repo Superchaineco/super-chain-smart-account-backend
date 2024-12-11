@@ -1,0 +1,14 @@
+query GetFirst100UsersLevel3 {
+  levelClaims(
+    where: { level: 3 }
+    orderBy: timestamp
+    orderDirection: asc
+    first: 100
+  ) {
+    account {
+      id
+    }
+    level
+    timestamp
+  }
+}

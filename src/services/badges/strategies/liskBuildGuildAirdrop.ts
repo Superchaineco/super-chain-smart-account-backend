@@ -17,7 +17,7 @@ export class LiskBuildGuildAirdropStrategy extends BaseBadgeStrategy {
     LISK_GUILD_AIRDROP_ROLE_ID = 146573
 
     async getValue(eoas: string[]): Promise<boolean> {
-        // const cacheKey = `liskBuildGuildAirdropStrategy-${eoas.join(",")}`;
+        const cacheKey = `liskBuildGuildAirdropStrategy-${eoas.join(",")}`;
         const ttl = 3600
 
         const fetchFunction = async () => {
@@ -36,8 +36,7 @@ export class LiskBuildGuildAirdropStrategy extends BaseBadgeStrategy {
             }
             return hasRole
         };
-        return fetchFunction()
 
-        // return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
     }
 }
