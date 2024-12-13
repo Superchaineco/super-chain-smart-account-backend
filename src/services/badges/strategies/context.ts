@@ -35,13 +35,13 @@ export class BadgeStrategyContext {
             case "Hold Nouns":
                 return new NounsCheckStrategy()
 
-            case "Giveth Donations Made":
+            case "Giveth Donor":
                 return new GivethDonationsStrategy()
 
-            case "Gitcoin Donations Made":
+            case "Gitcoin Donor":
                 return new GitcoinDonationsStrategy()
 
-            case "Talent Protocol score":
+            case "Builder Score":
                 return new TalentScoreStrategy()
 
             case "Worldcoin Verification":
