@@ -19,6 +19,7 @@ const config = {
     JSON_RPC_PROVIDER: process.env.JSON_RPC_PROVIDER,
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
     DOMAIN: "http://localhost:3000",
+    REDIS: process.env.REDIS_PUBLIC_URL,
   },
   production: {
     SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS:
@@ -29,6 +30,7 @@ const config = {
     JSON_RPC_PROVIDER: process.env.JSON_RPC_PROVIDER,
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
     DOMAIN: "https://account.superchain.eco",
+    REDIS: process.env.REDIS_URL,
   },
 }[ENV];
 
@@ -43,11 +45,7 @@ export const ATTESTATOR_SIGNER_PRIVATE_KEY =
   process.env.ATTESTATOR_SIGNER_PRIVATE_KEY!;
 export const JSON_RPC_PROVIDER = config.JSON_RPC_PROVIDER!;
 export const ETHERSCAN_API_KEY = config.ETHERSCAN_API_KEY!;
-export const REDIS_URL = process.env.REDIS_URL!;
-export const REDIS_PASSWORD = process.env.REDISPASSWORD!;
-export const REDIS_HOST = process.env.REDISHOST!;
-export const REDIS_PORT = Number(process.env.REDISPORT!);
-export const REDIS_USER = process.env.REDISUSER!;
+export const REDIS_URL = config.REDIS;
 export const PRIVY_APP_ID = process.env.PRIVY_APP_ID!;
 export const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET!;
 export const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY!;
