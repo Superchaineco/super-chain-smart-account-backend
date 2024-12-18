@@ -20,17 +20,19 @@ export class LeaderBoardService {
         const pipeline = redis.multi();
 
         pipeline.del(this.cacheKey);
+        pipeline.del(`${this.cacheKey}_zset`);
 
-        allRows.forEach(row => {
+        allRows.forEach((row, index) => {
             pipeline.rpush(this.cacheKey, JSON.stringify(row));
+            pipeline.zadd(`${this.cacheKey}_zset`, index, row.superaccount.toLowerCase());
         });
-
         pipeline.expire(this.cacheKey, this.ttl);
+        pipeline.expire(`${this.cacheKey}_zset`, this.ttl);
 
         await pipeline.exec();
     }
 
-    public async getPaginatedLeaderBoard(page: number = 1, pageSize: number = 20): Promise<any[]> {
+    public async getPaginatedLeaderBoard(page: number = 1, pageSize: number = 20): Promise<{ data: any[]; hasNextPage: boolean }> {
         const startIndex = (page - 1) * pageSize;
         const endIndex = startIndex + pageSize - 1;
 
@@ -41,47 +43,50 @@ export class LeaderBoardService {
         }
 
         const rows = await redis.lrange(this.cacheKey, startIndex, endIndex);
+        const hasNextPage = (await redis.llen(this.cacheKey)) > endIndex;
+
         console.log("rows", rows.length);
-        return rows.map(row => JSON.parse(row));
+        return {
+            data: rows.map(row => JSON.parse(row)),
+            hasNextPage,
+        };
     }
 
     public async getRank(superaccount: string): Promise<{ rank: number; data: any } | null> {
-        const rankCacheKey = `leaderboard_rank:${superaccount.toLowerCase()}`; 
+        const rankCacheKey = `leaderboard_rank:${superaccount.toLowerCase()}`;
+        const zsetKey = `${this.cacheKey}_zset`;
 
+        console.log(rankCacheKey)
         const cachedRank = await redisService.getCachedData(rankCacheKey);
         if (cachedRank) {
             console.log(`Cache hit for rank of ${superaccount}`);
             return cachedRank;
         }
-    
-        const allRows = await this.getAllRowsFromCache();
-    
-        const rank = allRows.findIndex(row => row.superaccount.toLowerCase() === superaccount.toLowerCase());
-        if (rank === -1) {
+
+        const zsetExists = await redis.exists(zsetKey);
+        if (!zsetExists) {
+            console.log("ZSET cache miss, refreshing leaderboard cache...");
+            await this.refreshLeaderBoardCache();
+        }
+
+        const rank = await redis.zrank(`${this.cacheKey}_zset`, superaccount.toLowerCase());
+        if (rank === null) {
             return null;
         }
-    
-        const result = { rank: rank + 1, data: allRows[rank] };
-    
+
+        const row = await redis.lindex(this.cacheKey, rank);
+        if (!row) {
+            return null;
+        }
+
+        const result = { rank: rank + 1, data: JSON.parse(row) };
         const ttl = await redis.ttl(this.cacheKey);
         if (ttl > 0) {
             await redisService.setCachedData(rankCacheKey, result, ttl);
         }
-    
+
         return result;
     }
-
-    private async getAllRowsFromCache(): Promise<any[]> {
-        const exists = await redis.exists(this.cacheKey);
-        if (!exists) {
-            console.log("Cache miss, refreshing leaderboard cache...");
-            await this.refreshLeaderBoardCache();
-        }
-
-        const rows = await redis.lrange(this.cacheKey, 0, -1);
-        return rows.map(row => JSON.parse(row));
-    }
-
 
     private async fetchAllRows(): Promise<any[]> {
         const queryId = 4432290;
