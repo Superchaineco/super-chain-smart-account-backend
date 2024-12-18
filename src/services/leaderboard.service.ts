@@ -54,38 +54,39 @@ export class LeaderBoardService {
 
     public async getRank(superaccount: string): Promise<{ rank: number; data: any } | null> {
         const rankCacheKey = `leaderboard_rank:${superaccount.toLowerCase()}`;
-        const zsetKey = `${this.cacheKey}_zset`;
 
-        console.log(rankCacheKey)
-        const cachedRank = await redisService.getCachedData(rankCacheKey);
-        if (cachedRank) {
-            console.log(`Cache hit for rank of ${superaccount}`);
-            return cachedRank;
-        }
-
-        const zsetExists = await redis.exists(zsetKey);
-        if (!zsetExists) {
-            console.log("ZSET cache miss, refreshing leaderboard cache...");
-            await this.refreshLeaderBoardCache();
-        }
-
-        const rank = await redis.zrank(`${this.cacheKey}_zset`, superaccount.toLowerCase());
-        if (rank === null) {
-            return null;
-        }
-
-        const row = await redis.lindex(this.cacheKey, rank);
-        if (!row) {
-            return null;
-        }
-
-        const result = { rank: rank + 1, data: JSON.parse(row) };
         const ttl = await redis.ttl(this.cacheKey);
-        if (ttl > 0) {
-            await redisService.setCachedData(rankCacheKey, result, ttl);
+
+        const fetchFunction = async () => {
+            const zsetKey = `${this.cacheKey}_zset`;
+
+            const cachedRank = await redisService.getCachedData(rankCacheKey);
+            if (cachedRank) {
+                console.log(`Cache hit for rank of ${superaccount}`);
+                return cachedRank;
+            }
+
+            const zsetExists = await redis.exists(zsetKey);
+            if (!zsetExists) {
+                console.log("ZSET cache miss, refreshing leaderboard cache...");
+                await this.refreshLeaderBoardCache();
+            }
+
+            const rank = await redis.zrank(`${this.cacheKey}_zset`, superaccount.toLowerCase());
+            if (rank === null) {
+                return null;
+            }
+
+            const row = await redis.lindex(this.cacheKey, rank);
+            if (!row) {
+                return null;
+            }
+
+            return { rank: rank + 1, data: JSON.parse(row) };
         }
 
-        return result;
+        return redisService.getCachedDataWithCallback(rankCacheKey, fetchFunction, ttl);
+
     }
 
     private async fetchAllRows(): Promise<any[]> {
