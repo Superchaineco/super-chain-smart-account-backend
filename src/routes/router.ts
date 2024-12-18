@@ -4,6 +4,7 @@ import { getUser } from "../controllers/user";
 import { claimBadges, getBadges } from "../controllers/badges";
 import { perksByAccount, perksByLevel } from "../controllers/perks";
 import { getBalance, relay, reverseProxy, validateSponsorship } from "../controllers/sponsor";
+import { paginatedLeaderboard, rankByAccount } from "@/controllers/leaderboard";
 
 export const routes = Router();
 
@@ -18,6 +19,10 @@ routes.get("/perks/:level", perksByLevel);
 routes.get("/user/:account/sponsorship-balance", getBalance);
 
 routes.post("/user/:account/badges/claim", verifyOwner, claimBadges);
+
+routes.get("/leaderboard/:account", rankByAccount)
+
+routes.get("/leaderboard", paginatedLeaderboard)
 
 routes.post("/validate-sponsorship", validateSponsorship);
 

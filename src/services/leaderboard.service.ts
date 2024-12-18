@@ -123,5 +123,4 @@ export class LeaderBoardService {
 
 }
 
-export const leaderBoardService = new LeaderBoardService();
 
