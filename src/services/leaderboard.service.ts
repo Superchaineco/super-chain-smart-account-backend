@@ -29,6 +29,13 @@ export class LeaderBoardService {
         pipeline.expire(this.cacheKey, this.ttl);
         pipeline.expire(`${this.cacheKey}_zset`, this.ttl);
 
+        const rankKeysPattern = `leaderboard_rank:*`;
+        const rankKeys = await redis.keys(rankKeysPattern);
+        if (rankKeys.length > 0) {
+            pipeline.del(...rankKeys);
+        }
+
+
         await pipeline.exec();
     }
 
