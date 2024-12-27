@@ -28,17 +28,12 @@ export class SuperChainAccountService {
   }
 
   async getEOAS(address: string): Promise<string[]> {
-    try {
-      // @ts-expect-error ESM import
-      const protocolKit = await Safe.default.init({
-        provider: JSON_RPC_PROVIDER,
-        safeAddress: address,
-      });
-      return await protocolKit.getOwners();
-    } catch (error) {
-      console.error("Error initializing protocolKit:", error);
-      return []; // Retornar un array vacío en caso de error
-    }
+    // @ts-expect-error ESM import
+    const protocolKit = await Safe.default.init({
+      provider: JSON_RPC_PROVIDER,
+      safeAddress: address,
+    });
+    return await protocolKit.getOwners();
   }
 
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
@@ -80,7 +75,7 @@ export class SuperChainAccountService {
     const owners = (await this.getEOAS(account)).map((owner) => owner.toLowerCase());
     return owners.includes(wallet.toLocaleLowerCase());
   }
-  
+
   async getAccountLevel(account: string): Promise<number> {
     const superChainSmartAccount = await this.getSuperChainSmartAccount(account);
     const accountLevel = Number(superChainSmartAccount[3]);
