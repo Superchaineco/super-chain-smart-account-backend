@@ -27,7 +27,7 @@ export class SuperChainAccountService {
     this.badgesService = new BadgesServices();
   }
 
-async getEOAS(address: string): Promise<string[]> {
+  async getEOAS(address: string): Promise<string[]> {
     try {
       // @ts-expect-error ESM import
       const protocolKit = await Safe.default.init({
@@ -36,22 +36,23 @@ async getEOAS(address: string): Promise<string[]> {
       });
       return await protocolKit.getOwners();
     } catch (error) {
-      console.error(error);
-      throw new Error("Error getting EOAS");
+      console.error("Error initializing protocolKit:", error);
+      return []; // Retornar un array vacío en caso de error
     }
   }
+
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
     return await this.superChainAccount.simulateIncrementSuperChainPoints(
       points,
       recipent,
     );
   }
+
   async getSuperChainSmartAccount(address: string): Promise<string> {
     const response = await this.superChainAccount.getSuperChainAccount(address);
     return response;
   }
 
-  
   async getSuperChainSmartAccountBadges(address: string) {
     const data = await this.badgesService.fetchBadges(address);
 
