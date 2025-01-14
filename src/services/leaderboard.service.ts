@@ -7,7 +7,7 @@ import { redis } from "@/utils/cache";
 export class LeaderBoardService {
     private readonly dune: DuneClient;
     private readonly cacheKey = "leaderboard_list";
-    private readonly ttl = 86400; // 24 hours
+    private readonly ttl = 86400 * 5; // 5 days
 
     constructor() {
         this.dune = new DuneClient(DUNE_API_KEY);
