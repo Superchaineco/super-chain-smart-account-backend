@@ -37,6 +37,7 @@
     "http": "^0.0.1-security",
     "ioredis": "^5.4.1",
     "morgan": "^1.10.0",
+    "redis": "^4.7.0",
     "siwe": "^2.3.2"
   },
   "engines": {
