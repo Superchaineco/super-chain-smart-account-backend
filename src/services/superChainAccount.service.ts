@@ -5,13 +5,6 @@ import {
   SUPER_CHAIN_MODULE_ABI,
 } from "../config/superChain/constants";
 import Safe from "@safe-global/protocol-kit";
-import { ExecutionResult } from "graphql";
-import {
-  GetUserBadgesDocument,
-  GetUserBadgesQuery,
-  GetUserBadgesQueryVariables,
-  execute,
-} from "../../.graphclient";
 import { BadgesServices } from "./badges/badges.service";
 
 export class SuperChainAccountService {
