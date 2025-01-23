@@ -9,25 +9,36 @@ export async function getAirdrop(req: Request, res: Response) {
   if (!account) {
     return res.status(500).json({ error: 'Invalid request' });
   }
-  const airdropService = new AirdropService();
-  const airdropData = await airdropService.getAirdropData(account.toLowerCase());
-  const isClaimed = await airdropService.isAirdropClaimed(account, SUNNY_TOKEN_ADDRESS);
+  try {
+    const airdropService = new AirdropService();
+    const airdropData = await airdropService.getAirdropData(
+      account.toLowerCase()
+    );
+    const isClaimed = await airdropService.isAirdropClaimed(
+      account,
+      SUNNY_TOKEN_ADDRESS
+    );
 
-  
-  const eligible = airdropData && airdropData.inputs[1] > 0;
-  const response = eligible ? {
-    eligible: true,
-    address: airdropData.inputs[0],
-    value: airdropData.inputs[1],
-    proofs: airdropData.proof,
-    claimed: isClaimed,
-  } : {
-    eligible: false,
-    address: '0x0000000000000000000000000000000000000000',
-    value: '0',
-    proofs: [],
-    claimed: false,
-  };
+    const eligible = airdropData && airdropData.inputs[1] > 0;
+    const response = eligible
+      ? {
+          eligible: true,
+          address: airdropData.inputs[0],
+          value: airdropData.inputs[1],
+          proofs: airdropData.proof,
+          claimed: isClaimed,
+        }
+      : {
+          eligible: false,
+          address: '0x0000000000000000000000000000000000000000',
+          value: '0',
+          proofs: [],
+          claimed: false,
+        };
 
-  res.status(200).json(response);
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 }
