@@ -6,7 +6,7 @@ export enum ENVIRONMENTS {
   production = "production",
 }
 
-export const ENV = ENVIRONMENTS.development;
+export const ENV = process.env.NODE_ENV || ENVIRONMENTS.development;
 
 const config = {
   development: {
