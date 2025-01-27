@@ -1,6 +1,5 @@
 import { SUNNY_TOKEN_ADDRESS } from '@/config/superChain/constants';
 import { AirdropService } from '@/services/airdrop.service';
-import { keccak256, solidityPacked } from 'ethers';
 import { Request, Response } from 'express';
 
 export async function getAirdrop(req: Request, res: Response) {
@@ -27,6 +26,7 @@ export async function getAirdrop(req: Request, res: Response) {
           value: airdropData.inputs[1],
           proofs: airdropData.proof,
           claimed: isClaimed,
+          reasons: airdropData.reasons,
         }
       : {
           eligible: false,
@@ -34,6 +34,7 @@ export async function getAirdrop(req: Request, res: Response) {
           value: '0',
           proofs: [],
           claimed: false,
+          reasons: [],
         };
 
     res.status(200).json(response);
