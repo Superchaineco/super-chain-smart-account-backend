@@ -24,9 +24,10 @@ app.use(Session({
   name: 'Super-account-SIWE',
   secret: SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
-  store: new RedisStore({ client: redis }),
-  cookie: { secure: ENV === ENVIRONMENTS.production,  sameSite: 'none' }
+  saveUninitialized: false,
+  store: new RedisStore({ client: redis, prefix: 'super-account-siwe:'}),
+  cookie: { secure: ENV === ENVIRONMENTS.production,  sameSite: 'none', maxAge:  7 * 24 * 3600 * 1000 },
+  rolling: true,
 }));
 
 app.set('trust proxy', 1); 
