@@ -131,7 +131,7 @@ export class BadgesServices {
 
   public async getBadgeMetadata(badge: Badge) {
     const CACHE_KEY = `badge:${badge.badge.uri}`;
-    const ttl = 3600;
+    const ttl = -1;
 
     const fetchFunction = async () => {
       const metadataJson = await IpfsService.getIPFSData(badge.badge.uri);
@@ -150,7 +150,7 @@ export class BadgesServices {
 
   public async getBadgeLevelMetadata(badgeLevel: Badge["badge"]["badgeTiers"][0]) {
     const CACHE_KEY = `badgeLevel:${badgeLevel.uri}`;
-    const ttl = 3600;
+    const ttl = -1;
     const fetchFunction = async () => {
       const metadataJson = await IpfsService.getIPFSData(badgeLevel.uri);
       try {

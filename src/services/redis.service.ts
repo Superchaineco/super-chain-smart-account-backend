@@ -14,6 +14,9 @@ export class RedisService {
         if (ttl > 0) {
                 await redis.set(key, JSON.stringify(data), "EX", ttl);
             }
+        else {
+            await redis.set(key, JSON.stringify(data));
+        }
             return data;
         } catch (error) {
             console.error('Error getting cached data', error);
