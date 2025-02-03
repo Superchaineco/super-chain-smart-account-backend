@@ -8,6 +8,7 @@ import type { ExecutionResult } from "graphql";
 import IpfsService from "../ipfs.service";
 import { redisService } from "../redis.service";
 import { BadgeStrategyContext } from "../badges/strategies/context";
+import { superChainAccountService } from "../superChainAccount.service";
 export type Badge = GetUserBadgesQuery["accountBadges"][number];
 export type ResponseBadge = {
   points: string;
@@ -21,7 +22,32 @@ export class BadgesServices {
   private badges: ResponseBadge[] = [];
 
 
- public async fetchBadges(account: string) {
+
+
+  public async getCachedBadges(account: string): Promise<any[]> {
+    const CACHE_KEY = `cached_badges:${account}`;
+
+    const fetchFunction = async () => {
+      console.log('Fetching badges data!')
+      const eoas = await superChainAccountService.getEOAS(account);
+      const freshData = await this.getBadges(eoas, account);
+      await redisService.setCachedData(CACHE_KEY, freshData, null);
+      console.log('Badges updated!')
+      return freshData;
+    };
+    const cachedData = await redisService.getCachedData(CACHE_KEY);
+
+    if (cachedData) {
+      console.log('Badges cache returned!')
+      fetchFunction();
+      return cachedData;
+    }
+
+    return fetchFunction();
+  }
+
+
+  public async fetchBadges(account: string) {
     const CACHE_KEY = `user_badges:${account}`;
     const ttl = 3600;
 

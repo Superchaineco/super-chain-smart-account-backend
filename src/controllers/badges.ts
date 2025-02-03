@@ -12,9 +12,8 @@ export async function getBadges(req: Request, res: Response) {
         return res.status(500).json({ error: "Invalid request" });
     }
     try {
-        const badgesService = new BadgesServices();
-        const eoas = await superChainAccountService.getEOAS(account);
-        const currentBadges = await badgesService.getBadges(eoas, account);
+        const badgesService = new BadgesServices();        
+        const currentBadges = await badgesService.getCachedBadges(account);
         res.json({ currentBadges });
     } catch (error) {
         console.error(error);
