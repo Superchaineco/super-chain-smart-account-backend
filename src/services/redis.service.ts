@@ -6,17 +6,17 @@ export class RedisService {
             const cachedData = await redis.get(key);
             if (cachedData) {
                 console.info(`Cache hit for key: ${key}`);
-            return JSON.parse(cachedData);
-        }
+                return JSON.parse(cachedData);
+            }
 
-        const data = await fetchFunction();
+            const data = await fetchFunction();
 
-        if (ttl > 0) {
+            if (ttl > 0) {
                 await redis.set(key, JSON.stringify(data), "EX", ttl);
             }
-        else {
-            await redis.set(key, JSON.stringify(data));
-        }
+            else {
+                await redis.set(key, JSON.stringify(data));
+            }
             return data;
         } catch (error) {
             console.error('Error getting cached data', error);
@@ -25,7 +25,10 @@ export class RedisService {
     }
 
     public async setCachedData(key: string, data: any, ttl: number) {
-        await redis.set(key, JSON.stringify(data), "EX", ttl);
+        if (ttl)
+            await redis.set(key, JSON.stringify(data), "EX", ttl);
+        else
+            await redis.set(key, JSON.stringify(data));
     }
 
     public async getCachedData(key: string) {
