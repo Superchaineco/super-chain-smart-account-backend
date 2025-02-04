@@ -37,7 +37,8 @@
     "http": "^0.0.1-security",
     "ioredis": "^5.4.1",
     "morgan": "^1.10.0",
-    "siwe": "^2.3.2"
+    "siwe": "^2.3.2",
+    "ws": "^8.18.0"
   },
   "engines": {
     "node": ">=16"

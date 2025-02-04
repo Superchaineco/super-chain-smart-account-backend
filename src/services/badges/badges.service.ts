@@ -9,6 +9,7 @@ import IpfsService from "../ipfs.service";
 import { redisService } from "../redis.service";
 import { BadgeStrategyContext } from "../badges/strategies/context";
 import { superChainAccountService } from "../superChainAccount.service";
+import { sendToUser } from "@/middleware/websocket";
 export type Badge = GetUserBadgesQuery["accountBadges"][number];
 export type ResponseBadge = {
   points: string;
@@ -39,7 +40,7 @@ export class BadgesServices {
 
     if (cachedData) {
       console.log('Badges cache returned!')
-      fetchFunction();
+      fetchFunction().then(() => sendToUser(account, "BADGES"));
       return cachedData;
     }
 
