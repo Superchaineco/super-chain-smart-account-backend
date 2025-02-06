@@ -95,7 +95,7 @@ export class AttestationsService {
     console.log('Init Safe4337Pack')
     const safe4337Pack = await (await Safe4337Pack).Safe4337Pack.init({
       provider: JSON_RPC_PROVIDER,
-      signer: this.wallet.address,
+      signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
       options: {
         owners: [this.wallet.address], // this.wallet.address
