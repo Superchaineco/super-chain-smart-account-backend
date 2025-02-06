@@ -13,7 +13,10 @@ import { superChainAccountService } from './superChainAccount.service';
 import { redisService } from './redis.service';
 import { ResponseBadge } from './badges/badges.service';
 import Safe from '@safe-global/protocol-kit';
+import SafeApiKit from '@safe-global/api-kit';
+import Safe4337Pack from '@safe-global/relay-kit';
 import { MetaTransactionData, OperationType } from '@safe-global/types-kit';
+import config from '@/config';
 
 export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
@@ -24,7 +27,7 @@ export class AttestationsService {
   private schemaEncoder = new SchemaEncoder(this.schemaString);
 
 
-
+  //Necesitamos esto??? o lo borramos?
   async estimateGas(account: string, txData: any) {
     const calldata = await this.eas.attest.populateTransaction(txData);
 
@@ -81,14 +84,16 @@ export class AttestationsService {
       return isValid;
 
     const apiKit = new SafeApiKit({
-      chainId: 11155111n
+      chainId: BigInt(config.constants.OPTIMISM_CHAIN_ID)
     })
 
     const safeTxHash = await safeSdkOwner1.getTransactionHash(safeTransaction)
     const senderSignature = await safeSdkOwner1.signHash(safeTxHash)
 
+
+    //Es necewsario con un solo signer????
     await apiKit.proposeTransaction({
-      SAFE_ACCOUNT,
+      safeAddress: SAFE_ACCOUNT,
       safeTransactionData: safeTransaction.data,
       safeTxHash,
       senderAddress: this.wallet.address,
@@ -99,21 +104,36 @@ export class AttestationsService {
     const executeTxResponse = await safeSdkOwner1.executeTransaction(safeTransaction)
     return executeTxResponse.hash;
 
-
-
   }
 
   async tryAttestWithGelato(account: string, txData: any): Promise<string | boolean> {
 
 
-    const safeSdk = await Safe.default.init({
+    const safe4337Pack = await Safe4337Pack.default.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
-      safeAddress: SAFE_ACCOUNT
+      bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${process.env.PIMLICO_API_KEY}`,
+      options: {
+        owners: [this.wallet.address],
+        threshold: 1
+      }
     })
 
+    const calldata = await this.eas.attest.populateTransaction(txData);
+    const transaction : MetaTransactionData = {
+      to: this.easContractAddress,
+      value: '0',
+      data: calldata.data,
+      operation: OperationType.Call
+    }
 
-    return false;
+    const safeOperation = await safe4337Pack.createTransaction({ transactions: [transaction] })
+    const signedSafeOperation = await safe4337Pack.signSafeOperation(safeOperation)
+    const userOperationHash = await safe4337Pack.executeTransaction({
+      executable: signedSafeOperation
+    })
+    
+    return userOperationHash;
 
   }
 
