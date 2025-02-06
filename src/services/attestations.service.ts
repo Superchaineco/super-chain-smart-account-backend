@@ -15,7 +15,7 @@ import { redisService } from './redis.service';
 import { ResponseBadge } from './badges/badges.service';
 import Safe from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
-import Safe4337Pack from '@safe-global/relay-kit';
+import Safe4337Pack from '@safe-global/relay-kit/dist/src/packs/safe-4337/Safe4337Pack';
 import { MetaTransactionData, OperationType } from '@safe-global/types-kit';
 import config from '@/config';
 
@@ -83,7 +83,7 @@ export class AttestationsService {
     const apiKit = new SafeApiKit({
       chainId: BigInt(config.constants.OPTIMISM_CHAIN_ID)
     })
-   
+
 
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
     return executeTxResponse.hash;
@@ -92,35 +92,37 @@ export class AttestationsService {
 
   async tryAttestWithRelayKit(account: string, txData: any): Promise<string | boolean> {
 
-// @ts-expect-error ESM import
-    const safe4337Pack = await Safe4337Pack.default.init({
+    console.log('Init Safe4337Pack')
+    const safe4337Pack = await (await Safe4337Pack).Safe4337Pack.init({
       provider: JSON_RPC_PROVIDER,
-      signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
+      signer: this.wallet.address,
       bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
       options: {
-        owners: [this.wallet.address],
+        owners: [this.wallet.address], // this.wallet.address
         threshold: 1
       },
-      paymasterOptions: {
-        isSponsored: true,
-        paymasterUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
-      }
+      // paymasterOptions: {
+      //   isSponsored: true,
+      //   paymasterUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
+      // }
     })
-
+    console.log('Populate transaction')
     const calldata = await this.eas.attest.populateTransaction(txData);
     const transaction: MetaTransactionData = {
-      to: this.easContractAddress,
+      to: ZeroAddress,// this.easContractAddress,
       value: '0',
-      data: calldata.data,
+      data: '0x',//calldata.data,
       operation: OperationType.Call
     }
-
+    console.log('Create transaction')
     const safeOperation = await safe4337Pack.createTransaction({ transactions: [transaction] })
+    console.log('Sign transaction')
     const signedSafeOperation = await safe4337Pack.signSafeOperation(safeOperation)
+    console.log('Execute transaction')
     const userOperationHash = await safe4337Pack.executeTransaction({
       executable: signedSafeOperation
     })
-
+    console.log('Hash de luxito ', userOperationHash)
     return userOperationHash;
 
   }
@@ -156,6 +158,9 @@ export class AttestationsService {
           revocable: false,
         },
       };
+
+      await this.tryAttestWithRelayKit(account, txData)
+      return
 
       let attestSuccess = await this.tryAttestWithSafe(account, txData);
       if (!attestSuccess)
