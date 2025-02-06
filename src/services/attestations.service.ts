@@ -6,6 +6,7 @@ import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
   EAS_CONTRACT_ADDRESS,
   JSON_RPC_PROVIDER,
+  PIMLICO_API_KEY,
   SAFE_ACCOUNT,
   SUPER_CHAIN_ATTESTATION_SCHEMA,
 } from '../config/superChain/constants';
@@ -53,8 +54,8 @@ export class AttestationsService {
   async tryAttestWithSafe(account: string, txData: any): Promise<string | boolean> {
 
 
-
-    const safeSdkOwner1 = await Safe.default.init({
+    // @ts-expect-error ESM import
+    const safeSdk = await Safe.default.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       safeAddress: SAFE_ACCOUNT
@@ -70,15 +71,11 @@ export class AttestationsService {
       operation: OperationType.Call
     }
 
-    const safeTransaction = await safeSdkOwner1.createTransaction({
+    const safeTransaction = await safeSdk.createTransaction({
       transactions: [safeTransactionData]
     })
 
-    // const gasRequired = await this.estimateGas(account, txData)
-    // const balance = await safeSdk.getBalance()
-    // console.log('Currente balance:', balance, ' ETH')
-
-    const isValid = await safeSdkOwner1.isValidTransaction(safeTransaction);
+    const isValid = await safeSdk.isValidTransaction(safeTransaction);
 
     if (!isValid)
       return isValid;
@@ -86,41 +83,32 @@ export class AttestationsService {
     const apiKit = new SafeApiKit({
       chainId: BigInt(config.constants.OPTIMISM_CHAIN_ID)
     })
+   
 
-    const safeTxHash = await safeSdkOwner1.getTransactionHash(safeTransaction)
-    const senderSignature = await safeSdkOwner1.signHash(safeTxHash)
-
-
-    //Es necewsario con un solo signer????
-    await apiKit.proposeTransaction({
-      safeAddress: SAFE_ACCOUNT,
-      safeTransactionData: safeTransaction.data,
-      safeTxHash,
-      senderAddress: this.wallet.address,
-      senderSignature: senderSignature.data
-    })
-
-
-    const executeTxResponse = await safeSdkOwner1.executeTransaction(safeTransaction)
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
     return executeTxResponse.hash;
 
   }
 
-  async tryAttestWithGelato(account: string, txData: any): Promise<string | boolean> {
+  async tryAttestWithRelayKit(account: string, txData: any): Promise<string | boolean> {
 
-
+// @ts-expect-error ESM import
     const safe4337Pack = await Safe4337Pack.default.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
-      bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${process.env.PIMLICO_API_KEY}`,
+      bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
       options: {
         owners: [this.wallet.address],
         threshold: 1
+      },
+      paymasterOptions: {
+        isSponsored: true,
+        paymasterUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
       }
     })
 
     const calldata = await this.eas.attest.populateTransaction(txData);
-    const transaction : MetaTransactionData = {
+    const transaction: MetaTransactionData = {
       to: this.easContractAddress,
       value: '0',
       data: calldata.data,
@@ -132,7 +120,7 @@ export class AttestationsService {
     const userOperationHash = await safe4337Pack.executeTransaction({
       executable: signedSafeOperation
     })
-    
+
     return userOperationHash;
 
   }
@@ -169,13 +157,9 @@ export class AttestationsService {
         },
       };
 
-
-
-
-
       let attestSuccess = await this.tryAttestWithSafe(account, txData);
       if (!attestSuccess)
-        attestSuccess = await this.tryAttestWithGelato(account, txData)
+        attestSuccess = await this.tryAttestWithRelayKit(account, txData)
 
       if (!attestSuccess)
         throw new Error('Not enough funds');
@@ -200,7 +184,7 @@ export class AttestationsService {
       await this.claimBadgesOptimistically(account, badgeUpdates);
 
       return {
-        hash: receipt?.hash,
+        hash: attestSuccess,
         isLevelUp,
         badgeImages,
         totalPoints,
