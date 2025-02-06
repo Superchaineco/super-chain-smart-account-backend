@@ -44,14 +44,14 @@ export class AttestationsService {
     return estimatedCost
   }
 
-  
+
 
 
   async tryAttestWithSafe(account: string, txData: any): Promise<string | boolean> {
 
-    
 
-    const safeSdk = await Safe.default.init({
+
+    const safeSdkOwner1 = await Safe.default.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       safeAddress: SAFE_ACCOUNT
@@ -67,7 +67,7 @@ export class AttestationsService {
       operation: OperationType.Call
     }
 
-    const safeTransaction = await safeSdk.createTransaction({
+    const safeTransaction = await safeSdkOwner1.createTransaction({
       transactions: [safeTransactionData]
     })
 
@@ -75,14 +75,32 @@ export class AttestationsService {
     // const balance = await safeSdk.getBalance()
     // console.log('Currente balance:', balance, ' ETH')
 
-    const isValid = await safeSdk.isValidTransaction(safeTransaction);
+    const isValid = await safeSdkOwner1.isValidTransaction(safeTransaction);
 
-    if(!isValid)
+    if (!isValid)
       return isValid;
 
+    const apiKit = new SafeApiKit({
+      chainId: 11155111n
+    })
+
+    const safeTxHash = await safeSdkOwner1.getTransactionHash(safeTransaction)
+    const senderSignature = await safeSdkOwner1.signHash(safeTxHash)
+
+    await apiKit.proposeTransaction({
+      SAFE_ACCOUNT,
+      safeTransactionData: safeTransaction.data,
+      safeTxHash,
+      senderAddress: this.wallet.address,
+      senderSignature: senderSignature.data
+    })
 
 
-    
+    const executeTxResponse = await safeSdkOwner1.executeTransaction(safeTransaction)
+    return executeTxResponse.hash;
+
+
+
   }
 
   async tryAttestWithGelato(account: string, txData: any): Promise<string | boolean> {

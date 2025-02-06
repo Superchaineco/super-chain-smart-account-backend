@@ -59,4 +59,4 @@ export const WC_PROJECT_ID = process.env.WC_PROJECT_ID!;
 export const DOMAIN = config.DOMAIN;
 export const SESSION_SECRET = process.env.SESSION_SECRET!;
 export const DUNE_API_KEY = process.env.DUNE_API_KEY!;
-export const SAFE_ACCOUNT = 
+export const SAFE_ACCOUNT =  config.SAFE_ADDRESS
