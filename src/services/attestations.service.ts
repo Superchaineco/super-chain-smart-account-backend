@@ -101,10 +101,10 @@ export class AttestationsService {
         owners: [this.wallet.address], // this.wallet.address
         threshold: 1
       },
-      // paymasterOptions: {
-      //   isSponsored: true,
-      //   paymasterUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
-      // }
+      paymasterOptions: {
+        isSponsored: true,
+        paymasterUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
+      }
     })
     console.log('Populate transaction')
     const calldata = await this.eas.attest.populateTransaction(txData);
