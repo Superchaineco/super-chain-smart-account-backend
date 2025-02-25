@@ -7,7 +7,7 @@ import {
   EAS_CONTRACT_ADDRESS,
   JSON_RPC_PROVIDER,
   PIMLICO_API_KEY,
-  SAFE_ACCOUNT,
+  SAFE_ADDRESS,
   SUPER_CHAIN_ATTESTATION_SCHEMA,
 } from '../config/superChain/constants';
 import { superChainAccountService } from './superChainAccount.service';
@@ -28,8 +28,8 @@ export class AttestationsService {
   private schemaEncoder = new SchemaEncoder(this.schemaString);
 
 
-  //Necesitamos esto??? o lo borramos?
-  async estimateGas(account: string, txData: any) {
+
+  async hasGas(account: string, txData: any) {
     const calldata = await this.eas.attest.populateTransaction(txData);
 
     const txRequest: ethers.TransactionRequest = {
@@ -41,11 +41,10 @@ export class AttestationsService {
     const gasEstimate = await this.eas.attest.estimateGas(txData);
     const estimatedCost = gasEstimate * gasPrice;
     const estimatedCostInEth = ethers.formatEther(estimatedCost);
-    console.log(ATTESTATOR_SIGNER_PRIVATE_KEY)
     console.log(`Gas Estimate: ${gasEstimate.toString()} units`);
     console.log(`Gas Price: ${ethers.formatUnits(gasPrice, 'gwei')} gwei`);
     console.log(`Estimated Cost: ${estimatedCostInEth} ETH`);
-    return estimatedCost
+    return estimatedCost <= (await this.provider.getBalance(account));
   }
 
 
@@ -58,7 +57,7 @@ export class AttestationsService {
     const safeSdk = await Safe.default.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
-      safeAddress: SAFE_ACCOUNT
+      safeAddress: SAFE_ADDRESS
     })
 
 
@@ -76,17 +75,26 @@ export class AttestationsService {
     })
 
     const isValid = await safeSdk.isValidTransaction(safeTransaction);
+    const hasGas = await this.hasGas(this.wallet.address, txData);
 
-    if (!isValid)
-      return isValid;
+    console.log('Transaction validity:', isValid)
+    console.log('Transaction has gas:', hasGas)
+
+    if (!isValid || !hasGas)
+      return isValid && hasGas;
 
     const apiKit = new SafeApiKit({
       chainId: BigInt(config.constants.OPTIMISM_CHAIN_ID)
     })
 
+    try {
+      const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+      return executeTxResponse.hash;
+    } catch (e) {
+      console.error('Unexpected error executing transaction with SAFE:', e)
+    }
 
-    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-    return executeTxResponse.hash;
+
 
   }
 
@@ -98,8 +106,9 @@ export class AttestationsService {
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
       options: {
-        owners: [this.wallet.address], // this.wallet.address
-        threshold: 1
+        owners: [this.wallet.address],
+        threshold: 1,
+        safeAddress: SAFE_ADDRESS,
       },
       paymasterOptions: {
         isSponsored: true,
@@ -109,9 +118,9 @@ export class AttestationsService {
     console.log('Populate transaction')
     const calldata = await this.eas.attest.populateTransaction(txData);
     const transaction: MetaTransactionData = {
-      to: ZeroAddress,// this.easContractAddress,
+      to: this.easContractAddress,
       value: '0',
-      data: '0x',//calldata.data,
+      data: calldata.data,
       operation: OperationType.Call
     }
     console.log('Create transaction')
@@ -119,11 +128,16 @@ export class AttestationsService {
     console.log('Sign transaction')
     const signedSafeOperation = await safe4337Pack.signSafeOperation(safeOperation)
     console.log('Execute transaction')
-    const userOperationHash = await safe4337Pack.executeTransaction({
-      executable: signedSafeOperation
-    })
-    console.log('Hash de luxito ', userOperationHash)
-    return userOperationHash;
+    try {
+      const userOperationHash = await safe4337Pack.executeTransaction({
+        executable: signedSafeOperation
+      })
+      console.log('Hash: ', userOperationHash)
+      return userOperationHash;
+    } catch (e) {
+      console.error('Unexpected error executing transaction with PAYMASTER:', e)
+    }
+
 
   }
 
@@ -159,8 +173,6 @@ export class AttestationsService {
         },
       };
 
-      await this.tryAttestWithRelayKit(account, txData)
-      return
 
       let attestSuccess = await this.tryAttestWithSafe(account, txData);
       if (!attestSuccess)
