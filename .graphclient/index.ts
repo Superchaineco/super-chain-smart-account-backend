@@ -23,6 +23,7 @@ import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { SuperAccountsTypes } from './sources/super-accounts/types';
 import * as importedModule$0 from "./sources/super-accounts/introspectionSchema";
+import { SUBGRAPH_API_KEY } from '@/config/superChain/constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -2323,7 +2324,7 @@ export async function getMeshOptions(): Promise<GetMeshOptions> {
   const additionalTypeDefs = [] as any[];
   const superAccountsHandler = new GraphqlHandler({
     name: "super-accounts",
-    config: { "endpoint": "https://gateway.thegraph.com/api/c6403f4080a355c720e7c7df9cb74917/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt" },
+    config: { "endpoint": `https://gateway.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt` },
     baseDir,
     cache,
     pubsub,
