@@ -20,7 +20,7 @@ const config = {
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
     DOMAIN: "http://localhost:3000",
     REDIS: process.env.REDIS_PUBLIC_URL,
-    SAFE_ADDRESS: process.env.SAFE_ADDRESS
+    SAFE_ADDRESS: "0x54efe9c4d7D91E2690f257A7855AAD4b21e20745"
   },
   production: {
     SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS:
@@ -32,7 +32,7 @@ const config = {
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
     DOMAIN: "https://account.superchain.eco",
     REDIS: process.env.REDIS_URL,
-    SAFE_ADDRESS: process.env.SAFE_ADDRESS
+    SAFE_ADDRESS: "0x54efe9c4d7D91E2690f257A7855AAD4b21e20745"
   },
 }[ENV];
 
@@ -53,6 +53,7 @@ export const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET!;
 export const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY!;
 export const GELATO_API_KEY = process.env.GELATO_API_KEY!;
 export const SUBGRAPH_API_KEY = process.env.SUBGRAPH_API_KEY!;
+console.log(SUBGRAPH_API_KEY)
 export const WC_PROJECT_ID = process.env.WC_PROJECT_ID!;
 export const DOMAIN = config.DOMAIN;
 export const SESSION_SECRET = process.env.SESSION_SECRET!;

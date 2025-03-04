@@ -76,9 +76,8 @@ export class AttestationsService {
 
     const isValid = await safeSdk.isValidTransaction(safeTransaction);
     const hasGas = await this.hasGas(this.wallet.address, txData);
-
-    console.log('Transaction validity:', isValid)
-    console.log('Transaction has gas:', hasGas)
+    console.log('isValid', isValid)
+    console.log('hasGas', hasGas)
 
     if (!isValid || !hasGas)
       return isValid && hasGas;
@@ -88,8 +87,8 @@ export class AttestationsService {
     })
 
     try {
-      const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-      return executeTxResponse.hash;
+      // const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+      // return executeTxResponse.hash;
     } catch (e) {
       console.error('Unexpected error executing transaction with SAFE:', e)
     }
@@ -100,7 +99,6 @@ export class AttestationsService {
 
   async tryAttestWithRelayKit(account: string, txData: any): Promise<string | boolean> {
 
-    console.log('Init Safe4337Pack')
     const safe4337Pack = await (await Safe4337Pack).Safe4337Pack.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
@@ -175,8 +173,8 @@ export class AttestationsService {
 
 
       let attestSuccess = await this.tryAttestWithSafe(account, txData);
-      if (!attestSuccess)
-        attestSuccess = await this.tryAttestWithRelayKit(account, txData)
+      // if (!attestSuccess)
+      //   attestSuccess = await this.tryAttestWithRelayKit(account, txData)
 
       if (!attestSuccess)
         throw new Error('Not enough funds');
