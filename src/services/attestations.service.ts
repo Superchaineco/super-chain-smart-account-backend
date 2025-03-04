@@ -13,7 +13,7 @@ import {
 import { superChainAccountService } from './superChainAccount.service';
 import { redisService } from './redis.service';
 import { ResponseBadge } from './badges/badges.service';
-import Safe from '@safe-global/protocol-kit';
+import Safe, { OnchainAnalyticsProps } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
 import Safe4337Pack from '@safe-global/relay-kit/dist/src/packs/safe-4337/Safe4337Pack';
 import { MetaTransactionData, OperationType } from '@safe-global/types-kit';
@@ -27,79 +27,57 @@ export class AttestationsService {
   private eas = EAS__factory.connect(this.easContractAddress, this.wallet);
   private schemaEncoder = new SchemaEncoder(this.schemaString);
 
-
-
-  async hasGas(account: string, txData: any) {
-    const calldata = await this.eas.attest.populateTransaction(txData);
-
-    const txRequest: ethers.TransactionRequest = {
-      to: this.easContractAddress,
-      from: this.wallet.address,
-      data: calldata.data,
+  async tryAttestWithSafe(txData: any): Promise<string | boolean> {
+    const onchainAnalytics: OnchainAnalyticsProps = {
+      project: 'SuperAccounts',
+      platform: 'Web',
     };
-    const gasPrice = await this.provider.estimateGas(txRequest);
-    const gasEstimate = await this.eas.attest.estimateGas(txData);
-    const estimatedCost = gasEstimate * gasPrice;
-    const estimatedCostInEth = ethers.formatEther(estimatedCost);
-    console.log(`Gas Estimate: ${gasEstimate.toString()} units`);
-    console.log(`Gas Price: ${ethers.formatUnits(gasPrice, 'gwei')} gwei`);
-    console.log(`Estimated Cost: ${estimatedCostInEth} ETH`);
-    return estimatedCost <= (await this.provider.getBalance(account));
-  }
-
-
-
-
-  async tryAttestWithSafe(account: string, txData: any): Promise<string | boolean> {
-
-
     // @ts-expect-error ESM import
     const safeSdk = await Safe.default.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
-      safeAddress: SAFE_ADDRESS
-    })
+      safeAddress: SAFE_ADDRESS,
+      onchainAnalytics,
+    });
 
-
-    const calldata = await this.eas.attest.populateTransaction(txData);
+    const data = this.eas.interface.encodeFunctionData('attest', [txData]);
 
     const safeTransactionData: MetaTransactionData = {
       to: this.easContractAddress,
       value: '0',
-      data: calldata.data,
-      operation: OperationType.Call
-    }
+      data: data,
+    };
 
     const safeTransaction = await safeSdk.createTransaction({
-      transactions: [safeTransactionData]
-    })
+      transactions: [safeTransactionData],
+    });
 
-    const isValid = await safeSdk.isValidTransaction(safeTransaction);
-    const hasGas = await this.hasGas(this.wallet.address, txData);
-    console.log('isValid', isValid)
-    console.log('hasGas', hasGas)
+    const isValid = await safeSdk.isValidTransaction(safeTransaction, {
+      from: SAFE_ADDRESS,
+    });
 
-    if (!isValid || !hasGas)
-      return isValid && hasGas;
-
-    const apiKit = new SafeApiKit({
-      chainId: BigInt(config.constants.OPTIMISM_CHAIN_ID)
-    })
+    if (!isValid) return isValid;
 
     try {
-      // const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-      // return executeTxResponse.hash;
+      const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+      return executeTxResponse.hash;
+      return false;
     } catch (e) {
-      console.error('Unexpected error executing transaction with SAFE:', e)
+      console.error('Unexpected error executing transaction with SAFE:', e);
     }
-
-
-
   }
 
-  async tryAttestWithRelayKit(account: string, txData: any): Promise<string | boolean> {
-
-    const safe4337Pack = await (await Safe4337Pack).Safe4337Pack.init({
+  async tryAttestWithRelayKit(
+    account: string,
+    txData: any
+  ): Promise<string | boolean> {
+    const onchainAnalytics: OnchainAnalyticsProps = {
+      project: 'SuperAccounts',
+      platform: 'Web',
+    };
+    const safe4337Pack = await (
+      await Safe4337Pack
+    ).Safe4337Pack.init({
       provider: JSON_RPC_PROVIDER,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
@@ -111,32 +89,34 @@ export class AttestationsService {
       paymasterOptions: {
         isSponsored: true,
         paymasterUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
-      }
-    })
-    console.log('Populate transaction')
+      },
+      onchainAnalytics,
+    });
     const calldata = await this.eas.attest.populateTransaction(txData);
     const transaction: MetaTransactionData = {
       to: this.easContractAddress,
       value: '0',
       data: calldata.data,
-      operation: OperationType.Call
-    }
-    console.log('Create transaction')
-    const safeOperation = await safe4337Pack.createTransaction({ transactions: [transaction] })
-    console.log('Sign transaction')
-    const signedSafeOperation = await safe4337Pack.signSafeOperation(safeOperation)
-    console.log('Execute transaction')
+      operation: OperationType.Call,
+    };
+    const safeOperation = await safe4337Pack.createTransaction({
+      transactions: [transaction],
+    });
+    const signedSafeOperation = await safe4337Pack.signSafeOperation(
+      safeOperation
+    );
     try {
       const userOperationHash = await safe4337Pack.executeTransaction({
-        executable: signedSafeOperation
-      })
-      console.log('Hash: ', userOperationHash)
+        executable: signedSafeOperation,
+      });
+      console.log('Hash: ', userOperationHash);
       return userOperationHash;
     } catch (e) {
-      console.error('Unexpected error executing transaction with PAYMASTER:', e)
+      console.error(
+        'Unexpected error executing transaction with PAYMASTER:',
+        e
+      );
     }
-
-
   }
 
   public async attest(
@@ -170,14 +150,11 @@ export class AttestationsService {
           revocable: false,
         },
       };
-
-
-      let attestSuccess = await this.tryAttestWithSafe(account, txData);
-      // if (!attestSuccess)
-      //   attestSuccess = await this.tryAttestWithRelayKit(account, txData)
-
+      let attestSuccess = await this.tryAttestWithSafe(txData);
       if (!attestSuccess)
-        throw new Error('Not enough funds');
+        attestSuccess = await this.tryAttestWithRelayKit(account, txData);
+
+      if (!attestSuccess) throw new Error('Not enough funds');
 
       const badgeImages = Array.from(
         new Set(
@@ -194,7 +171,6 @@ export class AttestationsService {
           )
         )
       );
-
 
       await this.claimBadgesOptimistically(account, badgeUpdates);
 

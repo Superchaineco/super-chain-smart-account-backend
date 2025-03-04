@@ -24,7 +24,6 @@ export class LiskTransactionsStrategy extends BaseBadgeStrategy {
                 return acc + parseInt(result.data.result, 16);
             }, Promise.resolve(0));
 
-            return 21
             return transactions;
         };
 
