@@ -1,4 +1,4 @@
-import { Interface, Wallet } from "ethers";
+import { ethers, Interface, Wallet } from 'ethers';
 import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
   EAS_CONTRACT_ADDRESS,
@@ -6,13 +6,13 @@ import {
   ENVIRONMENTS,
   ETHERSCAN_API_KEY,
   GELATO_API_KEY,
-} from "../config/superChain/constants";
-import axios from "axios";
-import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
-import { redisService } from "./redis.service";
-import sponsorshipValues from "../data/sponsorship.values.json";
-import config from "../config";
-import { superChainAccountService } from "./superChainAccount.service";
+} from '../config/superChain/constants';
+import axios from 'axios';
+import { GelatoRelay, SponsoredCallRequest } from '@gelatonetwork/relay-sdk';
+import { redisService } from './redis.service';
+import sponsorshipValues from '../data/sponsorship.values.json';
+import config from '../config';
+import { superChainAccountService } from './superChainAccount.service';
 
 type Txn = {
   gas: string;
@@ -23,23 +23,24 @@ type Txn = {
   recipient: string;
 };
 
-
-
 export async function callPimlicoAPI({ jsonrpc, method, params, id }: any) {
-  if (!jsonrpc || jsonrpc !== "2.0" || !method || !id) {
+  if (!jsonrpc || jsonrpc !== '2.0' || !method || !id) {
     return {
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       error: {
         code: -32600,
-        message: "Invalid Request: The request object is missing required fields or has invalid fields.",
+        message:
+          'Invalid Request: The request object is missing required fields or has invalid fields.',
       },
       id: id || null,
     };
   }
 
   try {
-    if (method === "eth_sendUserOperation") {
-      const superChainAccount = await superChainAccountService.getAccountLevel(params[0].sender);
+    if (method === 'eth_sendUserOperation') {
+      const superChainAccount = await superChainAccountService.getAccountLevel(
+        params[0].sender
+      );
       // const isAble = await isAbleToSponsor(params[0].sender, superChainAccount);
       // if (!isAble) {
       //   throw { message: "User is not able to sponsor" };
@@ -48,7 +49,7 @@ export async function callPimlicoAPI({ jsonrpc, method, params, id }: any) {
     const response = await axios.post(
       `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc`,
       {
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         method: method,
         params: params,
         id: id,
@@ -66,12 +67,12 @@ export async function callPimlicoAPI({ jsonrpc, method, params, id }: any) {
 
     return response.data;
   } catch (error: any) {
-    console.error("Error calling Pimlico API", error);
+    console.error('Error calling Pimlico API', error);
     return {
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       error: {
         code: -32603,
-        message: error.message || "An unknown error occurred",
+        message: error.message || 'An unknown error occurred',
       },
       id: id || null,
     };
@@ -80,67 +81,74 @@ export async function callPimlicoAPI({ jsonrpc, method, params, id }: any) {
 
 export async function getTransactionsCount(
   startTime: number,
-  account: string,
+  account: string
 ): Promise<number> {
   const startBlock = await getBlockNumberFromTimestamp(startTime);
 
   try {
     // const badgeTransactions = await getBadgeTransactions(startBlock, account);
-    const badgeTransactions = []
+    const badgeTransactions = [];
     const relayCount = await getRelayCount(account);
     return badgeTransactions.length + relayCount;
   } catch (error) {
-    console.error("Error fetching transactions:", error);
+    console.error('Error fetching transactions:', error);
     return 0;
   }
 }
 
 export async function getCurrentSponsorhipValue(
   account: string,
-  level: number,
+  level: number
 ) {
-  const maxRelayedTransactions = sponsorshipValues.levels[level].relayTransactions;
+  const maxRelayedTransactions =
+    sponsorshipValues.levels[level].relayTransactions;
   const relayedTransactions = await getTransactionsCount(
     getLastMondayTimestampUTC(),
-    account,
+    account
   );
   return { relayedTransactions, maxRelayedTransactions };
 }
-
 
 export async function relayTransaction(
   target: string,
   data: string,
   account: string,
-  level: number,
+  level: number
 ) {
   const isSponsorAble = await isAbleToSponsor(account, level);
   if (!isSponsorAble) {
-    throw new Error("User is not able to sponsor");
+    throw new Error('User is not able to sponsor');
   }
   try {
     const relay = new GelatoRelay();
+
+    const encodedData = ethers.solidityPacked(
+      ['bytes', 'bytes'],
+      [data, '0x5afe003433613232343763663835306565386462343564646561393063346135']
+    );
+
     const request: SponsoredCallRequest = {
       chainId: BigInt(10),
       target,
-      data,
+      data: encodedData,
     };
+
     const relayResponse = await relay.sponsoredCall(request, GELATO_API_KEY);
     const taskId = relayResponse.taskId;
     // If the update fails, it will not affect the transaction
     await updateRelayCount(account).catch((error) => {
-      console.error("Error updating relay count:", error);
+      console.error('Error updating relay count:', error);
     });
     return taskId;
   } catch (error) {
-    console.error("Error relaying transaction:", error);
+    console.error('Error relaying transaction:', error);
     throw error;
   }
 }
 
 export async function isAbleToSponsor(
   account: string,
-  level: number,
+  level: number
 ): Promise<boolean> {
   const startTime = getLastMondayTimestampUTC();
   const transactions = await getTransactionsCount(startTime, account);
@@ -154,19 +162,19 @@ async function getBlockNumberFromTimestamp(timestamp: number): Promise<number> {
       'https://api-optimistic.etherscan.io/api',
       {
         params: {
-          module: "block",
-          action: "getblocknobytime",
+          module: 'block',
+          action: 'getblocknobytime',
           timestamp: timestamp,
-          closest: "before",
+          closest: 'before',
           apikey: ETHERSCAN_API_KEY,
         },
         timeout: 50000,
-      },
+      }
     );
 
     return parseInt(response.data.result);
   } catch (error) {
-    console.error("Error fetching block number:", error);
+    console.error('Error fetching block number:', error);
     return 0;
   }
 }
@@ -178,32 +186,32 @@ async function getBadgeTransactions(startBlock: number, account: string) {
       `https://api-optimistic.etherscan.io/api`,
       {
         params: {
-          module: "account",
-          action: "txlist",
+          module: 'account',
+          action: 'txlist',
           address: wallet.address,
           startblock: startBlock,
-          endblock: "latest",
-          sort: "asc",
+          endblock: 'latest',
+          sort: 'asc',
           apikey: ETHERSCAN_API_KEY,
         },
         timeout: 50000,
-      },
+      }
     );
 
     const transactions = response.data.result as Txn[];
     const abi = [
-      "function attest((bytes32 schema, (address recipient, uint64 expirationTime, bool revocable, bytes32 refUID, bytes data, uint256 value) data) request)",
+      'function attest((bytes32 schema, (address recipient, uint64 expirationTime, bool revocable, bytes32 refUID, bytes data, uint256 value) data) request)',
     ];
 
     const iface = new Interface(abi);
 
     const filteredTransactions = transactions.filter(
-      (tx: any) => tx.to.toLowerCase() === EAS_CONTRACT_ADDRESS.toLowerCase(),
+      (tx: any) => tx.to.toLowerCase() === EAS_CONTRACT_ADDRESS.toLowerCase()
     );
     const decodedTransactions = filteredTransactions
       .map((tx) => {
         try {
-          const decodedData = iface.decodeFunctionData("attest", tx.input);
+          const decodedData = iface.decodeFunctionData('attest', tx.input);
           const recipient = decodedData[0].data.recipient.toLowerCase();
           return {
             ...tx,
@@ -211,7 +219,7 @@ async function getBadgeTransactions(startBlock: number, account: string) {
             recipient,
           };
         } catch (error) {
-          console.error("Error decoding transaction:", error);
+          console.error('Error decoding transaction:', error);
           return null;
         }
       })
@@ -219,7 +227,7 @@ async function getBadgeTransactions(startBlock: number, account: string) {
 
     if (decodedTransactions.length > 0) {
       const transactionsForAccount = decodedTransactions.filter(
-        (tx) => tx.recipient.toLowerCase() === account.toLowerCase(),
+        (tx) => tx.recipient.toLowerCase() === account.toLowerCase()
       );
       return transactionsForAccount;
     } else {
@@ -231,10 +239,9 @@ async function getBadgeTransactions(startBlock: number, account: string) {
   }
 }
 
-
 async function validateMaxSponsorship(
   transactions: number,
-  level: number,
+  level: number
 ): Promise<boolean> {
   const maxTransactions = sponsorshipValues.levels[level].relayTransactions;
   return transactions < maxTransactions;
@@ -250,7 +257,9 @@ async function updateRelayCount(account: string) {
     const timeUntilNextMonday = nextMondayTimestamp - currentTime;
     await redisService.setCachedData(key, relayCount + 1, timeUntilNextMonday);
   } else {
-    throw new Error("User has reached the weekly limit of relayed transactions.");
+    throw new Error(
+      'User has reached the weekly limit of relayed transactions.'
+    );
   }
 }
 
