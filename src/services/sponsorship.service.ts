@@ -122,10 +122,8 @@ export async function relayTransaction(
   try {
     const relay = new GelatoRelay();
 
-    const encodedData = ethers.solidityPacked(
-      ['bytes', 'bytes'],
-      [data, '0x5afe003433613232343763663835306565386462343564646561393063346135']
-    );
+    const encodedData =
+      data + '5afe003433613232343763663835306565386462343564646561393063346135';
 
     const request: SponsoredCallRequest = {
       chainId: BigInt(10),
@@ -136,7 +134,7 @@ export async function relayTransaction(
     const relayResponse = await relay.sponsoredCall(request, GELATO_API_KEY);
     const taskId = relayResponse.taskId;
     // If the update fails, it will not affect the transaction
-    await updateRelayCount(account).catch((error) => {
+    await updateRelayCount(account, level).catch((error) => {
       console.error('Error updating relay count:', error);
     });
     return taskId;
@@ -247,11 +245,11 @@ async function validateMaxSponsorship(
   return transactions < maxTransactions;
 }
 
-async function updateRelayCount(account: string) {
+async function updateRelayCount(account: string, level: number) {
   const key = `relayCount:${account}`;
   const relayCount = await getRelayCount(account);
 
-  if (relayCount < 5) {
+  if (relayCount < sponsorshipValues.levels[level].relayTransactions) {
     const nextMondayTimestamp = getNextMondayTimestampUTC();
     const currentTime = Math.floor(Date.now() / 1000);
     const timeUntilNextMonday = nextMondayTimestamp - currentTime;
