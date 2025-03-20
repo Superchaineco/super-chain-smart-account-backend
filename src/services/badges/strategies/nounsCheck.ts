@@ -9,7 +9,7 @@ export class NounsCheckStrategy extends BaseBadgeStrategy {
     const ttl = 86400; 
 
     const fetchFunction = async () => {
-      const provider = new ethers.JsonRpcProvider("https://rpc.ankr.com/eth");
+      const provider = new ethers.JsonRpcProvider(process.env.JSON_RPC_ETH_PROVIDER);
       const contract = new ethers.Contract(
         process.env.NOUNS_CONTRACT_ADDRESS!,
         ["function balanceOf(address owner) public view returns (uint256)"],
