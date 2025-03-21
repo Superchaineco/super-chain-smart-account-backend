@@ -259,3 +259,10 @@ export type UserProfile = {
   has_accepted_terms: boolean;
   is_guest: boolean;
 };
+
+export type Season = {
+  season: string;
+  fromDate: Date,
+  toDate: Date,
+  blockRanges: any
+}
