@@ -1,6 +1,6 @@
 {
   "SuperChainRaffle": {
-    "contractAddress": "0x39987445bc31823c8be2d0aa4577ca44d7233a6f",
+    "contractAddress": "0x30B6f7C268fa02b96284A7A2b3Af38E006b5e2A2",
     "functionName": "getFreeTicketsPerLevel",
     "functionParams": [],
     "functionAbi": [
