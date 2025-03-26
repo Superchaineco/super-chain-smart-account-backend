@@ -33,15 +33,15 @@ export async function claimBadges(req: Request, res: Response) {
         const superChainSmartAccount =
             await superChainAccountService.getSuperChainSmartAccount(account);
 
-        const isAble = await isAbleToSponsor(
-            account,
-            Number(superChainSmartAccount[3]),
-        );
+        // const isAble = await isAbleToSponsor(
+        //     account,
+        //     Number(superChainSmartAccount[3]),
+        // );
 
-        if (!isAble) {
-            console.error("User is not able to sponsor");
-            return res.status(500).json({ error: "User is not able to sponsor" });
-        }
+        // if (!isAble) {
+        //     console.error("User is not able to sponsor");
+        //     return res.status(500).json({ error: "User is not able to sponsor" });
+        // }
 
         const badgesService = new BadgesServices();
         const eoas = await superChainAccountService.getEOAS(account);
