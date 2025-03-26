@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { superChainAccountService } from "../services/superChainAccount.service";
+import { ENV, ENVIRONMENTS } from "../config/superChain/constants";
 
 export async function verifyOwner(req: Request, res: Response, next: NextFunction) {
+    // Development environment bypass
+    if (ENV === ENVIRONMENTS.development) {
+        return next();
+    }
+
     try {
         const { address } = verifySession(req, res);
 
@@ -26,6 +32,11 @@ export async function verifyOwner(req: Request, res: Response, next: NextFunctio
 
 
 export async function verifyReverseProxy(req: Request, res: Response, next: NextFunction) {
+    // Development environment bypass
+    if (ENV === ENVIRONMENTS.development) {
+        return next();
+    }
+
     try {
         const { address } = verifySession(req, res);
         if (req.body.method == "eth_sendUserOperation") {
