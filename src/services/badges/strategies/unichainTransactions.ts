@@ -2,16 +2,16 @@ import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
 import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 
-export class OpTransactionsStrategy extends BaseBadgeStrategy {
+export class UnichainTransactionsStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
-    const cacheKey = `optimisimTransactions-${eoas.join(",")}`;
+    const cacheKey = `unichainTransactions-${eoas.join(",")}`;
     const ttl = 3600
 
     const fetchFunction = async () => {
       const settings = {
         apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
-        network: Network.OPT_MAINNET,
+        network: Network.UNICHAIN_MAINNET,
       };
 
       const alchemy = new Alchemy(settings);
