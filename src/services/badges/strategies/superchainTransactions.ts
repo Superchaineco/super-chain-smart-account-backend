@@ -14,9 +14,9 @@ const seasons: Season[] = [
         fromDate: new Date(2025, 0, 16),
         toDate: new Date(2025, 5, 11),
         blockRanges: {
-            "opt-mainnet": [130693412, 137000612],//2 secs x block
-            "base-mainnet": [25098127, 31405327], //2 secs x block
-            "unichain-mainnet": [10151172, 22765572], //1 sec x block
+            "optimism-10": [130693412, 137000612],//2 secs x block
+            "base-8453": [25098127, 31405327], //2 secs x block
+            "unichain-130": [10151172, 22765572], //1 sec x block
             "mode-34443": [18418009, 24725209], //2 secs x block
             "ink-57073": [3505189, 16119589],//1 sec x block
             "Soneium": [1934425, 8241625], //2 secs x block
@@ -41,14 +41,17 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
 
         const season = this.getSeason();
-        let totalTxs = await this.getAlchemyValue(Network.OPT_MAINNET, eoas, season);
-        totalTxs += await this.getAlchemyValue(Network.BASE_MAINNET, eoas, season);
-        totalTxs += await this.getAlchemyValue(Network.UNICHAIN_MAINNET, eoas, season);
+        // let totalTxs = await this.getAlchemyValue(Network.OPT_MAINNET, eoas, season);
 
+
+        let totalTxs = await this.getRoutescanValue("optimism-10", eoas, season);
+        totalTxs += await this.getRoutescanValue("base-8453", eoas, season);
+       // totalTxs += await this.getRoutescanValue("unichain-130", eoas, season);
         totalTxs += await this.getRoutescanValue("mode-34443", eoas, season);
         totalTxs += await this.getRoutescanValue("ink-57073", eoas, season);
 
-        totalTxs += await this.getSoneiumValue(eoas, season);
+        totalTxs += await this.getBlockscoutValue("unichain-130",eoas, season);
+        totalTxs += await this.getBlockscoutValue("Soneium",eoas, season);
 
         // totalTxs += await this.getRoutescanValue("mint-185", eoas, season);
         // totalTxs += await this.getRoutescanValue("swell-1923", eoas, season);
@@ -59,14 +62,16 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     }
 
 
-    async getSoneiumValue(eoas: string[], season: Season): Promise<number> {
+    async getBlockscoutValue(chain: string,eoas: string[], season: Season): Promise<number> {
         const cacheKey = `soneiumTransactions-${eoas.join(",")}`;
 
-        const fromBlock = season.blockRanges["Soneium"][0];
-        const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? season.blockRanges["Soneium"][1] : 'latest'
+        const fromBlock = season.blockRanges[chain][0];
+        const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + season.blockRanges[chain][1] : ''
         const fetchFunction = async () => {
             const transactions = eoas.reduce(async (accPromise, eoa) => {
-                const response = await axios.get(`https://soneium.blockscout.com/api/v2/addresses/${eoa}/transactions?from_block=${fromBlock}&to_block=${toBlock}`)
+
+                const baseUrl = chain === "Soneium" ? "https://soneium.blockscout.com" : `https://unichain.blockscout.com`
+                const response = await axios.get(`${baseUrl}/api/v2/addresses/${eoa}/transactions?from_block=${fromBlock}${toBlock}`)
                 const transactions = Number(response.data.result.transactions_count);
                 return (await accPromise) + transactions;
             }, Promise.resolve(0));
@@ -84,48 +89,52 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         const fromBlock = season.blockRanges[chain][0];
         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&startblock=' + season.blockRanges[chain][1] : ''
         const fetchFunction = async () => {
+
             const transactions = eoas.reduce(async (accPromise, eoa) => {
-                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)              
+                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
+                console.log(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
                 const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
                 return (await accPromise) + transactions;
             }, Promise.resolve(0));
 
             return transactions;
+
+
         };
 
         return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
     }
 
 
-    async getAlchemyValue(chain: Network, eoas: string[], season: Season): Promise<number> {
-        const cacheKey = `${chain}${season}Transactions-${eoas.join(",")}`;
+    // async getAlchemyValue(chain: Network, eoas: string[], season: Season): Promise<number> {
+    //     const cacheKey = `${chain}${season}Transactions-${eoas.join(",")}`;
 
 
-        const fetchFunction = async () => {
-            const settings = {
-                apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
-                network: chain,
-            };
+    //     const fetchFunction = async () => {
+    //         const settings = {
+    //             apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+    //             network: chain,
+    //         };
 
-            const fromBlock = season.blockRanges[chain][0];
-            const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? season.blockRanges[chain][1] : 'latest';
-            const alchemy = new Alchemy(settings);
-            const transactions = await eoas.reduce(async (accPromise, fromAddress) => {
-                const acc = await accPromise;
-                const result = await alchemy.core.getAssetTransfers({
-                    fromBlock, toBlock, fromAddress, category: [
-                        AssetTransfersCategory.EXTERNAL,
-                        AssetTransfersCategory.ERC20,
-                        AssetTransfersCategory.ERC721,
-                        AssetTransfersCategory.ERC1155,
-                        AssetTransfersCategory.SPECIALNFT]
-                });
-                return acc + result.transfers.length;
-            }, Promise.resolve(0));
+    //         const fromBlock = season.blockRanges[chain][0];
+    //         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? season.blockRanges[chain][1] : 'latest';
+    //         const alchemy = new Alchemy(settings);
+    //         const transactions = await eoas.reduce(async (accPromise, fromAddress) => {
+    //             const acc = await accPromise;
+    //             const result = await alchemy.core.getAssetTransfers({
+    //                 fromBlock, toBlock, fromAddress, category: [
+    //                     AssetTransfersCategory.EXTERNAL,
+    //                     AssetTransfersCategory.ERC20,
+    //                     AssetTransfersCategory.ERC721,
+    //                     AssetTransfersCategory.ERC1155,
+    //                     AssetTransfersCategory.SPECIALNFT]
+    //             });
+    //             return acc + result.transfers.length;
+    //         }, Promise.resolve(0));
 
-            return transactions;
-        };
+    //         return transactions;
+    //     };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
-    }
+    //     return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    // }
 }
