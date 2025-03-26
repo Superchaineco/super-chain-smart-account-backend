@@ -1,6 +1,6 @@
 import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/typechain-types/factories/contracts/EAS__factory';
 
-import { ethers, JsonRpcProvider, Wallet, ZeroAddress } from 'ethers';
+import { ethers, JsonRpcProvider, Wallet, ZeroAddress, zeroPadValue } from 'ethers';
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
@@ -156,20 +156,8 @@ export class AttestationsService {
 
       if (!attestSuccess) throw new Error('Not enough funds');
 
-      const badgeImages = Array.from(
-        new Set(
-          badges.flatMap((badge) =>
-            badgeUpdates
-              .filter((update) => badge.badgeId === update.badgeId)
-              .map(
-                (update) =>
-                  badge.badgeTiers.find(
-                    (tier) => Number(tier.tier) === Number(update.level)
-                  )?.metadata?.['2DImage']
-              )
-              .filter((image) => image)
-          )
-        )
+      const updatedBadges = badges.filter(badge => 
+        badgeUpdates.some(update => update.badgeId === badge.badgeId)
       );
 
       await this.claimBadgesOptimistically(account, badgeUpdates);
@@ -177,9 +165,9 @@ export class AttestationsService {
       return {
         hash: attestSuccess,
         isLevelUp,
-        badgeImages,
         totalPoints,
         badgeUpdates,
+        updatedBadges,
       };
     } catch (error: any) {
       console.error('Error attesting', error);

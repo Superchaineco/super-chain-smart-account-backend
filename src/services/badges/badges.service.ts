@@ -163,7 +163,8 @@ export class BadgesServices {
       .map((badge) => ({
         badgeId: badge.badgeId,
         level: badge.claimableTier!,
-        points: Number(badge.points)
+        points: Number(badge.points),
+        previousLevel: badge.tier,
       }));
   }
 
