@@ -1,14 +1,11 @@
-
-
 class IpfsService {
-    private gatewayUrl = 'https://silver-brilliant-meadowlark-311.mypinata.cloud'
+  private gatewayUrl = 'https://ipfs.io';
 
-    public async getIPFSData(CID: string): Promise<string> {
-        const response = await fetch(`${this.gatewayUrl}/${CID}`)
-        return await response.text()
-    }
+  public async getIPFSData(CID: string): Promise<string> {
+    const response = await fetch(`${this.gatewayUrl}/${CID}`);
+    return await response.text();
+  }
 }
 
-
-const ipfsService = new IpfsService()
-export default ipfsService
+const ipfsService = new IpfsService();
+export default ipfsService;
