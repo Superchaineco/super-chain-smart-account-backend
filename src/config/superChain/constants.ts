@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-// export enum ENVIRONMENTS {
-//   development = "development",
-//   production = "production",
-// }
+export enum ENVIRONMENTS {
+  development = "development",
+  production = "production",
+}
 
-// export const ENV =
-//   (process.env.NODE_ENV as ENVIRONMENTS) || ENVIRONMENTS.development;
+export const ENV =
+  (process.env.NODE_ENV as ENVIRONMENTS) || ENVIRONMENTS.development;
 
 const config = {
   //   development: {
