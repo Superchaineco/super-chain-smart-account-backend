@@ -11,8 +11,9 @@ export class SoneiumTransactionsStrategy extends BaseBadgeStrategy {
 
         const fetchFunction = async () => {
             const transactions = eoas.reduce(async (accPromise, eoa) => {
-                const response = await axios.get(`https://soneium.blockscout.com/api/v2/addresses/${eoa}/counters`)
-                const transactions = Number(response.data.result.transactions_count);
+                
+                const response = await axios.get(`https://soneium.blockscout.com/api/v2/addresses/${eoa}/counters`)                
+                const transactions = Number(response.data.transactions_count);
                 return (await accPromise) + transactions;
             }, Promise.resolve(0));
 
