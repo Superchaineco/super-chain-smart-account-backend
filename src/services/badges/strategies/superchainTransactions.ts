@@ -41,20 +41,20 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
 
         const season = this.getSeason();
-     
+
         let totalTxs = await this.getRoutescanValue("optimism-10", eoas, season);
         totalTxs += await this.getRoutescanValue("base-8453", eoas, season);
         totalTxs += await this.getRoutescanValue("mode-34443", eoas, season);
         totalTxs += await this.getRoutescanValue("ink-57073", eoas, season);
 
-        totalTxs += await this.getBlockscoutValue("unichain-130",eoas, season);
-        totalTxs += await this.getBlockscoutValue("Soneium",eoas, season);
+        totalTxs += await this.getBlockscoutValue("unichain-130", eoas, season);
+        totalTxs += await this.getBlockscoutValue("Soneium", eoas, season);
 
         return totalTxs;
     }
 
 
-    async getBlockscoutValue(chain: string,eoas: string[], season: Season): Promise<number> {
+    async getBlockscoutValue(chain: string, eoas: string[], season: Season): Promise<number> {
         const cacheKey = `${chain}-${season.season}Transactions-${eoas.join(",")}`;
 
         const fromBlock = season.blockRanges[chain][0];
@@ -64,8 +64,10 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
                 const baseUrl = chain === "Soneium" ? "https://soneium.blockscout.com" : `https://unichain.blockscout.com`
                 const response = await axios.get(`${baseUrl}/api/v2/addresses/${eoa}/transactions?from_block=${fromBlock}${toBlock}`)
-                const transactions = Number(response.data.result.transactions_count);
+                const transactions = Number(response.data.items.length);
                 return (await accPromise) + transactions;
+
+
             }, Promise.resolve(0));
 
             return transactions;
@@ -83,7 +85,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         const fetchFunction = async () => {
 
             const transactions = eoas.reduce(async (accPromise, eoa) => {
-                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)               
+                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
                 const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
                 return (await accPromise) + transactions;
             }, Promise.resolve(0));
