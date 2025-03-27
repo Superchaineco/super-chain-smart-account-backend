@@ -41,29 +41,21 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
 
         const season = this.getSeason();
-        // let totalTxs = await this.getAlchemyValue(Network.OPT_MAINNET, eoas, season);
-
-
+     
         let totalTxs = await this.getRoutescanValue("optimism-10", eoas, season);
         totalTxs += await this.getRoutescanValue("base-8453", eoas, season);
-       // totalTxs += await this.getRoutescanValue("unichain-130", eoas, season);
         totalTxs += await this.getRoutescanValue("mode-34443", eoas, season);
         totalTxs += await this.getRoutescanValue("ink-57073", eoas, season);
 
         totalTxs += await this.getBlockscoutValue("unichain-130",eoas, season);
         totalTxs += await this.getBlockscoutValue("Soneium",eoas, season);
 
-        // totalTxs += await this.getRoutescanValue("mint-185", eoas, season);
-        // totalTxs += await this.getRoutescanValue("swell-1923", eoas, season);
-
-
-
         return totalTxs;
     }
 
 
     async getBlockscoutValue(chain: string,eoas: string[], season: Season): Promise<number> {
-        const cacheKey = `soneiumTransactions-${eoas.join(",")}`;
+        const cacheKey = `${chain}-${season.season}Transactions-${eoas.join(",")}`;
 
         const fromBlock = season.blockRanges[chain][0];
         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + season.blockRanges[chain][1] : ''
@@ -83,7 +75,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     }
 
     async getRoutescanValue(chain: string, eoas: string[], season: Season): Promise<number> {
-        const cacheKey = `${chain}${season}Transactions-${eoas.join(",")}`;
+        const cacheKey = `${chain}-${season.season}Transactions-${eoas.join(",")}`;
 
         const chainId = chain.split("-")[1];
         const fromBlock = season.blockRanges[chain][0];
@@ -91,8 +83,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         const fetchFunction = async () => {
 
             const transactions = eoas.reduce(async (accPromise, eoa) => {
-                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
-                console.log(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
+                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)               
                 const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
                 return (await accPromise) + transactions;
             }, Promise.resolve(0));
@@ -106,35 +97,4 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     }
 
 
-    // async getAlchemyValue(chain: Network, eoas: string[], season: Season): Promise<number> {
-    //     const cacheKey = `${chain}${season}Transactions-${eoas.join(",")}`;
-
-
-    //     const fetchFunction = async () => {
-    //         const settings = {
-    //             apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
-    //             network: chain,
-    //         };
-
-    //         const fromBlock = season.blockRanges[chain][0];
-    //         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? season.blockRanges[chain][1] : 'latest';
-    //         const alchemy = new Alchemy(settings);
-    //         const transactions = await eoas.reduce(async (accPromise, fromAddress) => {
-    //             const acc = await accPromise;
-    //             const result = await alchemy.core.getAssetTransfers({
-    //                 fromBlock, toBlock, fromAddress, category: [
-    //                     AssetTransfersCategory.EXTERNAL,
-    //                     AssetTransfersCategory.ERC20,
-    //                     AssetTransfersCategory.ERC721,
-    //                     AssetTransfersCategory.ERC1155,
-    //                     AssetTransfersCategory.SPECIALNFT]
-    //             });
-    //             return acc + result.transfers.length;
-    //         }, Promise.resolve(0));
-
-    //         return transactions;
-    //     };
-
-    //     return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
-    // }
 }
