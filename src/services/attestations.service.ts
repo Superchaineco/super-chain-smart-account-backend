@@ -61,7 +61,6 @@ export class AttestationsService {
     try {
       const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
       return executeTxResponse.hash;
-      return false;
     } catch (e) {
       console.error('Unexpected error executing transaction with SAFE:', e);
     }
@@ -155,6 +154,10 @@ export class AttestationsService {
         attestSuccess = await this.tryAttestWithRelayKit(account, txData);
 
       if (!attestSuccess) throw new Error('Not enough funds');
+      
+      if (typeof attestSuccess === 'string') {
+        await this.provider.waitForTransaction(attestSuccess, 1);
+      }
 
       const updatedBadges = badges.filter(badge => 
         badgeUpdates.some(update => update.badgeId === badge.badgeId)
