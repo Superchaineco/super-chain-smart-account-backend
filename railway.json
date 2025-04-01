@@ -1,0 +1,9 @@
+{
+  "jobs": [
+    {
+      "name": "leaderboard-job",
+       "schedule": "*/2 * * * *",
+      "command": "npx --yes tsx scripts/refreshLeaderboard.ts"
+    }
+  ]
+}
