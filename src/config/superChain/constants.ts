@@ -4,7 +4,7 @@ dotenv.config();
 export enum ENVIRONMENTS {
   development = 'development',
   production = 'production',
-  staging = 'staging',
+  staging = 'staging'
 }
 
 export const ENV =
