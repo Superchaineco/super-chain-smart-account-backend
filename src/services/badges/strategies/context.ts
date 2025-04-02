@@ -59,7 +59,7 @@ export class BadgeStrategyContext {
                 return new InkTransactionsStrategy()
             case "Unichain User":
                 return new UnichainTransactionsStrategy()
-            case "Season Super User":
+            case "S7 Super User":
                 return new SuperChainTransactionsStrategy()
 
             //NOT RELEVANT FOR NOW

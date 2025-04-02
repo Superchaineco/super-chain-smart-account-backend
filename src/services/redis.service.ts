@@ -1,4 +1,6 @@
-import { redis } from "../utils/cache";
+import { json } from 'express';
+import { get } from 'http';
+import { redis, redisClient } from '../utils/cache';
 
 export class RedisService {
     public async getCachedDataWithCallback<T>(key: string, fetchFunction: () => Promise<T>, ttl: number): Promise<T> {
@@ -31,16 +33,24 @@ export class RedisService {
             await redis.set(key, JSON.stringify(data));
     }
 
-    public async getCachedData(key: string) {
-        const cachedData = await redis.get(key);
-        if (cachedData) {
-            return JSON.parse(cachedData);
-        }
-        return null;
+  public async getCachedData(key: string) {
+    const cachedData = await redis.get(key);
+    if (cachedData) {
+      return JSON.parse(cachedData);
     }
-    public async deleteCachedData(key: string) {
-        await redis.del(key);
-    }
+    return null;
+  }
+  public async deleteCachedData(key: string) {
+    await redis.del(key);
+  }
+
+  public async JSONGet(key: string, path: string) {
+    const result = await redisClient.json.get(key, {
+      path,
+    });
+    return result;
+  }
+
 }
 
 export const redisService = new RedisService();
