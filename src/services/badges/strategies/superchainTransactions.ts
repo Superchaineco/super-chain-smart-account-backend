@@ -1,5 +1,3 @@
-
-
 import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
 import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
@@ -7,6 +5,10 @@ import axios from "axios";
 import { Season } from "@/types/index.types";
 
 const ttl = 3600
+const REQUEST_DELAY = 750; // 0.75 segundos en milisegundos
+
+// Función de utilidad para esperar un tiempo determinado
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const seasons: Season[] = [
     {
@@ -38,16 +40,23 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     }
 
     async getValue(eoas: string[]) {
-
-
         const season = this.getSeason();
 
         let totalTxs = await this.getRoutescanValue("optimism-10", eoas, season);
+        await delay(REQUEST_DELAY);
+        
         totalTxs += await this.getRoutescanValue("base-8453", eoas, season);
+        await delay(REQUEST_DELAY);
+        
         totalTxs += await this.getRoutescanValue("mode-34443", eoas, season);
+        await delay(REQUEST_DELAY);
+        
         totalTxs += await this.getRoutescanValue("ink-57073", eoas, season);
+        await delay(REQUEST_DELAY);
 
         totalTxs += await this.getBlockscoutValue("unichain-130", eoas, season);
+        await delay(REQUEST_DELAY);
+        
         totalTxs += await this.getBlockscoutValue("Soneium", eoas, season);
 
         return totalTxs;
@@ -60,17 +69,20 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         const fromBlock = season.blockRanges[chain][0];
         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + season.blockRanges[chain][1] : ''
         const fetchFunction = async () => {
-            const transactions = eoas.reduce(async (accPromise, eoa) => {
-
+            let totalTransactions = 0;
+            
+            for (const eoa of eoas) {
                 const baseUrl = chain === "Soneium" ? "https://soneium.blockscout.com" : `https://unichain.blockscout.com`
                 const response = await axios.get(`${baseUrl}/api/v2/addresses/${eoa}/transactions?from_block=${fromBlock}${toBlock}`)
-                const transactions = Number(response.data.items.length);
-                return (await accPromise) + transactions;
-
-
-            }, Promise.resolve(0));
-
-            return transactions;
+                totalTransactions += Number(response.data.items.length);
+                
+                // Añadir retraso entre solicitudes, excepto para la última
+                if (eoas.indexOf(eoa) < eoas.length - 1) {
+                    await delay(REQUEST_DELAY);
+                }
+            }
+            
+            return totalTransactions;
         };
 
         return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
@@ -83,16 +95,19 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         const fromBlock = season.blockRanges[chain][0];
         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&startblock=' + season.blockRanges[chain][1] : ''
         const fetchFunction = async () => {
-
-            const transactions = eoas.reduce(async (accPromise, eoa) => {
-                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
-                const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
-                return (await accPromise) + transactions;
-            }, Promise.resolve(0));
-
-            return transactions;
-
-
+            let totalTransactions = 0;
+            
+            for (const eoa of eoas) {
+                const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
+                totalTransactions += response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
+                
+                // Añadir retraso entre solicitudes, excepto para la última
+                if (eoas.indexOf(eoa) < eoas.length - 1) {
+                    await delay(REQUEST_DELAY);
+                }
+            }
+            
+            return totalTransactions;
         };
 
         return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);

@@ -11,7 +11,7 @@ export class SwellTransactionsStrategy extends BaseBadgeStrategy {
 
     const fetchFunction = async () => {
       const transactions = eoas.reduce(async (accPromise, eoa) => {
-        const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/1923/etherscan/api?module=account&action=txlist&address=${eoa}&startblock=0&endblock=99999999&page=1&offset=250&sort=asc`)
+        const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/1923/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=0&endblock=99999999&page=1&offset=250&sort=asc`)
         const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
         return (await accPromise) + transactions;
       }, Promise.resolve(0));
