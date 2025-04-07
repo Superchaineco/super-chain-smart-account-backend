@@ -7,8 +7,9 @@ export enum ENVIRONMENTS {
   staging = 'staging'
 }
 
-export const ENV =
-  ENVIRONMENTS.development;
+export const ENV = Object.values(ENVIRONMENTS).includes(process.env.NODE_ENV as ENVIRONMENTS)
+  ? process.env.NODE_ENV as ENVIRONMENTS
+  : ENVIRONMENTS.development;
 
 const config = {
   //   development: {
