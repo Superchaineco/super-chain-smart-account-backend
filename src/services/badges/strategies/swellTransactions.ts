@@ -1,6 +1,7 @@
 import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 import axios from "axios";
+import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
 
 export class SwellTransactionsStrategy extends BaseBadgeStrategy {
 

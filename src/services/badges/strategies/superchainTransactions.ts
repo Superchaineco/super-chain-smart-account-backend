@@ -3,6 +3,8 @@ import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 import axios from "axios";
 import { Season } from "@/types/index.types";
+import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
+
 
 const ttl = 3600
 const REQUEST_DELAY = 750; // 0.75 segundos en milisegundos
