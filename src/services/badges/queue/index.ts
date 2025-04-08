@@ -21,17 +21,17 @@ export class BadgesQueueService {
     this.badgesService = new BadgesServices(this);
     this.superChainAccountService = new SuperChainAccountService();
     
-    // Only initialize worker if not in development
-    if (process.env.NODE_ENV !== 'development') {
-      this.worker = this.initializeWorker();
-      this.attachLifecycleHandlers();
+    this.worker = this.initializeWorker();
+    this.attachLifecycleHandlers();
+
+    // Pause the worker in development
+    if (process.env.NODE_ENV === 'development') {
+      this.worker.pause();
+      console.log('Worker initialized in paused state for development environment');
     }
   }
 
   private initializeWorker(): Worker {
-    if (process.env.NODE_ENV === 'development') {
-      throw new Error('Worker should not be initialized in development');
-    }
     return new Worker(
       this.queueName,
       async (job: Job<BadgeJobData>) => this.processJob(job),
