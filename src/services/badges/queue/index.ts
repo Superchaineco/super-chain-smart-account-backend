@@ -28,7 +28,10 @@ export class BadgesQueueService {
     return new Worker(
       this.queueName,
       async (job: Job<BadgeJobData>) => this.processJob(job),
-      { connection: redisWorker }
+      { 
+        connection: redisWorker,
+        concurrency: 1
+      }
     );
   }
 
