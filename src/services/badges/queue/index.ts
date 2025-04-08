@@ -11,7 +11,7 @@ interface BadgeJobData {
 
 export class BadgesQueueService {
   private readonly queue: Queue;
-  private readonly worker: Worker;
+  private readonly worker?: Worker;
   private readonly queueName = 'badgesQueue';
   private readonly badgesService: BadgesServices;
   private readonly superChainAccountService: SuperChainAccountService;
@@ -20,11 +20,18 @@ export class BadgesQueueService {
     this.queue = new Queue(this.queueName, { connection: redis });
     this.badgesService = new BadgesServices(this);
     this.superChainAccountService = new SuperChainAccountService();
-    this.worker = this.initializeWorker();
-    this.attachLifecycleHandlers();
+    
+    // Only initialize worker if not in development
+    if (process.env.NODE_ENV !== 'development') {
+      this.worker = this.initializeWorker();
+      this.attachLifecycleHandlers();
+    }
   }
 
   private initializeWorker(): Worker {
+    if (process.env.NODE_ENV === 'development') {
+      throw new Error('Worker should not be initialized in development');
+    }
     return new Worker(
       this.queueName,
       async (job: Job<BadgeJobData>) => this.processJob(job),
@@ -124,6 +131,8 @@ export class BadgesQueueService {
   }
 
   private attachLifecycleHandlers() {
+    if (!this.worker) return;
+    
     this.worker.on('error', (err) => {
       console.error('[BullMQ Worker Error]', err);
     });
