@@ -37,11 +37,10 @@ export class BadgesQueueService {
     console.info(`Processing badge for address: ${address}`);
 
     if (forceCompare) {
-      await this.handleForceCompare(address);
-      return;
+      return await this.handleForceCompare(address);
     }
 
-    await this.fetchAndCacheBadges(address);
+    return await this.fetchAndCacheBadges(address);
   }
 
   private async handleForceCompare(address: string): Promise<void> {
@@ -78,11 +77,13 @@ export class BadgesQueueService {
           'Data fetch matches optimistic data. Everything remains the same.'
         );
       }
+      return freshData;
     } catch (error) {
       console.error(
         'Error in badges fetch during comparison with optimistic data:',
         error
       );
+      return null;
     }
   }
 
@@ -106,14 +107,17 @@ export class BadgesQueueService {
     address: string,
     forceCompare: boolean = false
   ): Promise<void> {
-    await this.queue.add(
-      this.queueName,
-      { address, forceCompare },
-      {
-        jobId: address,
-        delay: 1000,
-      }
-    );
+    console.log('🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥');
+
+    const existingJob = await this.queue.getJob(address);
+    if (
+      !existingJob ||
+      (await existingJob.isCompleted()) ||
+      (await existingJob.isFailed())
+    ) {
+      await this.queue.remove(address);
+      await this.queue.add(this.queueName, { address }, { jobId: address, delay: 1000 });
+    }
   }
 
   private attachLifecycleHandlers() {

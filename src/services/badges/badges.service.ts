@@ -46,11 +46,13 @@ export class BadgesServices {
       return optimisticData;
     }
 
+
     if (cachedData) {
       console.log('Badges cache returned!');
       this.badgesQueueService.addJob(account);
       return cachedData;
     }
+
 
     console.log('No cache found. Fetching badges...');
     const eoas = await superChainAccountService.getEOAS(account);
