@@ -36,6 +36,8 @@ export class BadgesQueueService {
     const { address, forceCompare } = job.data;
     console.info(`Processing badge for address: ${address}`);
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     if (forceCompare) {
       return await this.handleForceCompare(address);
     }
@@ -107,8 +109,6 @@ export class BadgesQueueService {
     address: string,
     forceCompare: boolean = false
   ): Promise<void> {
-    console.log('🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥');
-
     const existingJob = await this.queue.getJob(address);
     if (
       !existingJob ||
@@ -116,7 +116,7 @@ export class BadgesQueueService {
       (await existingJob.isFailed())
     ) {
       await this.queue.remove(address);
-      await this.queue.add(this.queueName, { address }, { jobId: address, delay: 1000 });
+      await this.queue.add(this.queueName, { address }, { jobId: address });
     }
   }
 
