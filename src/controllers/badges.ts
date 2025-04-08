@@ -5,14 +5,14 @@ import { superChainAccountService } from "../services/superChainAccount.service"
 import { isAbleToSponsor } from "../services/sponsorship.service";
 import { AttestationsService } from "../services/attestations.service";
 import { redisService } from "@/services/redis.service";
-
+import { badgesQueueService } from "../services/badges/queue";
 export async function getBadges(req: Request, res: Response) {
     const account = req.params.account as string;
     if (!account || account === ZeroAddress) {
         return res.status(500).json({ error: "Invalid request" });
     }
     try {
-        const badgesService = new BadgesServices();        
+        const badgesService = new BadgesServices(badgesQueueService);
         const currentBadges = await badgesService.getCachedBadges(account);
         res.json({ currentBadges });
     } catch (error) {
@@ -43,7 +43,7 @@ export async function claimBadges(req: Request, res: Response) {
         //     return res.status(500).json({ error: "User is not able to sponsor" });
         // }
 
-        const badgesService = new BadgesServices();
+        const badgesService = new BadgesServices(badgesQueueService);
         const eoas = await superChainAccountService.getEOAS(account);
         const badges = await badgesService.getBadges(eoas, account);
         const attestationsService = new AttestationsService();

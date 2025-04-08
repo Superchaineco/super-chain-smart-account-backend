@@ -13,9 +13,11 @@ import {
   SESSION_SECRET,
 } from './config/superChain/constants';
 import { redis } from './utils/cache';
-
+import { setupBullBoard } from './utils/bullBoard';
 const app = express();
 console.debug('ENV', ENV);
+
+setupBullBoard(app);
 
 app.use(
   cors({

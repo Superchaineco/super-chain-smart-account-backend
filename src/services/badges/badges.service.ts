@@ -9,6 +9,7 @@ import IpfsService from '../ipfs.service';
 import { redisService } from '../redis.service';
 import { BadgeStrategyContext } from '../badges/strategies/context';
 import { superChainAccountService } from '../superChainAccount.service';
+import { BadgesQueueService } from './queue';
 export type Badge = GetUserBadgesQuery['accountBadges'][number];
 export type ResponseBadge = {
   points: string;
@@ -20,46 +21,44 @@ export type ResponseBadge = {
 
 export class BadgesServices {
   private badges: ResponseBadge[] = [];
+  private badgesQueueService: BadgesQueueService;
+  public BADGES_CACHE_KEY_PREFIX = 'cached_badges';
+  public OPTIMISTIC_UPDATED_BADGES_CACHE_KEY_PREFIX = 'optimistic_updated_cached_badges';
+
+  constructor(queueService: BadgesQueueService) {
+    this.badgesQueueService = queueService;
+  }
 
   public async getCachedBadges(account: string): Promise<any[]> {
-    const CACHE_KEY = `cached_badges:${account}`;
-    const OPTIMISTIC_UPDATED_CACHE_KEY = `optimistic_updated_cached_badges:${account}`;
+    const CACHE_KEY = `${this.BADGES_CACHE_KEY_PREFIX}:${account}`;
+    const OPTIMISTIC_UPDATED_CACHE_KEY = `${this.OPTIMISTIC_UPDATED_BADGES_CACHE_KEY_PREFIX}:${account}`;
 
-    const fetchFunction = async (updateCache = true) => {
-      const eoas = await superChainAccountService.getEOAS(account);
-      const freshData = await this.getBadges(eoas, account);
-      if (updateCache) {
-        await redisService.setCachedData(CACHE_KEY, freshData, null);
-      }
-      return freshData;
-    };
-
-    const optimisticData = await redisService.getCachedData(OPTIMISTIC_UPDATED_CACHE_KEY);
+    const optimisticData = await redisService.getCachedData(
+      OPTIMISTIC_UPDATED_CACHE_KEY
+    );
     const cachedData = await redisService.getCachedData(CACHE_KEY);
+
     if (optimisticData && cachedData) {
-      console.log('Optimistic data found for badges. Returning optimistic data...');
-      fetchFunction(false).then((freshData) => {
-        if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
-          console.log('Data fetch differs from optimistic data. Updating main cache and clearing optimistic data.');
-          redisService.deleteCachedData(OPTIMISTIC_UPDATED_CACHE_KEY);
-          redisService.setCachedData(CACHE_KEY, freshData, null);
-          return freshData;
-        } else {
-          console.log('Data fetch matches optimistic data. Everything remains the same.');
-        }
-      }).catch((err) => {
-        console.error('Error in badges fetch during comparison with optimistic data:', err);
-      });
+      console.log(
+        'Optimistic data found for badges. Returning optimistic data...'
+      );
+      this.badgesQueueService.addJob(account, true);
       return optimisticData;
     }
 
+
     if (cachedData) {
       console.log('Badges cache returned!');
-      fetchFunction();
+      this.badgesQueueService.addJob(account);
       return cachedData;
     }
 
-    return fetchFunction();
+
+    console.log('No cache found. Fetching badges...');
+    const eoas = await superChainAccountService.getEOAS(account);
+    const freshData = await this.getBadges(eoas, account);
+    await redisService.setCachedData(CACHE_KEY, freshData, null);
+    return freshData;
   }
 
   public async fetchBadges(account: string) {
