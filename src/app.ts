@@ -17,6 +17,7 @@ import { redis } from './utils/cache';
 const app = express();
 console.debug('ENV', ENV);
 
+
 app.use(
   cors({
     origin: DOMAIN,
