@@ -1,41 +1,38 @@
 import { redis, redisWorker } from '@/utils/cache';
 import { Queue, Worker, Job } from 'bullmq';
-import { BadgesServices } from '../badges.service';
 import { redisService } from '@/services/redis.service';
-import { SuperChainAccountService } from '@/services/superChainAccount.service';
+import { ENV, ENVIRONMENTS } from '@/config/superChain/constants';
+import axios from 'axios';
 
 interface BadgeJobData {
-  address: string;
-  forceCompare: boolean;
+  urlGet: string;
 }
 
+
 export class BadgesQueueService {
+
   private readonly queue: Queue;
   private readonly worker?: Worker;
-  private readonly queueName = 'badgesQueue';
-  private readonly badgesService: BadgesServices;
-  private readonly superChainAccountService: SuperChainAccountService;
+  private readonly queueName = 'apiCallQueue';
 
   constructor() {
     this.queue = new Queue(this.queueName, { connection: redis });
-    this.badgesService = new BadgesServices(this);
-    this.superChainAccountService = new SuperChainAccountService();
-    
-    // Only initialize worker if not in development
-    if (process.env.NODE_ENV !== 'development') {
+
+    if (ENV === ENVIRONMENTS.production) {
       this.worker = this.initializeWorker();
       this.attachLifecycleHandlers();
     }
+
   }
 
   private initializeWorker(): Worker {
-    if (process.env.NODE_ENV === 'development') {
+    if (ENV !== ENVIRONMENTS.production) {
       throw new Error('Worker should not be initialized in development');
     }
     return new Worker(
       this.queueName,
       async (job: Job<BadgeJobData>) => this.processJob(job),
-      { 
+      {
         connection: redisWorker,
         concurrency: 1
       }
@@ -43,96 +40,45 @@ export class BadgesQueueService {
   }
 
   private async processJob(job: Job<BadgeJobData>): Promise<void> {
-    const { address, forceCompare } = job.data;
-    console.info(`Processing badge for address: ${address}`);
+    const { urlGet } = job.data;
+    console.info(`Processing delayed call: ${urlGet}`);
+    const cacheKey = `delayed_call:${urlGet}`;
+    const response = await axios.get(urlGet)
+    await new Promise(resolve => setTimeout(resolve, 300));
+    redisService.setCachedData(cacheKey, response.data, 3600);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
 
-    if (forceCompare) {
-      return await this.handleForceCompare(address);
+
+
+
+
+  public async getCachedDelayedResponse(urlGet: string): Promise<any> {
+    const cacheKey = `delayed_call:${urlGet}`;
+    const cachedData = await redisService.getCachedData(cacheKey);
+    if (cachedData) {
+      console.info(`Cache hit for key: ${cacheKey}`);
+      return cachedData;
     }
-
-    return await this.fetchAndCacheBadges(address);
+    await this.addJob(urlGet)
+    return null;
   }
 
-  private async handleForceCompare(address: string): Promise<void> {
-    const cacheKey = this.getCacheKey(address);
-    const optimisticCacheKey = this.getOptimisticCacheKey(address);
-
-    const [optimisticData, cachedData] = await Promise.all([
-      redisService.getCachedData(optimisticCacheKey),
-      redisService.getCachedData(cacheKey),
-    ]);
-
-    if (!optimisticData || !cachedData) {
-      await this.fetchAndCacheBadges(address);
-      return;
-    }
-
-    console.log(
-      'Optimistic data found for badges. Returning optimistic data...'
-    );
-
-    try {
-      const freshData = await this.fetchAndCacheBadges(address);
-
-      if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
-        console.log(
-          'Data fetch differs from optimistic data. Updating main cache and clearing optimistic data.'
-        );
-        await Promise.all([
-          redisService.deleteCachedData(optimisticCacheKey),
-          redisService.setCachedData(cacheKey, freshData, null),
-        ]);
-      } else {
-        console.log(
-          'Data fetch matches optimistic data. Everything remains the same.'
-        );
-      }
-      return freshData;
-    } catch (error) {
-      console.error(
-        'Error in badges fetch during comparison with optimistic data:',
-        error
-      );
-      return null;
-    }
-  }
-
-  private async fetchAndCacheBadges(address: string): Promise<any> {
-    const cacheKey = this.getCacheKey(address);
-    const eoas = await this.superChainAccountService.getEOAS(address);
-    const freshData = await this.badgesService.getBadges(eoas, address);
-    await redisService.setCachedData(cacheKey, freshData, null);
-    return freshData;
-  }
-
-  private getCacheKey(address: string): string {
-    return `${this.badgesService.BADGES_CACHE_KEY_PREFIX}:${address}`;
-  }
-
-  private getOptimisticCacheKey(address: string): string {
-    return `${this.badgesService.OPTIMISTIC_UPDATED_BADGES_CACHE_KEY_PREFIX}:${address}`;
-  }
-
-  public async addJob(
-    address: string,
-    forceCompare: boolean = false
-  ): Promise<void> {
-    const existingJob = await this.queue.getJob(address);
+  public async addJob(urlGet: string): Promise<void> {
+    const existingJob = await this.queue.getJob(urlGet);
     if (
       !existingJob ||
       (await existingJob.isCompleted()) ||
       (await existingJob.isFailed())
     ) {
-      await this.queue.remove(address);
-      await this.queue.add(this.queueName, { address }, { jobId: address });
+      await this.queue.remove(urlGet);
+      await this.queue.add(this.queueName, { urlGet }, { jobId: urlGet });
     }
   }
 
   private attachLifecycleHandlers() {
     if (!this.worker) return;
-    
+
     this.worker.on('error', (err) => {
       console.error('[BullMQ Worker Error]', err);
     });
@@ -141,6 +87,7 @@ export class BadgesQueueService {
       console.error('[BullMQ Queue Error]', err);
     });
 
+    //On process exit
     const gracefulShutdown = async (signal: string) => {
       console.log(`Received ${signal}, closing worker gracefully...`);
       await this.worker.close();
