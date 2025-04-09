@@ -7,19 +7,21 @@ export class InkTransactionsStrategy extends BaseBadgeStrategy {
 
 
   async getValue(eoas: string[]): Promise<number> {
-    const cacheKey = `inkTransactions-${eoas.join(",")}`;
-    const ttl = 3600
 
-    const fetchFunction = async () => {
-      const transactions = eoas.reduce(async (accPromise, eoa) => {
-        const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/57073/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=0&endblock=99999999&page=1&offset=250&sort=asc`)
-        const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
-        return (await accPromise) + transactions;
-      }, Promise.resolve(0));
+    return await this.getCachedValue({ service: "routescan", chain: "ink-57073", chainId: "57073", eoas });
+    // const cacheKey = `inkTransactions-${eoas.join(",")}`;
+    // const ttl = 3600
 
-      return transactions;
-    };
+    // const fetchFunction = async () => {
+    //   const transactions = eoas.reduce(async (accPromise, eoa) => {
+    //     const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/57073/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=0&endblock=99999999&page=1&offset=250&sort=asc`)
+    //     const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
+    //     return (await accPromise) + transactions;
+    //   }, Promise.resolve(0));
 
-    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    //   return transactions;
+    // };
+
+    // return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 }

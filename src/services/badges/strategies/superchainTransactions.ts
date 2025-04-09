@@ -7,7 +7,6 @@ import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
 import { badgesQueueService } from "../queue";
 
 
-const ttl = 3600
 
 
 
@@ -43,12 +42,12 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     async getValue(eoas: string[]) {
         const season = this.getSeason();
 
-        let totalTxs = await this.getCachedValue("routescan", "optimism-10", eoas, season);
-        totalTxs += await this.getCachedValue("routescan", "base-8453", eoas, season);
-        totalTxs += await this.getCachedValue("routescan", "mode-34443", eoas, season);
-        totalTxs += await this.getCachedValue("routescan", "ink-57073", eoas, season);
-        totalTxs += await this.getCachedValue("blockscout", "unichain-130", eoas, season);
-        totalTxs += await this.getCachedValue("blockscout", "Soneium", eoas, season);
+        let totalTxs = await this.getCachedSeasonedValue({ service: "routescan", chain: "optimism-10", chainId: "10", eoas, season });
+        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "base-8453", chainId: "8453", eoas, season });
+        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas, season });
+        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "ink-57073", chainId: "57073", eoas, season });
+        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "unichain-130", chainId: "130", eoas, season });
+        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "Soneium", chainId: "", eoas, season });
 
         return totalTxs;
     }
@@ -56,39 +55,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
 
 
-    async getCachedValue(service: string, chain: string, eoas: string[], season: Season): Promise<number> {
 
-        let value = 0;
-        const fetchDataOfEOA = async (service: string, eoa: string): Promise<number> => {
-            const chainId = chain.split("-")[1];
-            const fromBlock = season.blockRanges[chain][0];
-            const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + season.blockRanges[chain][1] : ''
-
-            const urlByService = {
-
-                "blockscout": () => {
-                    const baseUrl = chain === "Soneium" ? "https://soneium.blockscout.com" : `https://unichain.blockscout.com`
-                    const urlGet = `${baseUrl}/api/v2/addresses/${eoa}/transactions?from_block=${fromBlock}${toBlock}`
-                    return urlGet
-                },
-                "routescan": () => {
-                    return `https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`
-                }
-
-            }
-
-            const urlGet = urlByService[service]();
-            const response = await badgesQueueService.getCachedDelayedResponse(urlGet)
-            const totalTransactions = Number(response?.data.items.length ?? 0);
-            return totalTransactions;
-        };
-        const cacheKey = `${service}-${chain}-${season.season}Transactions-${eoas.join(",")}`;
-        for (const eoa of eoas) {
-            value += await redisService.getCachedDataWithCallback(cacheKey, () => fetchDataOfEOA(service, eoa), ttl);
-        }
-        return value;
-
-    }
 
 
 
