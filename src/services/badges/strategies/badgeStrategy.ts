@@ -90,6 +90,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     apicall.toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + apicall.season.blockRanges[apicall.chain][1] : ''
 
     const response = await this.fetchDataOfEOA(apicall)
+    
     const totalTransactions = Number(response?.data.items.length ?? 0);
     return totalTransactions;
   }
