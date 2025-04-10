@@ -8,9 +8,7 @@ interface BadgeJobData {
   urlGet: string;
 }
 
-
 export class BadgesQueueService {
-
   private readonly queue: Queue;
   private readonly worker?: Worker;
   private readonly queueName = 'apiCallQueue';
@@ -22,7 +20,6 @@ export class BadgesQueueService {
       this.worker = this.initializeWorker();
       this.attachLifecycleHandlers();
     }
-
   }
 
   private initializeWorker(): Worker {
@@ -46,12 +43,7 @@ export class BadgesQueueService {
     const response = await axios.get(urlGet)
     await new Promise(resolve => setTimeout(resolve, 300));
     redisService.setCachedData(cacheKey, response.data, 3600);
-
   }
-
-
-
-
 
   public async getCachedDelayedResponse(urlGet: string): Promise<any> {
     const cacheKey = `delayed_call:${urlGet}`;

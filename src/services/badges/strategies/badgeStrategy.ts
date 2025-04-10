@@ -1,42 +1,45 @@
 import { Badge, ResponseBadge } from '../badges.service';
-import { redisService } from "../../redis.service";
-import { Season } from "@/types/index.types";
-import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
-import { badgesQueueService } from "../queue";
-
-
+import { redisService } from '../../redis.service';
+import { Season } from '@/types/index.types';
+import { ROUTESCAN_API_KEY } from '@/config/superChain/constants';
+import { badgesQueueService } from '../queue';
 
 type ExternalApiCall = {
-  service: string,
-  chain: string,
-  chainId: string,
-  eoas: string[],
-  eoa?: string,
-  season?: Season,
-  fromBlock?: string,
-  toBlock?: string
-}
+  service: string;
+  chain: string;
+  chainId: string;
+  eoas: string[];
+  eoa?: string;
+  season?: Season;
+  fromBlock?: string;
+  toBlock?: string;
+};
 export interface BadgeStrategy {
-  calculateTier(eoas: string[], badgeData: Badge, account?: string): Promise<ResponseBadge>;
+  calculateTier(
+    eoas: string[],
+    badgeData: Badge,
+    account?: string
+  ): Promise<ResponseBadge>;
 }
 
-const ttl = 3600
+const ttl = 3600;
 
 const buildUrl = (apiCall: ExternalApiCall) => {
   const urlByService = {
-
-    "blockscout": () => {
-      const baseUrl = apiCall.chain === "Soneium" ? "https://soneium.blockscout.com" : `https://unichain.blockscout.com`
-      const urlGet = `${baseUrl}/api/v2/addresses/${apiCall.eoa}/transactions?from_block=${apiCall.fromBlock}${apiCall.toBlock}`
-      return urlGet
+    blockscout: () => {
+      const baseUrl =
+        apiCall.chain === 'Soneium'
+          ? 'https://soneium.blockscout.com'
+          : `https://unichain.blockscout.com`;
+      const urlGet = `${baseUrl}/api/v2/addresses/${apiCall.eoa}/transactions?from_block=${apiCall.fromBlock}${apiCall.toBlock}`;
+      return urlGet;
     },
-    "routescan": () => {
-      return `https://api.routescan.io/v2/network/mainnet/evm/${apiCall.chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${apiCall.eoa}&startblock=${apiCall.fromBlock}&page=1&offset=301&sort=asc`
-    }
-
-  }
+    routescan: () => {
+      return `https://api.routescan.io/v2/network/mainnet/evm/${apiCall.chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${apiCall.eoa}&startblock=${apiCall.fromBlock}&page=1&offset=301&sort=asc`;
+    },
+  };
   return urlByService[apiCall.service]();
-}
+};
 
 export abstract class BaseBadgeStrategy implements BadgeStrategy {
   abstract getValue(
@@ -44,64 +47,73 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     account?: string
   ): Promise<number | boolean>;
 
-
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
+    let totalTransactions = 0;
+    
+    for (const eoa of apicall.eoas) {
+      const cacheKey = `${apicall.service}-${apicall.chain}-${eoa}`;
+      apicall.eoa = eoa;
+      
+      const transactions = await redisService.getCachedDataWithCallback(
+        cacheKey,
+        () => this.fetchAllTimeDataOfEOA(apicall),
+        ttl
+      );
+      
+      totalTransactions += transactions;
+    }
 
-    const cacheKey = `inkTransactions-${apicall.eoas.join(",")}`;
-
-    const transactions = apicall.eoas.reduce(async (accPromise, eoa) => {
-      apicall.eoa = eoa
-      const transactions = await redisService.getCachedDataWithCallback(cacheKey, () => this.fetchAllTimeDataOfEOA(apicall), ttl);
-      return (await accPromise) + transactions;
-
-    }, Promise.resolve(0));
-
-    return transactions;
-
-
-
+    return totalTransactions;
   }
   async getCachedSeasonedValue(apicall: ExternalApiCall): Promise<number> {
-
     let value = 0;
-    const cacheKey = `${apicall.service}-${apicall.chain}-${apicall.season.season}Transactions-${apicall.eoas.join(",")}`;
+    
     for (const eoa of apicall.eoas) {
-      apicall.eoa = eoa
-      value += await redisService.getCachedDataWithCallback(cacheKey, () => this.fetchSeasonedDataOfEOA(apicall), ttl);
+      const cacheKey = `${apicall.service}-${apicall.chain}-${
+        apicall.season.season
+      }Transactions-${eoa}`;
+      
+      apicall.eoa = eoa;
+      value += await redisService.getCachedDataWithCallback(
+        cacheKey,
+        () => this.fetchSeasonedDataOfEOA(apicall),
+        ttl
+      );
     }
     return value;
-
   }
 
   async fetchAllTimeDataOfEOA(apicall: ExternalApiCall): Promise<number> {
+    apicall.fromBlock = '0';
 
-    apicall.fromBlock = "0"
-
-    const response = await this.fetchDataOfEOA(apicall)
-    const totalTransactions = response?.data.result.filter((tx: any) => tx.from.toLowerCase() === apicall.eoa.toLowerCase()).length ?? 0;
+    const response = await this.fetchDataOfEOA(apicall);
+    const totalTransactions =
+      response?.result.filter(
+        (tx: any) => tx.from.toLowerCase() === apicall.eoa.toLowerCase()
+      ).length ?? 0;
 
     return totalTransactions;
   }
 
   async fetchSeasonedDataOfEOA(apicall: ExternalApiCall): Promise<number> {
-
     apicall.fromBlock = apicall.season.blockRanges[apicall.chain][0];
-    apicall.toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + apicall.season.blockRanges[apicall.chain][1] : ''
+    apicall.toBlock =
+      Date.now() >= new Date(2025, 5, 11).getTime()
+        ? '&to_block=' + apicall.season.blockRanges[apicall.chain][1]
+        : '';
 
-    const response = await this.fetchDataOfEOA(apicall)
-    
-    const totalTransactions = Number(response?.data.items.length ?? 0);
+    const response = await this.fetchDataOfEOA(apicall);
+    const totalTransactions = Number(
+      (response?.result?.length || response?.items?.length) ?? 0
+    );
     return totalTransactions;
   }
 
-
   async fetchDataOfEOA(apicall: ExternalApiCall): Promise<any> {
-
-    const urlGet = buildUrl(apicall)
-    const response = await badgesQueueService.getCachedDelayedResponse(urlGet)
-    return response
-
-  };
+    const urlGet = buildUrl(apicall);
+    const response = await badgesQueueService.getCachedDelayedResponse(urlGet);
+    return response;
+  }
 
   async calculateTier(
     eoas: string[],
