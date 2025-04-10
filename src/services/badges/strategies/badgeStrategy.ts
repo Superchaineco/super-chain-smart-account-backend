@@ -31,7 +31,7 @@ const buildUrl = (apiCall: ExternalApiCall) => {
       return urlGet
     },
     "routescan": () => {
-      return `https://api.routescan.io/v2/network/mainnet/evm/${apiCall.chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${apiCall.eoa}&startblock=${apiCall.fromBlock}${apiCall.toBlock}&page=1&offset=1000&sort=asc`
+      return `https://api.routescan.io/v2/network/mainnet/evm/${apiCall.chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${apiCall.eoa}&startblock=${apiCall.fromBlock}&page=1&offset=301&sort=asc`
     }
 
   }
@@ -76,7 +76,6 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
   async fetchAllTimeDataOfEOA(apicall: ExternalApiCall): Promise<number> {
 
     apicall.fromBlock = "0"
-    apicall.toBlock = "99999999"
 
     const response = await this.fetchDataOfEOA(apicall)
     const totalTransactions = response?.data.result.filter((tx: any) => tx.from.toLowerCase() === apicall.eoa.toLowerCase()).length ?? 0;
