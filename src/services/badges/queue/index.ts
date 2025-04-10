@@ -42,12 +42,13 @@ export class BadgesQueueService {
     const cacheKey = `delayed_call:${urlGet}`;
     const response = await axios.get(urlGet)
     await new Promise(resolve => setTimeout(resolve, 300));
-    redisService.setCachedData(cacheKey, response.data, 3600);
+    await redisService.setCachedData(cacheKey, response.data, 3600);
   }
 
   public async getCachedDelayedResponse(urlGet: string): Promise<any> {
     const cacheKey = `delayed_call:${urlGet}`;
     const cachedData = await redisService.getCachedData(cacheKey);
+
     if (cachedData) {
       console.info(`Cache hit for key: ${cacheKey}`);
       return cachedData;
