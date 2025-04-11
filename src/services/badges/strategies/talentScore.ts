@@ -24,6 +24,9 @@ export class TalentScoreStrategy extends BaseBadgeStrategy {
             "x-api-key": process.env.TALENT_API_KEY!
           }
         }).catch(error => {
+          if (axios.isAxiosError(error) && error.response?.status === 404) {
+            return;
+          }
           console.error(`Error fetching talent passport for ${eoa}:`, error);
           return;
         });
