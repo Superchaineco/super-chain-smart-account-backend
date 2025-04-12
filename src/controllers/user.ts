@@ -30,3 +30,19 @@ export async function getUser(req: Request, res: Response) {
     }
 }
 
+export async function refreshEOAS(req: Request, res: Response) {
+    const account = req.params.account as string;
+
+    if (!account) {
+        return res.status(500).json({ error: "Invalid request" });
+    }
+
+    try {
+        const eoas = await superChainAccountService.refreshEOASCache(account);
+        return res.status(200).json({ eoas });
+    } catch (error) {
+        console.error("Error refreshing EOAS cache:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+

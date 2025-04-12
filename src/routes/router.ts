@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { verifyReverseProxy, verifyOwner } from '../middleware/auth';
-import { getUser } from '../controllers/user';
+import { getUser, refreshEOAS } from '../controllers/user';
 import { claimBadges, getBadges } from '../controllers/badges';
 import { perksByAccount, perksByLevel } from '../controllers/perks';
 import {
@@ -14,6 +14,8 @@ import { getAirdrop } from '@/controllers/airdrop';
 export const routes = Router();
 
 routes.get('/user/:account', getUser);
+
+routes.post('/user/:account/refresh-eoas', refreshEOAS);
 
 routes.get('/user/:account/badges', getBadges);
 

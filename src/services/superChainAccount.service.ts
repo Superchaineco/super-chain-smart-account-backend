@@ -6,6 +6,7 @@ import {
 } from "../config/superChain/constants";
 import Safe from "@safe-global/protocol-kit";
 import { BadgesServices } from "./badges/badges.service";
+import { redisService } from "./redis.service";
 
 export class SuperChainAccountService {
   superChainAccount: Contract;
@@ -21,12 +22,24 @@ export class SuperChainAccountService {
   }
 
   async getEOAS(address: string): Promise<string[]> {
-    // @ts-expect-error ESM import
-    const protocolKit = await Safe.default.init({
-      provider: JSON_RPC_PROVIDER,
-      safeAddress: address,
-    });
-    return await protocolKit.getOwners();
+    const cacheKey = `eoas-${address}`;
+    const ttl = 3600;
+    const fetchFunction = async () => {
+      // @ts-expect-error ESM import
+      const protocolKit = await Safe.default.init({
+        provider: JSON_RPC_PROVIDER,
+        safeAddress: address,
+      });
+      return await protocolKit.getOwners();
+    };
+
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+  }
+
+  async refreshEOASCache(address: string): Promise<string[]> {
+    const cacheKey = `eoas-${address}`;
+    await redisService.deleteCachedData(cacheKey);
+    return this.getEOAS(address);
   }
 
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
@@ -37,8 +50,15 @@ export class SuperChainAccountService {
   }
 
   async getSuperChainSmartAccount(address: string): Promise<string> {
-    const response = await this.superChainAccount.getSuperChainAccount(address);
-    return response;
+    const cacheKey = `smart-account-${address}`;
+    const ttl = 3600; 
+
+    const fetchFunction = async () => {
+      const response = await this.superChainAccount.getSuperChainAccount(address);
+      return response;
+    };
+
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 
   async getSuperChainSmartAccountBadges(address: string) {
