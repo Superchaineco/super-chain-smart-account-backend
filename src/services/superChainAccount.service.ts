@@ -49,13 +49,16 @@ export class SuperChainAccountService {
     );
   }
 
-  async getSuperChainSmartAccount(address: string): Promise<string> {
+  async getSuperChainSmartAccount(address: string): Promise<any> {
     const cacheKey = `smart-account-${address}`;
     const ttl = 3600; 
 
     const fetchFunction = async () => {
       const response = await this.superChainAccount.getSuperChainAccount(address);
-      return response;
+      // Convertir el objeto/array manteniendo su estructura
+      return JSON.parse(JSON.stringify(response, (_, value) =>
+        typeof value === 'bigint' ? value.toString() : value
+      ));
     };
 
     return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
