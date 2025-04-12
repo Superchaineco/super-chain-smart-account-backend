@@ -201,12 +201,14 @@ export class AttestationsService {
       return badge;
     });
 
-    // 3. Guardar la versión optimista
     await redisService.setCachedData(
       OPTIMISTIC_UPDATED_CACHE_KEY,
       updatedBadges,
       null
     );
+
+    // Delete the cached smart account data
+    await redisService.deleteCachedData(`smart-account-${account}`);
     console.log('Optimistic updated badges for:', account);
   }
 }
