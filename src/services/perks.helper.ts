@@ -14,7 +14,7 @@ export class PerksHelper {
 
     public async getRafflePerks(accountLevel: number): Promise<Perk> {
         const cacheKey = `rafflePerks-${accountLevel}`;
-        const ttl = 1800; // 30 minutes
+        const ttl = null; 
 
         const fetchFunction = async () => {
             const { contractAddress, functionAbi } = this.config.SuperChainRaffle;
