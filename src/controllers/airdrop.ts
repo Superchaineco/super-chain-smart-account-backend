@@ -3,6 +3,7 @@ import { AirdropService } from '@/services/airdrop.service';
 import { Request, Response } from 'express';
 
 export async function getAirdrop(req: Request, res: Response) {
+  return res.status(404).json({ message: 'Not implemented' });
   const account = req.params.account as string;
 
   if (!account) {
