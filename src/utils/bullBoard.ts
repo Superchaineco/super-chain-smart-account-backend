@@ -15,7 +15,7 @@ export const setupBullBoard = (app: any) => {
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
 
-  const badgesQueue = new Queue('badgesQueue', { connection: redis });
+  const badgesQueue = new Queue('apiCallQueue', { connection: redis });
   createBullBoard({
     queues: [new BullMQAdapter(badgesQueue) as any],
     serverAdapter,
