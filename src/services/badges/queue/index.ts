@@ -31,7 +31,11 @@ export class BadgesQueueService {
       async (job: Job<BadgeJobData>) => this.processJob(job),
       {
         connection: redisWorker,
-        concurrency: 1
+        concurrency: 1,
+        limiter: {
+          max: 5,
+          duration: 1000,
+        },
       }
     );
   }
@@ -40,8 +44,8 @@ export class BadgesQueueService {
     const { urlGet } = job.data;
     console.info(`Processing delayed call: ${urlGet}`);
     const cacheKey = `delayed_call:${urlGet}`;
-    const response = await axios.get(urlGet)
-    await new Promise(resolve => setTimeout(resolve, 300));
+    const response = await axios.get(urlGet);
+    await new Promise((resolve) => setTimeout(resolve, 300));
     await redisService.setCachedData(cacheKey, response.data, 3600);
   }
 
@@ -53,7 +57,7 @@ export class BadgesQueueService {
       console.info(`Cache hit for key: ${cacheKey}`);
       return cachedData;
     }
-    await this.addJob(urlGet)
+    await this.addJob(urlGet);
     return null;
   }
 
@@ -65,7 +69,21 @@ export class BadgesQueueService {
       (await existingJob.isFailed())
     ) {
       await this.queue.remove(urlGet);
-      await this.queue.add(this.queueName, { urlGet }, { jobId: urlGet });
+      await this.queue.add(
+        this.queueName,
+        { urlGet },
+        {
+          jobId: urlGet,
+          attempts: 5,
+          backoff: {
+            type: 'exponential',
+            delay: 1000,
+          },
+          removeOnComplete: {
+            age: 2 * 24 * 60 * 60 * 1000,
+          },
+        }
+      );
     }
   }
 
