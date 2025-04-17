@@ -29,8 +29,8 @@ export async function claimBadges(req: Request, res: Response) {
         return res.status(500).json({ error: "Invalid request" });
     }
     try {
-        const superChainSmartAccount =
-            await superChainAccountService.getSuperChainSmartAccount(account);
+        // const superChainSmartAccount =
+        //     await superChainAccountService.getSuperChainSmartAccount(account);
 
         // const isAble = await isAbleToSponsor(
         //     account,
