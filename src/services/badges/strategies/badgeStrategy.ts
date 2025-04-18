@@ -106,7 +106,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
 
     const response = await this.fetchDataOfEOA(apicall);
     const totalTransactions = Number(
-      (response?.result?.length || response?.items?.length) ?? 0
+      (response.data?.result?.length || response?.data.items?.length) ?? 0
     );
     return totalTransactions;
   }
