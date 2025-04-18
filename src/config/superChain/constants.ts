@@ -68,3 +68,9 @@ export const SUNNY_TOKEN_ADDRESS = config.SUNNY_TOKEN_ADDRESS;
 export const SUNNY_AIRDROP_ADDRESS = config.SUNNY_AIRDROP_ADDRESS;
 export const SUBGRAPH_URI = process.env.SUBGRAPH_URI!;
 export const ROUTESCAN_API_KEY = process.env.ROUTESCAN_API_KEY!;  
+
+export const INK_BLOCKSCOUT_API_KEY  = process.env.INK_BLOCKSCOUT_API_KEY!; 
+export const OP_BLOCKSCOUT_API_KEY  = process.env.OP_BLOCKSCOUT_API_KEY!; 
+export const BASE_BLOCKSCOUT_API_KEY  = process.env.BASE_BLOCKSCOUT_API_KEY!; 
+export const SONEIUM_BLOCKSCOUT_API_KEY  = process.env.SONEIUM_BLOCKSCOUT_API_KEY!; 
+export const UNICHAIN_BLOCKSCOUT_API_URL = process.env.UNICHAIN_BLOCKSCOUT_API_URL!; 

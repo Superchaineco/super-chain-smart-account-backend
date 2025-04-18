@@ -42,12 +42,13 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     async getValue(eoas: string[]) {
         const season = this.getSeason();
 
-        let totalTxs = await this.getCachedSeasonedValue({ service: "routescan", chain: "optimism-10", chainId: "10", eoas, season });
-        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "base-8453", chainId: "8453", eoas, season });
-        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas, season });
-        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "ink-57073", chainId: "57073", eoas, season });
+        let totalTxs = await this.getCachedSeasonedValue({ service: "blockscout", chain: "optimism-10", chainId: "10", eoas, season });
+        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "base-8453", chainId: "8453", eoas, season });        
+        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "ink-57073", chainId: "57073", eoas, season });
         totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "unichain-130", chainId: "130", eoas, season });
         totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "Soneium", chainId: "", eoas, season });
+        
+        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas, season });
 
         return totalTxs;
     }

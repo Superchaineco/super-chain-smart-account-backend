@@ -1,7 +1,7 @@
 import { Badge, ResponseBadge } from '../badges.service';
 import { redisService } from '../../redis.service';
 import { Season } from '@/types/index.types';
-import { ROUTESCAN_API_KEY } from '@/config/superChain/constants';
+import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY, ROUTESCAN_API_KEY, SONEIUM_BLOCKSCOUT_API_KEY, UNICHAIN_BLOCKSCOUT_API_URL } from '@/config/superChain/constants';
 import { badgesQueueService } from '../queue';
 
 type ExternalApiCall = {
@@ -27,11 +27,14 @@ const ttl = 3600;
 const buildUrl = (apiCall: ExternalApiCall) => {
   const urlByService = {
     blockscout: () => {
-      const baseUrl =
-        apiCall.chain === 'Soneium'
-          ? 'https://soneium.blockscout.com'
-          : `https://unichain.blockscout.com`;
-      const urlGet = `${baseUrl}/api/v2/addresses/${apiCall.eoa}/transactions?from_block=${apiCall.fromBlock}${apiCall.toBlock}`;
+      const baseUrls = {
+        "Soneium": `https://soneium.blockscout.com/api?apikey=${SONEIUM_BLOCKSCOUT_API_KEY}`,
+        "unichain-130": `https://unichain.blockscout.com/api?apikey=${UNICHAIN_BLOCKSCOUT_API_URL}`,
+        "ink-57073": `https://explorer.inkonchain.com/api?apikey=${INK_BLOCKSCOUT_API_KEY}`,
+        "optimism-10": `https://optimism.blockscout.com/api?apikey=${OP_BLOCKSCOUT_API_KEY}`,
+        "base-8453": `https://base.blockscout.com/api?apikey=${BASE_BLOCKSCOUT_API_KEY}`
+      }
+      const urlGet = `${baseUrls[apiCall.chain]}&module=account&action=txlist&address=${apiCall.eoa}&sort=asc&startblock=${apiCall.fromBlock}&endblock=${apiCall.toBlock}`;
       return urlGet;
     },
     routescan: () => {
@@ -49,17 +52,17 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
 
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
     let totalTransactions = 0;
-    
+
     for (const eoa of apicall.eoas) {
       const cacheKey = `${apicall.service}-${apicall.chain}-${eoa}`;
       apicall.eoa = eoa;
-      
+
       const transactions = await redisService.getCachedDataWithCallback(
         cacheKey,
         () => this.fetchAllTimeDataOfEOA(apicall),
         ttl
       );
-      
+
       totalTransactions += transactions;
     }
 
@@ -67,12 +70,11 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
   }
   async getCachedSeasonedValue(apicall: ExternalApiCall): Promise<number> {
     let value = 0;
-    
+
     for (const eoa of apicall.eoas) {
-      const cacheKey = `${apicall.service}-${apicall.chain}-${
-        apicall.season.season
-      }Transactions-${eoa}`;
-      
+      const cacheKey = `${apicall.service}-${apicall.chain}-${apicall.season.season
+        }Transactions-${eoa}`;
+
       apicall.eoa = eoa;
       value += await redisService.getCachedDataWithCallback(
         cacheKey,
@@ -104,7 +106,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
 
     const response = await this.fetchDataOfEOA(apicall);
     const totalTransactions = Number(
-      (response?.result?.length || response?.items?.length) ?? 0
+      (response.data?.result?.length || response?.data.items?.length) ?? 0
     );
     return totalTransactions;
   }
