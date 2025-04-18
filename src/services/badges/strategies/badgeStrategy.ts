@@ -1,7 +1,7 @@
 import { Badge, ResponseBadge } from '../badges.service';
 import { redisService } from '../../redis.service';
 import { Season } from '@/types/index.types';
-import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY, ROUTESCAN_API_KEY } from '@/config/superChain/constants';
+import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY, ROUTESCAN_API_KEY, SONEIUM_BLOCKSCOUT_API_KEY, UNICHAIN_BLOCKSCOUT_API_URL } from '@/config/superChain/constants';
 import { badgesQueueService } from '../queue';
 
 type ExternalApiCall = {
@@ -28,8 +28,8 @@ const buildUrl = (apiCall: ExternalApiCall) => {
   const urlByService = {
     blockscout: () => {
       const baseUrls = {
-        "Soneium": `https://soneium.blockscout.com/api?true=true`,
-        "unichain-130": `https://unichain.blockscout.com/api?true=true`,
+        "Soneium": `https://soneium.blockscout.com/api?apikey=${SONEIUM_BLOCKSCOUT_API_KEY}`,
+        "unichain-130": `https://unichain.blockscout.com/api?apikey=${UNICHAIN_BLOCKSCOUT_API_URL}`,
         "ink-57073": `https://explorer.inkonchain.com/api?apikey=${INK_BLOCKSCOUT_API_KEY}`,
         "optimism-10": `https://optimism.blockscout.com/api?apikey=${OP_BLOCKSCOUT_API_KEY}`,
         "base-8453": `https://base.blockscout.com/api?apikey=${BASE_BLOCKSCOUT_API_KEY}`
