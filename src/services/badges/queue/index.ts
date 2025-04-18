@@ -40,13 +40,15 @@ export class BadgesQueueService {
     );
   }
 
-  private async processJob(job: Job<BadgeJobData>): Promise<void> {
+  private async processJob(job: Job<BadgeJobData>): Promise<any> {
     const { urlGet } = job.data;
-    console.info(`Processing delayed call: ${urlGet}`);
+    await job.log(`Processing delayed call: ${urlGet}`);
     const cacheKey = `delayed_call:${urlGet}`;
     const response = await axios.get(urlGet);
+    await job.log(`Processed delayed call: ${urlGet}`);
     await new Promise((resolve) => setTimeout(resolve, 300));
     await redisService.setCachedData(cacheKey, response.data, 3600);
+    return response.data;
   }
 
   public async getCachedDelayedResponse(urlGet: string): Promise<any> {
