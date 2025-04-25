@@ -48,7 +48,6 @@ export async function verifySignature(req, res) {
 
         req.session.siwe = { address, chainId };
         req.session.save(() => res.status(200).send(true));
-        console.log('Success verify', req.session.siwe)
 
     } catch (e: any) {
         console.error(e)
@@ -61,7 +60,6 @@ export async function verifySignature(req, res) {
 
 export async function getSession(req, res) {
     res.setHeader('Content-Type', 'application/json');
-    console.debug('Session', req.session);
     res.send(req.session.siwe);
 }
 
