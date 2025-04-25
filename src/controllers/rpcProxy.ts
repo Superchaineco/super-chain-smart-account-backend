@@ -31,7 +31,6 @@ export async function rpcReverseProxy(req: Request, res: Response) {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
     console.log(`→ IP: ${req.ip}`);
     console.log(`→ Body:`, req.body);
-    console.log("🆕🆕🆕🆕🆕🆕🆕🆕🆕");
     delete req.headers.host
 
     const headers: Record<string, string> = {};
