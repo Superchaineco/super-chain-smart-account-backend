@@ -83,7 +83,7 @@ export async function getTransactionsCount(
   startTime: number,
   account: string
 ): Promise<number> {
-  const startBlock = await getBlockNumberFromTimestamp(startTime);
+  // const startBlock = await getBlockNumberFromTimestamp(startTime);
 
   try {
     // const badgeTransactions = await getBadgeTransactions(startBlock, account);
