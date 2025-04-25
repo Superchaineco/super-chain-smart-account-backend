@@ -59,7 +59,6 @@ export class LeaderBoardService {
     const rows = await redis.lrange(this.cacheKey, startIndex, endIndex);
     const hasNextPage = (await redis.llen(this.cacheKey)) > endIndex;
 
-    console.log('rows', rows.length);
     return {
       data: rows.map((row) => JSON.parse(row)),
       hasNextPage,
