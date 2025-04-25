@@ -26,7 +26,6 @@ export class GitcoinDonationsStrategy extends BaseBadgeStrategy {
               }),
             }).then((r) => r.json());
     
-            console.log(res);
             const donations: { amountInUsd: number }[] = res.data?.donations || [];
             return donations.reduce((sum, d) => sum + d.amountInUsd, 0);
           } catch {
