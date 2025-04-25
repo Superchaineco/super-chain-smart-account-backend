@@ -7,7 +7,7 @@ export class RedisService {
     key: string,
     fetchFunction: () => Promise<T>,
     ttl: number,
-    log: boolean = true
+    log: boolean = false
   ): Promise<T> {
     try {
       const cachedData = await redis.get(key);

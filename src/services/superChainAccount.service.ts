@@ -33,7 +33,7 @@ export class SuperChainAccountService {
       return await protocolKit.getOwners();
     };
 
-    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl, true);
   }
 
   async refreshEOASCache(address: string): Promise<string[]> {
@@ -67,7 +67,7 @@ export class SuperChainAccountService {
       ));
     };
 
-    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl, true);
   }
 
   async getSuperChainSmartAccountBadges(address: string) {
