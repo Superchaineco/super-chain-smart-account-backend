@@ -23,7 +23,7 @@ export class SuperChainAccountService {
 
   async getEOAS(address: string): Promise<string[]> {
     const cacheKey = `eoas-${address}`;
-    const ttl = 3600;
+    const ttl = 3600 * 24 * 30;
     const fetchFunction = async () => {
       // @ts-expect-error ESM import
       const protocolKit = await Safe.default.init({
@@ -42,6 +42,12 @@ export class SuperChainAccountService {
     return this.getEOAS(address);
   }
 
+  async refreshSmartAccountCache(address: string): Promise<any> {
+    const cacheKey = `smart-account-${address}`;
+    await redisService.deleteCachedData(cacheKey);
+    return this.getSuperChainSmartAccount(address);
+  }
+
   async getIsLevelUp(recipent: string, points: number): Promise<boolean> {
     return await this.superChainAccount.simulateIncrementSuperChainPoints(
       points,
@@ -51,7 +57,7 @@ export class SuperChainAccountService {
 
   async getSuperChainSmartAccount(address: string): Promise<any> {
     const cacheKey = `smart-account-${address}`;
-    const ttl = 3600; 
+    const ttl = 3600 * 24 * 30; 
 
     const fetchFunction = async () => {
       const response = await this.superChainAccount.getSuperChainAccount(address);
