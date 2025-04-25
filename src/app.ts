@@ -16,6 +16,7 @@ import { redis } from './utils/cache';
 import { setupBullBoard } from './utils/bullBoard';
 const app = express();
 console.debug('ENV', ENV);
+console.log('DOMAIN:', JSON.stringify(DOMAIN));
 
 setupBullBoard(app);
 
