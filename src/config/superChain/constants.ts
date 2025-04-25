@@ -74,3 +74,4 @@ export const OP_BLOCKSCOUT_API_KEY  = process.env.OP_BLOCKSCOUT_API_KEY!;
 export const BASE_BLOCKSCOUT_API_KEY  = process.env.BASE_BLOCKSCOUT_API_KEY!; 
 export const SONEIUM_BLOCKSCOUT_API_KEY  = process.env.SONEIUM_BLOCKSCOUT_API_KEY!; 
 export const UNICHAIN_BLOCKSCOUT_API_URL = process.env.UNICHAIN_BLOCKSCOUT_API_URL!; 
+export const RPC_PROVIDER = process.env.RPC_PROVIDER!; 

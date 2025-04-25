@@ -11,6 +11,7 @@ import {
 } from '../controllers/sponsor';
 import { paginatedLeaderboard, rankByAccount } from '@/controllers/leaderboard';
 import { getAirdrop } from '@/controllers/airdrop';
+import { rpcReverseProxy, verifyInternalRequest } from '@/controllers/rpcProxy';
 export const routes = Router();
 
 routes.get('/user/:account', getUser);
@@ -38,5 +39,7 @@ routes.post('/validate-sponsorship', validateSponsorship);
 routes.post('/relay', relay);
 
 routes.post('/user-op-reverse-proxy', verifyReverseProxy, reverseProxy);
+
+routes.use("/rpc", verifyInternalRequest, rpcReverseProxy);
 
 export default routes;
