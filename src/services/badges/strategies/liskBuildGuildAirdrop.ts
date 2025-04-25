@@ -24,9 +24,12 @@ export class LiskBuildGuildAirdropStrategy extends BaseBadgeStrategy {
             for (const eoa of eoas) {
                 try {
                     const response = await axios.get<Response>(`https://api.guild.xyz/v2/users/${eoa}/memberships`);
-                    hasRole = response.data.find((guild) => guild.guildId === this.LISK_GUILD_ID).roleIds.some(role => role === this.LISK_GUILD_AIRDROP_ROLE_ID)
-                    if (hasRole) {
-                        break;
+                    const liskGuild = response.data.find((guild) => guild.guildId === this.LISK_GUILD_ID);
+                    if (liskGuild && liskGuild.roleIds) {
+                        hasRole = liskGuild.roleIds.some(role => role === this.LISK_GUILD_AIRDROP_ROLE_ID);
+                        if (hasRole) {
+                            break;
+                        }
                     }
                 } catch (e) {
                     if (axios.isAxiosError(e) && e.response?.status === 404) {
