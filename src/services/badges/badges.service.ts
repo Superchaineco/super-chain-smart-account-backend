@@ -189,7 +189,8 @@ export class BadgesServices {
     return redisService.getCachedDataWithCallback(
       CACHE_KEY,
       fetchFunction,
-      ttl
+      ttl,
+      false
     );
   }
 
@@ -215,7 +216,8 @@ export class BadgesServices {
     return redisService.getCachedDataWithCallback(
       CACHE_KEY,
       fetchFunction,
-      ttl
+      ttl,
+      false
     );
   }
 
