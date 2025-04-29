@@ -37,7 +37,7 @@ routes.get('/leaderboard', paginatedLeaderboard);
 
 routes.post('/validate-sponsorship', validateSponsorship);
 
-routes.get('/vaults', getVaults);
+routes.get('/vaults/:account', getVaults);
 
 routes.post('/relay', relay);
 
