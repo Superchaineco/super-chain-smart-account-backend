@@ -1,5 +1,3 @@
-import { json } from 'express';
-import { get } from 'http';
 import { redis, redisClient } from '../utils/cache';
 
 export class RedisService {
@@ -17,7 +15,7 @@ export class RedisService {
       }
 
       const data = await fetchFunction();
-      if (data == 0) ttl = 5;
+      console.log("data", data)
       if (ttl > 0) {
         await redis.set(key, JSON.stringify(data), 'EX', ttl);
       } else {
