@@ -12,7 +12,7 @@ import {
 import { paginatedLeaderboard, rankByAccount } from '@/controllers/leaderboard';
 import { getAirdrop } from '@/controllers/airdrop';
 import { rpcReverseProxy, verifyInternalRequest } from '@/controllers/rpcProxy';
-import { getVaults } from '@/controllers/vaults';
+import { getVaults, refreshVaults } from '@/controllers/vaults';
 export const routes = Router();
 
 routes.get('/user/:account', getUser);
@@ -38,6 +38,8 @@ routes.get('/leaderboard', paginatedLeaderboard);
 routes.post('/validate-sponsorship', validateSponsorship);
 
 routes.get('/vaults/:account', getVaults);
+
+routes.post('/vaults/:account/refresh', refreshVaults)
 
 routes.post('/relay', relay);
 

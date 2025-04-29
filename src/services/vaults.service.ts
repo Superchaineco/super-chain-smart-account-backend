@@ -124,3 +124,12 @@ export async function getVaultsAPR(account: string) {
 
   return vaultsWithData;
 }
+
+export async function refreshVaultsCache(account: string) {
+
+  const vaults = await getVaultsData();
+
+  for (const vault of vaults) {
+    await redisService.deleteCachedData(`vault_balance_${vault.comet}_${account}`);
+  }
+}
