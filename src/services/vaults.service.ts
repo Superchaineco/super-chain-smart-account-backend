@@ -74,7 +74,7 @@ export class VaultsService {
         return ((Number(supplyRate)) / scale) * secondsPerYear;
       } catch (error: any) {
         console.error(error.message)
-        throw new Error(error)
+        //throw new Error(error)
       }
     };
 
@@ -106,7 +106,8 @@ export class VaultsService {
 
       } catch (error: any) {
         console.error(error)
-        throw new Error(error)
+        return 0;
+        //throw new Error(error)
       }
     };
 
