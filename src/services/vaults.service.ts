@@ -4,9 +4,9 @@ import { Contract, formatUnits, JsonRpcProvider } from 'ethers';
 import { RedisService } from './redis.service';
 
 const tokenImages = {
-  ETH: 'https://staging.account.superchain.eco/images/vaults/icons/ETH_OP.svg',
-  USDC: 'https://staging.account.superchain.eco/images/vaults/icons/USDC_OP.svg',
-  USDT: 'https://staging.account.superchain.eco/images/vaults/icons/USDT_OP.svg'
+  WETH: 'https://staging.account.superchain.eco/images/currencies/ethereum.svg',
+  USDC: 'https://staging.account.superchain.eco/images/currencies/usdc.svg',
+  USDT: 'https://staging.account.superchain.eco/images/currencies/usdt.svg'
 };
 
 export class VaultsService {
@@ -31,7 +31,9 @@ export class VaultsService {
           asset: apr.base_asset.address,
           symbol: apr.base_asset.symbol,
           decimals: apr.base_asset.decimals,
-          image: tokenImages[apr.base_asset.symbol] || null
+          image: tokenImages[apr.base_asset.symbol] || null,
+          depreciated: false, // TODO: add depreciated field,
+          min_deposit: apr.base_asset.symbol === 'WETH' ? 0.01 : 1 // TODO: add min_deposit field
         }));
     };
 
