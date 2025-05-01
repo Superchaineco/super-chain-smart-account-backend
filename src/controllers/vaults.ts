@@ -6,13 +6,14 @@ export async function getVaults(req: Request, res: Response) {
   const account = req.params.account as string;
   const vaultsService = new VaultsService(redisService);
   const vaults = await vaultsService.getVaultsAPR(account);
-  res.status(200).json(vaults);
+  return res.status(200).json(vaults);
 }
 
 export async function refreshVaults(req: Request, res: Response) {
   const account = req.params.account as string;
   const vaultsService = new VaultsService(redisService);
   await vaultsService.refreshVaultsCache(account)
-  res.status(200)
+  console.log("returning...")
+  return res.status(200).json({ message: "Vaults refreshed" });
 }
 
