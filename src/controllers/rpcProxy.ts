@@ -63,7 +63,8 @@ export async function rpcReverseProxy(req: Request, res: Response) {
       const cachedData = await redisService.getCachedDataWithCallback(
         cacheKey,
         fetchFunction,
-        ttl
+        ttl,
+        true
       );
 
       res.status(200).json(cachedData);
