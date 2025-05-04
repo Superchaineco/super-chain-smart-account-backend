@@ -2,11 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import axios, { AxiosRequestConfig, AxiosResponseHeaders } from "axios";
 import { RPC_PROVIDER } from "@/config/superChain/constants";
 import https from "https";
+import { redisService } from "@/services/redis.service";
 
 export function verifyInternalRequest(req: Request, res: Response, next: NextFunction) {
   const allowedOrigins = [
-    "localhost:3000",
-    "localhost:3003",
     "scsa-backend-production.up.railway.app",
     "scsa-backend-staging.up.railway.app"
   ];
@@ -24,8 +23,38 @@ export function verifyInternalRequest(req: Request, res: Response, next: NextFun
 
 export async function rpcReverseProxy(req: Request, res: Response) {
   try {
-
     const method = req.method.toLowerCase() as AxiosRequestConfig["method"];
+    const isBlockNumberRequest = method === "post" && 
+      req.body?.method === "eth_blockNumber";
+
+    if (isBlockNumberRequest) {
+      const cacheKey = "eth_blockNumber";
+      const ttl = 2; // 2 segundos, tiempo de bloque en Optimism
+
+      const fetchFunction = async () => {
+        const config: AxiosRequestConfig = {
+          method,
+          url: RPC_PROVIDER,
+          headers: req.headers,
+          data: req.body,
+          params: req.query,
+          responseType: "json",
+          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        };
+
+        const response = await axios(config);
+        return response.data;
+      };
+
+      const cachedData = await redisService.getCachedDataWithCallback(
+        cacheKey,
+        fetchFunction,
+        ttl
+      );
+
+      res.status(200).json(cachedData);
+      return;
+    }
 
     console.log("🆕🆕🆕🆕🆕🆕🆕🆕🆕");
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
