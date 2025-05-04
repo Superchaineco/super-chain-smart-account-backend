@@ -5,10 +5,12 @@ import https from "https";
 
 export function verifyInternalRequest(req: Request, res: Response, next: NextFunction) {
   const allowedOrigins = [
-    "localhost:3000",
-    "localhost:3003",
     "scsa-backend-production.up.railway.app",
-    "scsa-backend-staging.up.railway.app"
+    "scsa-backend-staging.up.railway.app",
+    ...(process.env.NODE_ENV === "development" ? [
+      "localhost:3003",
+      "localhost:3000"
+    ] : [])
   ];
 
   const origin = req.get("origin") || req.get("referer") || "";
