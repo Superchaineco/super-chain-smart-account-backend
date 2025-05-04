@@ -33,11 +33,13 @@ export async function rpcReverseProxy(req: Request, res: Response) {
     const method = req.method.toLowerCase() as AxiosRequestConfig['method'];
     const isBlockNumberRequest =
       method === 'post' && req.body?.method === 'eth_blockNumber';
+    const isChainIdRequest =
+      method === 'post' && req.body?.method === 'eth_chainId';
 
     const agent = new https.Agent({ rejectUnauthorized: false });
-    if (isBlockNumberRequest) {
-      const cacheKey = 'eth_blockNumber';
-      const ttl = 2; // 2 segundos, tiempo de bloque en Optimism
+    if (isBlockNumberRequest || isChainIdRequest) {
+      const cacheKey = isBlockNumberRequest ? 'eth_blockNumber' : 'eth_chainId';
+      const ttl = isBlockNumberRequest ? 2 : 86400 * 30; // 2 segundos para blockNumber, 30 días para chainId
       delete req.headers.host;
 
       const headers: Record<string, string> = {};
