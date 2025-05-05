@@ -28,17 +28,21 @@ export function verifyInternalRequest(
   return res.status(403).json({ error: 'Forbidden: invalid origin' });
 }
 
+function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 export async function rpcReverseProxy(req: Request, res: Response) {
   try {
     const method = req.method.toLowerCase() as AxiosRequestConfig['method'];
-    const isBlockNumberRequest = false//      method === 'post' && req.body?.method === 'eth_blockNumber';
+    const isBlockNumberRequest =
+      method === 'post' && req.body?.method === 'eth_blockNumber';
     const isChainIdRequest =
       method === 'post' && req.body?.method === 'eth_chainId';
 
     const agent = new https.Agent({ rejectUnauthorized: false });
     if (isBlockNumberRequest || isChainIdRequest) {
       const cacheKey = isBlockNumberRequest ? 'eth_blockNumber' : 'eth_chainId';
-      const ttl = isBlockNumberRequest ? 2 : 86400 * 30; 
+      const ttl = isBlockNumberRequest ? 2 : 86400 * 30; // 2 segundos para blockNumber, 30 días para chainId
       delete req.headers.host;
 
       const headers: Record<string, string> = {};
@@ -60,7 +64,7 @@ export async function rpcReverseProxy(req: Request, res: Response) {
         const response = await axios(config);
         return response.data;
       };
-
+      delay(300);
       const cachedData = await redisService.getCachedDataWithCallback(
         cacheKey,
         fetchFunction,
