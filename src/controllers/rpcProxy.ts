@@ -38,11 +38,26 @@ export async function rpcReverseProxy(req: Request, res: Response) {
       method === 'post' && req.body?.method === 'eth_blockNumber';
     const isChainIdRequest =
       method === 'post' && req.body?.method === 'eth_chainId';
+    const isGetCodeRequest =
+      method === 'post' && req.body?.method === 'eth_getCode';
 
     const agent = new https.Agent({ rejectUnauthorized: false });
-    if (isBlockNumberRequest || isChainIdRequest) {
-      const cacheKey = isBlockNumberRequest ? 'eth_blockNumber' : 'eth_chainId';
-      const ttl = isBlockNumberRequest ? 2 : 86400 * 30; // 2 segundos para blockNumber, 30 días para chainId
+    if (isBlockNumberRequest || isChainIdRequest || isGetCodeRequest) {
+      let cacheKey: string;
+      let ttl: number;
+
+      if (isBlockNumberRequest) {
+        cacheKey = 'eth_blockNumber';
+        ttl = 2; // 2 segundos para blockNumber
+      } else if (isChainIdRequest) {
+        cacheKey = 'eth_chainId';
+        ttl = 86400 * 30; // 30 días para chainId
+      } else if (isGetCodeRequest) {
+        const contractAddress = req.body.params[0]?.toLowerCase();
+        cacheKey = `eth_getCode_${contractAddress}`;
+        ttl = 86400 * 7; // 7 días para getCode
+      }
+
       delete req.headers.host;
 
       const headers: Record<string, string> = {};
@@ -64,7 +79,8 @@ export async function rpcReverseProxy(req: Request, res: Response) {
         const response = await axios(config);
         return response.data;
       };
-      delay(300);
+
+      await delay(300);
       const cachedData = await redisService.getCachedDataWithCallback(
         cacheKey,
         fetchFunction,
