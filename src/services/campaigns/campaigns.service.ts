@@ -131,6 +131,8 @@ export async function getCampaignDetails(account: string, campaignId: string) {
     description: campaign.description,
     banner: campaign.banner,
     network: campaign.network,
+    start_date: campaign.startDate,
+    end_date: campaign.endDate,
     boosts,
     totalBoost,
     campaign_badges,
