@@ -3,6 +3,7 @@ import { verifyReverseProxy, verifyOwner } from '../middleware/auth';
 import { getUser, refreshEOAS } from '../controllers/user';
 import { claimBadges, getBadges } from '../controllers/badges';
 import { perksByAccount, perksByLevel } from '../controllers/perks';
+import { getCampaigns } from '../controllers/campaigns';
 import {
   getBalance,
   relay,
@@ -46,5 +47,7 @@ routes.post('/relay', relay);
 routes.post('/user-op-reverse-proxy', verifyReverseProxy, reverseProxy);
 
 routes.use("/rpc", verifyInternalRequest, rpcReverseProxy);
+
+routes.get('/campaigns/:account', getCampaigns);
 
 export default routes;

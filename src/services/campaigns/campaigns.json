@@ -1,0 +1,40 @@
+[
+  {
+    "id": "lisk_surge",
+    "name": "Lisk Surge",
+    "description": "Join Lisk Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
+    "startDate": "2024-11-11",
+    "endDate": "2025-11-13",
+    "network": "lisk",
+    "banner": "https://lisk.com/wp-content/uploads/bf-advanced-images/1844/Lisk-Edge-city-900x0.png",
+    "boosts": [
+      {
+        "type": "level",
+        "level": 3,
+        "boostPercent": 10,
+        "description": "Reach level 3 with your Super Account."
+      },
+      {
+        "type": "badge",
+        "badgeName": "Lisk User",
+        "boostPercent": 10,
+        "minLevel": 5,
+        "description": "Number of transactions made on Lisk."
+      },
+      {
+        "type": "badge",
+        "badgeName": "Lisk Aidrop S1",
+        "boostPercent": 10,
+        "minLevel": 1,
+        "description": "Join the Verified Airdrop participant Guild."
+      }
+    ],
+    "campaign_badges": [
+      {
+        "type": "campaign_badge",
+        "badgeName": "lisk_surge",
+        "description": "Rewards earned during Lisk Surge."
+      }
+    ]
+  }
+] 
