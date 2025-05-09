@@ -14,7 +14,18 @@ export class BadgesQueueService {
   private readonly queueName = 'apiCallQueue';
 
   constructor() {
-    this.queue = new Queue(this.queueName, { connection: redis });
+    this.queue = new Queue(this.queueName, {
+      connection: redis, defaultJobOptions: {
+        removeOnComplete: {
+          age: 3600,
+          count: 20000
+        },
+        removeOnFail: {
+          age: 86400,
+          count: 5000
+        }
+      }
+    });
 
     if (ENV === ENVIRONMENTS.production) {
       this.worker = this.initializeWorker();
