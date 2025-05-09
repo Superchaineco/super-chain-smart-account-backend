@@ -28,8 +28,8 @@ export type Campaign = {
   id: string;
   name: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  start_date: Date;
+  end_date: Date;
   network: string;
   banner: string;
   boosts: CampaignBoost[];
@@ -84,7 +84,7 @@ export async function getCampaignDetails(account: string, campaignId: string) {
         const badgeLevel = userBadge ? userBadge.tier : 0;
         const badgeImage = getBadgeImage(userBadge, badgeLevel);
         const applies = badgeLevel >= (boost.minLevel || 1);
-        if (applies) totalBoost += boost.boostPercent;
+        totalBoost += boost.boostPercent;
         return {
           ...boost,
           badgeLevel,
@@ -131,8 +131,8 @@ export async function getCampaignDetails(account: string, campaignId: string) {
     description: campaign.description,
     banner: campaign.banner,
     network: campaign.network,
-    start_date: campaign.startDate,
-    end_date: campaign.endDate,
+    start_date: campaign.start_date,
+    end_date: campaign.end_date,
     boosts,
     totalBoost,
     campaign_badges,
