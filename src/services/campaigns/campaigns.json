@@ -6,7 +6,7 @@
     "startDate": "2024-11-11",
     "endDate": "2025-11-13",
     "network": "lisk",
-    "banner": "https://lisk.com/wp-content/uploads/bf-advanced-images/1844/Lisk-Edge-city-900x0.png",
+    "banner": "/images/campaigns/lisk-banner.png",
     "boosts": [
       {
         "type": "level",

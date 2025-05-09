@@ -128,8 +128,8 @@ export class VaultsService {
 
         return {
           ...vault,
-          balance: balance.toString(),
-          interest_apr: interest_apr.toString()
+          balance: balance?.toString(),
+          interest_apr: interest_apr?.toString()
         };
       })
     );
