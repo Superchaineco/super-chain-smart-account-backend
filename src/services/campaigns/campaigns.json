@@ -7,6 +7,8 @@
     "end_date": "2025-06-05",
     "network": "lisk",
     "banner": "/images/campaigns/lisk-banner.png",
+    "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
+    "campaign_link": "https://www.superchain.eco/programs/superstacks",
     "boosts": [
       {
         "type": "level",
@@ -32,9 +34,9 @@
     "campaign_badges": [
       {
         "type": "campaign_badge",
-        "badgeName": "lisk_surge",
+        "badgeName": "S7 Super User",
         "description": "Rewards earned during Lisk Surge."
       }
     ]
   }
-] 
+]

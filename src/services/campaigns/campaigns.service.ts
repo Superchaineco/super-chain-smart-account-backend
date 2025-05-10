@@ -5,18 +5,18 @@ import { superChainAccountService } from '../superChainAccount.service';
 // Types
 export type CampaignBoost =
   | {
-      type: 'level';
-      level: number;
-      boostPercent: number;
-      description: string;
-    }
+    type: 'level';
+    level: number;
+    boostPercent: number;
+    description: string;
+  }
   | {
-      type: 'badge';
-      badgeName: string;
-      boostPercent: number;
-      minLevel?: number;
-      description: string;
-    };
+    type: 'badge';
+    badgeName: string;
+    boostPercent: number;
+    minLevel?: number;
+    description: string;
+  };
 
 export type CampaignBadge = {
   type: 'campaign_badge';
@@ -34,30 +34,12 @@ export type Campaign = {
   banner: string;
   boosts: CampaignBoost[];
   campaign_badges: CampaignBadge[];
+  participate_description: string;
+  campaign_link: string;
 };
 
 const campaigns: Campaign[] = campaignsData as unknown as Campaign[];
 const badgesService = new BadgesServices();
-
-function getBadgeImage(userBadge: any, badgeLevel: number): string | undefined {
-  if (
-    userBadge &&
-    userBadge.badge &&
-    userBadge.badge.badgeTiers &&
-    userBadge.badge.badgeTiers[badgeLevel - 1]?.metadata?.image
-  ) {
-    return userBadge.badge.badgeTiers[badgeLevel - 1].metadata.image;
-  }
-  if (
-    userBadge &&
-    userBadge.badge &&
-    userBadge.badge.badgeTiers[0]?.metadata?.image
-  ) {
-    return userBadge.badge.badgeTiers[0].metadata.image;
-  }
-  return undefined;
-}
-
 // Type guard for CampaignBoost
 function isCampaignBoost(obj: any): obj is CampaignBoost {
   return obj && (obj.type === 'level' || obj.type === 'badge');
@@ -80,15 +62,14 @@ export async function getCampaignDetails(account: string, campaignId: string) {
       }
       if (boost.type === 'badge') {
         const userBadge = userBadges.find((b) => b.metadata?.name === boost.badgeName);
-        console.log(userBadge, userBadges)
         const badgeLevel = userBadge ? userBadge.tier : 0;
-        const badgeImage = getBadgeImage(userBadge, badgeLevel);
         const applies = badgeLevel >= (boost.minLevel || 1);
         totalBoost += boost.boostPercent;
         return {
           ...boost,
-          badgeLevel,
-          badgeImage,
+          currentLevel: badgeLevel,
+          maxLevel: userBadge?.badgeTiers.length,
+          image: userBadge?.metadata?.image || undefined,
           applies,
         };
       }
@@ -98,12 +79,10 @@ export async function getCampaignDetails(account: string, campaignId: string) {
         const applies = userLevel >= (boost as any).level;
         if (applies) totalBoost += boost.boostPercent;
         return {
-          type: boost.type,
-          level: (boost as any).level,
-          boostPercent: boost.boostPercent,
-          description: boost.description,
-          badgeLevel: userLevel,
-          badgeImage: undefined,
+          ...boost,
+          currentLevel: userLevel,
+          maxLevel: 0,
+          image: undefined,
           applies,
         };
       }
@@ -114,13 +93,15 @@ export async function getCampaignDetails(account: string, campaignId: string) {
 
   const campaign_badges = await Promise.all(
     campaign.campaign_badges.map(async (badge) => {
-      const userBadge = userBadges.find((b) => b.badge?.metadata?.name === badge.badgeName);
+      const userBadge = userBadges.find((b) => b.metadata?.name === badge.badgeName);
       const badgeLevel = userBadge ? userBadge.tier : 0;
-      const badgeImage = getBadgeImage(userBadge, badgeLevel);
+      const applies = badgeLevel > userBadge?.badgeTiers.length;
       return {
         ...badge,
-        badgeLevel,
-        badgeImage,
+        currentLevel: badgeLevel,
+        maxLevel: userBadge?.badgeTiers.length || 0,
+        image: userBadge?.metadata?.image || undefined,
+        applies,
       };
     })
   );
@@ -133,6 +114,8 @@ export async function getCampaignDetails(account: string, campaignId: string) {
     network: campaign.network,
     start_date: campaign.start_date,
     end_date: campaign.end_date,
+    participate_description: campaign.participate_description,
+    campaign_link: campaign.campaign_link,
     boosts,
     totalBoost,
     campaign_badges,
