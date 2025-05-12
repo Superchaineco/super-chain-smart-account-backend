@@ -11,7 +11,7 @@ export class SuperStacksStrategy extends BaseBadgeStrategy {
       let points = 0;
       for (const eoa of eoas) {
         const response = await axios.get(
-          `http://obl-data-gateway-dev-568660380.us-east-1.elb.amazonaws.com:8000/superchain/user-points?wallet_address=${eoa}`
+          `https://www.data-openblocklabs.com/superchain/user-points?wallet_address=${eoa}`
         );
         console.log(response.data);
         points += response.data.points;
