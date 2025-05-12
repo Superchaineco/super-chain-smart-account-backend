@@ -40,12 +40,12 @@
     ]
   },
   {
-    "id": "lisk_surge",
-    "name": "Lisk Surge",
-    "description": "Join Lisk Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
+    "id": "lisk_surge2",
+    "name": "Mode Campaign",
+    "description": "Join Mode Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
     "start_date": "2025-08-05",
     "end_date": "2025-09-05",
-    "network": "lisk",
+    "network": "mode",
     "banner": "/images/campaigns/lisk-banner.png",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": "https://www.superchain.eco/programs/superstacks",
@@ -80,21 +80,28 @@
     ]
   },
   {
-    "id": "lisk_surge",
-    "name": "Lisk Surge",
-    "description": "Join Lisk Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
+    "id": "lisk_surge1",
+    "name": "Ink Surge",
+    "description": "Join Ink Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
     "start_date": "2025-10-05",
     "end_date": "2025-11-05",
-    "network": "lisk",
+    "network": "ink",
     "banner": "/images/campaigns/lisk-banner.png",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": "https://www.superchain.eco/programs/superstacks",
     "boosts": [
       {
         "type": "level",
-        "level": 3,
-        "boostPercent": 10,
+        "level": 2,
+        "boostPercent": 15,
         "description": "Reach level 3 with your Super Account."
+      },
+      {
+        "type": "badge",
+        "badgeName": "Early Power user",
+        "boostPercent": 10,
+        "minLevel": 5,
+        "description": "Number of transactions made on Lisk."
       },
       {
         "type": "badge",
