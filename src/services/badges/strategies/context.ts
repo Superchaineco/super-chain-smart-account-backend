@@ -16,6 +16,7 @@ import { OpTransactionsStrategy } from './opTransactions';
 import { SoneiumTransactionsStrategy } from './soneiumTransactions';
 import { SuperChainTransactionsStrategy } from './superchainTransactions';
 import { SuperCohort0Strategy } from './superCohort0Strategy';
+import { SuperStacksStrategy } from './superStacks';
 import { SwellTransactionsStrategy } from './swellTransactions';
 import { TalentScoreStrategy } from './talentScore';
 import { UnichainTransactionsStrategy } from './unichainTransactions';
@@ -61,6 +62,8 @@ export class BadgeStrategyContext {
                 return new UnichainTransactionsStrategy()
             case "S7 Super User":
                 return new SuperChainTransactionsStrategy()
+            case "SuperStacks":
+                return new SuperStacksStrategy()
 
             //NOT RELEVANT FOR NOW
             // case "Mint User":

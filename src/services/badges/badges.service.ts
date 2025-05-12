@@ -228,7 +228,7 @@ export class BadgesServices {
   ) {
     try {
       const strategy = BadgeStrategyContext.getBadgeStrategy(
-        badgeData.badge.metadata!.name
+        badgeData.badge.metadata!.name.trim()
       );
       const badgeResponse = await strategy.calculateTier(
         eoas,
