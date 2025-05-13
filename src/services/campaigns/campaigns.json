@@ -2,35 +2,14 @@
   {
     "id": "lisk_surge",
     "name": "Lisk Surge",
-    "description": "Join Lisk Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
-    "start_date": "2025-05-05",
-    "end_date": "2025-06-05",
+    "description": "Lisk Surge is a 9-week DeFi initiative run by Lisk DAO in collaboration with Jumper, aimed at accelerating DeFi on Lisk and growing TVL on Lisk.",
+    "start_date": "2025-05-13",
+    "end_date": "2025-07-16",
     "network": "lisk",
     "banner": "/images/campaigns/lisk-banner.png",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
-    "campaign_link": "https://www.superchain.eco/programs/superstacks",
-    "boosts": [
-      {
-        "type": "level",
-        "level": 3,
-        "boostPercent": 10,
-        "description": "Reach level 3 with your Super Account."
-      },
-      {
-        "type": "badge",
-        "badgeName": "Lisk User",
-        "boostPercent": 10,
-        "minLevel": 5,
-        "description": "Number of transactions made on Lisk."
-      },
-      {
-        "type": "badge",
-        "badgeName": "Lisk Aidrop S1",
-        "boostPercent": 10,
-        "minLevel": 1,
-        "description": "Join the Verified Airdrop participant Guild."
-      }
-    ],
+    "campaign_link": "https://www.superchain.eco/programs/lisk-surge",
+    "boosts": [  ],
     "campaign_badges": [
       {
         "type": "campaign_badge",
@@ -40,90 +19,24 @@
     ]
   },
   {
-    "id": "lisk_surge2",
-    "name": "Mode Campaign",
-    "description": "Join Mode Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
-    "start_date": "2025-08-05",
-    "end_date": "2025-09-05",
-    "network": "mode",
-    "banner": "/images/campaigns/lisk-banner.png",
+    "id": "super_stacks",
+    "name": "SuperStacks",
+    "description": "SuperStacks is an experimental pilot campaign designed to show how the Superchain can create a more connected onchain experience.",
+    "start_date": "2025-04-16",
+    "end_date": "2025-06-30",
+    "network": ["optimism", "base", "ink", "unichain", "sonieum", "worldcoin"],
+    "banner": "/images/campaigns/superstacksbanner.jpg",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": "https://www.superchain.eco/programs/superstacks",
     "boosts": [
-      {
-        "type": "level",
-        "level": 3,
-        "boostPercent": 10,
-        "description": "Reach level 3 with your Super Account."
-      },
-      {
-        "type": "badge",
-        "badgeName": "Lisk User",
-        "boostPercent": 10,
-        "minLevel": 5,
-        "description": "Number of transactions made on Lisk."
-      },
-      {
-        "type": "badge",
-        "badgeName": "Lisk Aidrop S1",
-        "boostPercent": 10,
-        "minLevel": 1,
-        "description": "Join the Verified Airdrop participant Guild."
-      }
     ],
     "campaign_badges": [
       {
         "type": "campaign_badge",
-        "badgeName": "S7 Super User",
-        "description": "Rewards earned during Lisk Surge."
-      }
-    ]
-  },
-  {
-    "id": "lisk_surge1",
-    "name": "Ink Surge",
-    "description": "Join Ink Surge: earn high APYs, unlock perks, and boost your rewards with a Super Account.",
-    "start_date": "2025-10-05",
-    "end_date": "2025-11-05",
-    "network": "ink",
-    "banner": "/images/campaigns/lisk-banner.png",
-    "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
-    "campaign_link": "https://www.superchain.eco/programs/superstacks",
-    "boosts": [
-      {
-        "type": "level",
-        "level": 2,
-        "boostPercent": 15,
-        "description": "Reach level 3 with your Super Account."
-      },
-      {
-        "type": "badge",
-        "badgeName": "Early Power user",
-        "boostPercent": 10,
-        "minLevel": 5,
-        "description": "Number of transactions made on Lisk."
-      },
-      {
-        "type": "badge",
-        "badgeName": "Lisk User",
-        "boostPercent": 10,
-        "minLevel": 5,
-        "description": "Number of transactions made on Lisk."
-      },
-      {
-        "type": "badge",
-        "badgeName": "Lisk Aidrop S1",
-        "boostPercent": 10,
-        "minLevel": 1,
-        "description": "Join the Verified Airdrop participant Guild."
-      }
-    ],
-    "campaign_badges": [
-      {
-        "type": "campaign_badge",
-        "badgeName": "S7 Super User",
+        "badgeName": "SuperStacks",
         "description": "Rewards earned during Lisk Surge."
       }
     ]
   }
+  
 ]
