@@ -5,11 +5,11 @@
     "description": "Lisk Surge is a 9-week DeFi initiative run by Lisk DAO in collaboration with Jumper, aimed at accelerating DeFi on Lisk and growing TVL on Lisk.",
     "start_date": "2025-05-13",
     "end_date": "2025-07-16",
-    "network": "lisk",
+    "network": ["lisk"],
     "banner": "/images/campaigns/lisk-banner.png",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": "https://www.superchain.eco/programs/lisk-surge",
-    "boosts": [  ],
+    "boosts": [],
     "campaign_badges": [
       {
         "type": "campaign_badge",
@@ -24,12 +24,11 @@
     "description": "SuperStacks is an experimental pilot campaign designed to show how the Superchain can create a more connected onchain experience.",
     "start_date": "2025-04-16",
     "end_date": "2025-06-30",
-    "network": ["optimism", "base", "ink", "unichain", "sonieum", "worldcoin"],
+    "network": ["optimism", "base", "ink", "unichain", "soneium", "worldcoin"],
     "banner": "/images/campaigns/superstacksbanner.jpg",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": "https://www.superchain.eco/programs/superstacks",
-    "boosts": [
-    ],
+    "boosts": [],
     "campaign_badges": [
       {
         "type": "campaign_badge",
@@ -38,5 +37,4 @@
       }
     ]
   }
-  
 ]

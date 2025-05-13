@@ -30,7 +30,7 @@ export type Campaign = {
   description: string;
   start_date: Date;
   end_date: Date;
-  network: string;
+  network: string[];
   banner: string;
   boosts: CampaignBoost[];
   campaign_badges: CampaignBadge[];
