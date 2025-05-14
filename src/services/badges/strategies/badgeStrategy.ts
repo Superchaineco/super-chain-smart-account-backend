@@ -50,6 +50,8 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     account?: string
   ): Promise<number | boolean>;
 
+  public campaigns: string[] = []
+  
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
     let totalTransactions = 0;
 
