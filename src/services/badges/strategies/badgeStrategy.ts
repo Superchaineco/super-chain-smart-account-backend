@@ -150,6 +150,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
         tier: badgeData.tier,
         claimableTier,
         claimable,
+        campaigns: this.campaigns
       };
     } catch (error) {
       console.error('Error calculating tier', error);
