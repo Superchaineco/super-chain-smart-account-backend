@@ -21,7 +21,7 @@
   {
     "id": "super_stacks",
     "name": "SuperStacks",
-    "description": "SuperStacks is an experimental pilot campaign designed to show how the Superchain can create a more connected onchain experience.",
+    "description": "SuperStacks is an experimental pilot campaign designed to show how the Superchain can create a more connected onchain experience.        ",
     "start_date": "2025-04-16",
     "end_date": "2025-06-30",
     "network": ["optimism", "base", "ink", "unichain", "soneium", "worldcoin"],
