@@ -4,7 +4,7 @@ import { Queue } from 'bullmq';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ENV, ENVIRONMENTS } from '../config/superChain/constants';
 
-import { redis } from './cache'; 
+import { redis } from './cache';
 
 export const setupBullBoard = (app: any) => {
   // Solo configurar Bull Board en desarrollo
@@ -15,7 +15,18 @@ export const setupBullBoard = (app: any) => {
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
 
-  const badgesQueue = new Queue('apiCallQueue', { connection: redis });
+  const badgesQueue = new Queue('apiCallQueue', {
+    connection: redis, defaultJobOptions: {
+      removeOnComplete: {
+        age: 3600,
+        count: 20000
+      },
+      removeOnFail: {
+        age: 86400,
+        count: 5000
+      }
+    }
+  });
   createBullBoard({
     queues: [new BullMQAdapter(badgesQueue) as any],
     serverAdapter,
