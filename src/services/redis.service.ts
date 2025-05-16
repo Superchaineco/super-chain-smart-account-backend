@@ -15,7 +15,6 @@ export class RedisService {
       }
 
       const data = await fetchFunction();
-      console.log("data", data)
       if (ttl > 0) {
         await redis.set(key, JSON.stringify(data), 'EX', ttl);
       } else {
