@@ -94,6 +94,7 @@ export class BadgesQueueService {
           },
           removeOnComplete: {
             age: 3600,
+            count: 1000
           },
         }
       );
