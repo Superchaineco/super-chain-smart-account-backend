@@ -3,6 +3,9 @@ import { redisService } from '../../redis.service';
 import axios from 'axios';
 
 export class SuperStacksStrategy extends BaseBadgeStrategy {
+
+  campaigns: string[] = ["SuperStacks"]
+
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `superStacks-${eoas.join(',')}`;
     const ttl = 3600;

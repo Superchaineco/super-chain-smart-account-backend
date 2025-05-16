@@ -13,6 +13,7 @@ export type Badge = GetUserBadgesQuery['accountBadges'][number];
 export type ResponseBadge = {
   points: string;
   tier: string;
+  campaigns?: string[];
 } & Badge['badge'] & {
   claimableTier: number | null;
   claimable: boolean;
@@ -87,6 +88,7 @@ export class BadgesServices {
     const accountBadgesIds =
       data?.accountBadges.map((accountBadge) => accountBadge.badge.badgeId) ??
       [];
+
     const unclaimedBadges = (
       data!.badges?.filter(
         (badge) => !accountBadgesIds.includes(badge.badgeId)

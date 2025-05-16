@@ -50,6 +50,8 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     account?: string
   ): Promise<number | boolean>;
 
+  public campaigns: string[] = []
+  
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
     let totalTransactions = 0;
 
@@ -148,6 +150,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
         tier: badgeData.tier,
         claimableTier,
         claimable,
+        campaigns: this.campaigns
       };
     } catch (error) {
       console.error('Error calculating tier', error);

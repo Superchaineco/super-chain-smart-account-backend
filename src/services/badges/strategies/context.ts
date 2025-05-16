@@ -7,9 +7,8 @@ import { GitcoinDonationsStrategy } from './gitcoinDonations';
 import { GivethDonationsStrategy } from './givethDonations';
 import { InkTransactionsStrategy } from './inkTransactions';
 import { LiskBuildGuildAirdropStrategy } from './liskBuildGuildAirdrop';
+import { LiskSurgeStrategy } from './liskSurgeStrategy';
 import { LiskTransactionsStrategy } from './liskTransactions';
-import { MetalTransactionsStrategy } from './metalTransactions';
-import { MintTransactionsStrategy } from './mintTransactions';
 import { ModeTransactionsStrategy } from './modeTransactions';
 import { NounsCheckStrategy } from './nounsCheck';
 import { OpTransactionsStrategy } from './opTransactions';
@@ -17,7 +16,6 @@ import { SoneiumTransactionsStrategy } from './soneiumTransactions';
 import { SuperChainTransactionsStrategy } from './superchainTransactions';
 import { SuperCohort0Strategy } from './superCohort0Strategy';
 import { SuperStacksStrategy } from './superStacks';
-import { SwellTransactionsStrategy } from './swellTransactions';
 import { TalentScoreStrategy } from './talentScore';
 import { UnichainTransactionsStrategy } from './unichainTransactions';
 import { WorldCoinCheckStrategy } from './worldCoinCheck';
@@ -64,6 +62,8 @@ export class BadgeStrategyContext {
                 return new SuperChainTransactionsStrategy()
             case "SuperStacks":
                 return new SuperStacksStrategy()
+            case "Lisk Surge":
+                return new LiskSurgeStrategy()
 
             //NOT RELEVANT FOR NOW
             // case "Mint User":
