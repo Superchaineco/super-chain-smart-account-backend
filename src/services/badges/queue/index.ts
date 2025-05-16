@@ -43,9 +43,9 @@ export class BadgesQueueService {
       async (job: Job<BadgeJobData>) => this.processJob(job),
       {
         connection: redisWorker,
-        concurrency: 3,
+        concurrency: this.queueName === 'routescan' ? 1 : 3,
         limiter: {
-          max: 5,
+          max: this.queueName === 'routescan' ? 3 : 5,
           duration: 1000,
         },
       }
