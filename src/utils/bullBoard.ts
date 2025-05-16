@@ -7,7 +7,7 @@ import { ENV, ENVIRONMENTS } from '../config/superChain/constants';
 import { redis } from './cache';
 
 export const setupBullBoard = (app: any) => {
-  // Solo configurar Bull Board en desarrollo
+
   if (ENV !== ENVIRONMENTS.development) {
     return;
   }
@@ -15,18 +15,7 @@ export const setupBullBoard = (app: any) => {
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
 
-  const badgesQueue = new Queue('apiCallQueue', {
-    connection: redis, defaultJobOptions: {
-      removeOnComplete: {
-        age: 3600,
-        count: 1000
-      },
-      removeOnFail: {
-        age: 86400,
-        count: 500
-      }
-    }
-  });
+  const badgesQueue = new Queue('apiCallQueue', { connection: redis });
   createBullBoard({
     queues: [new BullMQAdapter(badgesQueue) as any],
     serverAdapter,

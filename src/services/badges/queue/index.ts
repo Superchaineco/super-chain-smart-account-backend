@@ -55,9 +55,12 @@ export class BadgesQueueService {
     const { urlGet } = job.data;
     await job.log(`Processing delayed call: ${urlGet}`);
     const cacheKey = `delayed_call:${urlGet}`;
+    if (urlGet.includes('routescan'))
+      await new Promise((resolve) => setTimeout(resolve, 333));
     const response = await axios.get(urlGet);
     await job.log(`Processed delayed call: ${urlGet}`);
-    //await new Promise((resolve) => setTimeout(resolve, 300));
+
+
     await redisService.setCachedData(cacheKey, response.data, 3600);
     return response.data;
   }
