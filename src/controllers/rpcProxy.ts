@@ -52,14 +52,14 @@ export async function rpcReverseProxy(req: Request, res: Response) {
 
       if (isBlockNumberRequest) {
         cacheKey = 'eth_blockNumber';
-        ttl = 2; // 2 segundos para blockNumber
+        ttl = 1; 
       } else if (isChainIdRequest) {
         cacheKey = 'eth_chainId';
-        ttl = 86400 * 30; // 30 días para chainId
+        ttl = 86400 * 30; 
       } else if (isGetCodeRequest) {
         const contractAddress = req.body.params[0]?.toLowerCase();
         cacheKey = `eth_getCode_${contractAddress}`;
-        ttl = 86400 * 7; // 7 días para getCode
+        ttl = 86400 * 7; 
       }
 
       delete req.headers.host;
