@@ -133,8 +133,8 @@ export const queuesInstances: Map<string, BadgesQueueService> = new Map();
 export const getBadgesQueue = (service: string): BadgesQueueService => {
 
   if(queuesInstances.size === 0) {
-    queuesInstances.set(service, new BadgesQueueService('routescan'));
-    queuesInstances.set(service, new BadgesQueueService('blockscout'));
+    queuesInstances.set('routescan', new BadgesQueueService('routescan'));
+    queuesInstances.set('blockscout', new BadgesQueueService('blockscout'));
   }
 
 
