@@ -11,9 +11,10 @@ interface BadgeJobData {
 export class BadgesQueueService {
   private readonly queue: Queue;
   private readonly worker?: Worker;
-  private readonly queueName = 'apiCallQueue';
+  private queueName = 'apiCallQueue';
 
-  constructor() {
+  constructor(queueName: string) {
+    this.queueName = queueName;
     this.queue = new Queue(this.queueName, {
       connection: redis, defaultJobOptions: {
         removeOnComplete: {
@@ -126,5 +127,14 @@ export class BadgesQueueService {
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
   }
 }
+const instances: Map<string, any> = new Map();
 
-export const badgesQueueService = new BadgesQueueService();
+
+export const getBadgesQueue = (service: string): BadgesQueueService => {
+  if (!instances.has(service)) {
+    const instance = new BadgesQueueService(service);
+    instances.set(service, instance);
+  }
+  return instances.get(service);
+}
+

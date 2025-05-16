@@ -2,7 +2,8 @@ import { Badge, ResponseBadge } from '../badges.service';
 import { redisService } from '../../redis.service';
 import { Season } from '@/types/index.types';
 import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY, ROUTESCAN_API_KEY, SONEIUM_BLOCKSCOUT_API_KEY, UNICHAIN_BLOCKSCOUT_API_URL } from '@/config/superChain/constants';
-import { badgesQueueService } from '../queue';
+import { getBadgesQueue } from '../queue';
+
 
 type ExternalApiCall = {
   service: string;
@@ -117,7 +118,8 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
 
   async fetchDataOfEOA(apicall: ExternalApiCall): Promise<any> {
     const urlGet = buildUrl(apicall);
-    const response = await badgesQueueService.getCachedDelayedResponse(urlGet);
+    const queueService = getBadgesQueue(apicall.service)
+    const response = await queueService.getCachedDelayedResponse(urlGet);
     return response;
   }
 

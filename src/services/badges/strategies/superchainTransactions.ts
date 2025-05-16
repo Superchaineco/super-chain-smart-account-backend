@@ -1,12 +1,5 @@
-import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
 import { BaseBadgeStrategy } from "./badgeStrategy";
-import { redisService } from "../../redis.service";
-import axios from "axios";
 import { Season } from "@/types/index.types";
-import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
-import { badgesQueueService } from "../queue";
-
-
 
 
 
@@ -55,59 +48,5 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
         return totalTxs;
     }
-
-
-
-
-
-
-
-
-    // async getBlockscoutValue(chain: string, eoas: string[], season: Season): Promise<number> {
-
-    //     let value = 0;
-    //     const fetchDataOfAddress = async (eoa: string) => {
-
-    //         const fromBlock = season.blockRanges[chain][0];
-    //         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + season.blockRanges[chain][1] : ''
-
-
-    //         const baseUrl = chain === "Soneium" ? "https://soneium.blockscout.com" : `https://unichain.blockscout.com`
-    //         const urlGet = `${baseUrl}/api/v2/addresses/${eoa}/transactions?from_block=${fromBlock}${toBlock}`
-    //         const response = await badgesQueueService.getCachedDelayedResponse(urlGet)
-    //         const totalTransactions = Number(response?.data.items.length ?? 0);
-    //         return totalTransactions;
-    //     };
-    //     for (const eoa of eoas) {
-    //         const cacheKey = `${chain}-${season.season}Transactions-${eoa}`;
-    //         value += await redisService.getCachedDataWithCallback(cacheKey, () => fetchDataOfAddress(eoa), ttl);
-    //     }
-    //     return value;
-
-    // }
-
-    // async getRoutescanValue(chain: string, eoas: string[], season: Season): Promise<number> {
-    //     const cacheKey = `${chain}-${season.season}Transactions-${eoas.join(",")}`;
-
-
-    //     const fetchFunction = async () => {
-    //         const chainId = chain.split("-")[1];
-    //         const fromBlock = season.blockRanges[chain][0];
-    //         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&startblock=' + season.blockRanges[chain][1] : ''
-    //         let totalTransactions = 0;
-
-    //         for (const eoa of eoas) {
-    //             const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
-    //             totalTransactions += response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
-
-
-    //         }
-
-    //         return totalTransactions;
-    //     };
-
-    //     return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
-    // }
-
 
 }
