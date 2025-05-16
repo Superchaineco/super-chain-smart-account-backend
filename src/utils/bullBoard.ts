@@ -5,7 +5,7 @@ import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ENV, ENVIRONMENTS } from '../config/superChain/constants';
 
 import { redis } from './cache';
-import { queuesInstances } from '@/services/badges/queue';
+import { getBadgesQueue, queuesInstances } from '@/services/badges/queue';
 
 export const setupBullBoard = (app: any) => {
 
@@ -15,8 +15,11 @@ export const setupBullBoard = (app: any) => {
 
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
-  const queueAdapters = Array.from(queuesInstances.values()).map((serviceInstance) =>
-    new BullMQAdapter(serviceInstance.queue)
+  getBadgesQueue('blockscout')
+  const queueAdapters = Array.from(queuesInstances.values()).map((serviceInstance) => {
+   
+    return new BullMQAdapter(serviceInstance.queue)
+  }
   );
   createBullBoard({
     queues: queueAdapters,
