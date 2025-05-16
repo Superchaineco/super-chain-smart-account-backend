@@ -15,8 +15,8 @@ export const setupBullBoard = (app: any) => {
 
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
-  const queueAdapters = Array.from(queuesInstances.keys()).map((service) =>
-    new BullMQAdapter(new Queue(service, { connection: redis }))
+  const queueAdapters = Array.from(queuesInstances.values()).map((serviceInstance) =>
+    new BullMQAdapter(serviceInstance.queue)
   );
   createBullBoard({
     queues: queueAdapters,
