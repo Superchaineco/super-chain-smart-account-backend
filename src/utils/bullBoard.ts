@@ -19,11 +19,11 @@ export const setupBullBoard = (app: any) => {
     connection: redis, defaultJobOptions: {
       removeOnComplete: {
         age: 3600,
-        count: 20000
+        count: 1000
       },
       removeOnFail: {
         age: 86400,
-        count: 5000
+        count: 500
       }
     }
   });

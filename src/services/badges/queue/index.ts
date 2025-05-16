@@ -18,11 +18,11 @@ export class BadgesQueueService {
       connection: redis, defaultJobOptions: {
         removeOnComplete: {
           age: 3600,
-          count: 20000
+          count: 1000
         },
         removeOnFail: {
           age: 86400,
-          count: 5000
+          count: 500
         }
       }
     });
@@ -93,7 +93,7 @@ export class BadgesQueueService {
             delay: 1000,
           },
           removeOnComplete: {
-            age: 2 * 24 * 60 * 60 * 1000,
+            age: 3600,
           },
         }
       );
