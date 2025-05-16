@@ -32,7 +32,7 @@
     "campaign_badges": [
       {
         "type": "campaign_badge",
-        "badgeName": "SuperStacks",
+        "badgeName": "SuperStacks ",
         "description": "XP earned during SuperStacks campaign."
       }
     ]
