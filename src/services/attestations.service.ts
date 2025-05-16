@@ -47,9 +47,12 @@ export class AttestationsService {
       value: '0',
       data: data,
     };
-
+    const currentNonce = await safeSdk.getNonce()
     const safeTransaction = await safeSdk.createTransaction({
       transactions: [safeTransactionData],
+      options: {
+        nonce: currentNonce,
+      },
     });
 
     const isValid = await safeSdk.isValidTransaction(safeTransaction, {
