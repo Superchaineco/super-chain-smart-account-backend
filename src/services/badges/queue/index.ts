@@ -18,11 +18,11 @@ export class BadgesQueueService {
       connection: redis, defaultJobOptions: {
         removeOnComplete: {
           age: 3600,
-          count: 20000
+          count: 1000
         },
         removeOnFail: {
           age: 86400,
-          count: 5000
+          count: 500
         }
       }
     });
@@ -42,7 +42,7 @@ export class BadgesQueueService {
       async (job: Job<BadgeJobData>) => this.processJob(job),
       {
         connection: redisWorker,
-        concurrency: 1,
+        concurrency: 3,
         limiter: {
           max: 5,
           duration: 1000,
@@ -57,7 +57,7 @@ export class BadgesQueueService {
     const cacheKey = `delayed_call:${urlGet}`;
     const response = await axios.get(urlGet);
     await job.log(`Processed delayed call: ${urlGet}`);
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    //await new Promise((resolve) => setTimeout(resolve, 300));
     await redisService.setCachedData(cacheKey, response.data, 3600);
     return response.data;
   }
@@ -93,7 +93,8 @@ export class BadgesQueueService {
             delay: 1000,
           },
           removeOnComplete: {
-            age: 2 * 24 * 60 * 60 * 1000,
+            age: 3600,
+            count: 1000
           },
         }
       );
