@@ -45,7 +45,7 @@ export class BadgesQueueService {
         connection: redisWorker,
         concurrency: this.queueName === 'routescan' ? 1 : 3,
         limiter: {
-          max: this.queueName === 'routescan' ? 3 : 5,
+          max: this.queueName === 'routescan' ? 2 : 5,
           duration: 1000,
         },
       }
@@ -55,10 +55,7 @@ export class BadgesQueueService {
   private async processJob(job: Job<BadgeJobData>): Promise<any> {
     const { urlGet } = job.data;
     await job.log(`Processing delayed call: ${urlGet}`);
-    const cacheKey = `delayed_call:${urlGet}`;
-
-    if (this.queueName === 'routescan')
-      await new Promise((resolve) => setTimeout(resolve, 400));
+    const cacheKey = `delayed_call:${urlGet}`; 
 
     const response = await axios.get(urlGet);
     await job.log(`Processed delayed call: ${urlGet}`);
