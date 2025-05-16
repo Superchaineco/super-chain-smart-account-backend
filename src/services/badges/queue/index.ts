@@ -9,7 +9,7 @@ interface BadgeJobData {
 }
 
 export class BadgesQueueService {
-  private readonly queue: Queue;
+  public readonly queue: Queue;
   private readonly worker?: Worker;
   private queueName = 'apiCallQueue';
 
@@ -127,14 +127,14 @@ export class BadgesQueueService {
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
   }
 }
-const instances: Map<string, any> = new Map();
+export const queuesInstances: Map<string, BadgesQueueService> = new Map();
 
 
 export const getBadgesQueue = (service: string): BadgesQueueService => {
-  if (!instances.has(service)) {
+  if (!queuesInstances.has(service)) {
     const instance = new BadgesQueueService(service);
-    instances.set(service, instance);
+    queuesInstances.set(service, instance);
   }
-  return instances.get(service);
+  return queuesInstances.get(service);
 }
 
