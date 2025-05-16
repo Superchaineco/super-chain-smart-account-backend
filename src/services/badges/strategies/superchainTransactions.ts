@@ -38,17 +38,20 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     getSeason(): Season {
         return seasons.find(season => season.fromDate < new Date() && season.toDate > new Date());
     }
-
     async getValue(eoas: string[]) {
         const season = this.getSeason();
 
-        let totalTxs = await this.getCachedSeasonedValue({ service: "blockscout", chain: "optimism-10", chainId: "10", eoas, season });
-        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "base-8453", chainId: "8453", eoas, season });        
-        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "ink-57073", chainId: "57073", eoas, season });
-        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "unichain-130", chainId: "130", eoas, season });
-        totalTxs += await this.getCachedSeasonedValue({ service: "blockscout", chain: "Soneium", chainId: "", eoas, season });
-        
-        totalTxs += await this.getCachedSeasonedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas, season });
+        const requests: Promise<number>[] = [
+            this.getCachedSeasonedValue({ service: "blockscout", chain: "optimism-10", chainId: "10", eoas, season }),
+            this.getCachedSeasonedValue({ service: "blockscout", chain: "base-8453", chainId: "8453", eoas, season }),
+            this.getCachedSeasonedValue({ service: "blockscout", chain: "ink-57073", chainId: "57073", eoas, season }),
+            this.getCachedSeasonedValue({ service: "blockscout", chain: "unichain-130", chainId: "130", eoas, season }),
+            this.getCachedSeasonedValue({ service: "blockscout", chain: "Soneium", chainId: "", eoas, season }),
+            this.getCachedSeasonedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas, season }),
+        ];
+
+        const results: number[] = await Promise.all(requests);
+        const totalTxs: number = results.reduce((acc, curr) => acc + curr, 0);
 
         return totalTxs;
     }
