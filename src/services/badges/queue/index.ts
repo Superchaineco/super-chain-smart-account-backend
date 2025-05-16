@@ -42,7 +42,7 @@ export class BadgesQueueService {
       async (job: Job<BadgeJobData>) => this.processJob(job),
       {
         connection: redisWorker,
-        concurrency: 1,
+        concurrency: 3,
         limiter: {
           max: 5,
           duration: 1000,
@@ -57,7 +57,7 @@ export class BadgesQueueService {
     const cacheKey = `delayed_call:${urlGet}`;
     const response = await axios.get(urlGet);
     await job.log(`Processed delayed call: ${urlGet}`);
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    //await new Promise((resolve) => setTimeout(resolve, 300));
     await redisService.setCachedData(cacheKey, response.data, 3600);
     return response.data;
   }
