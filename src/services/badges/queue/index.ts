@@ -56,8 +56,10 @@ export class BadgesQueueService {
     const { urlGet } = job.data;
     await job.log(`Processing delayed call: ${urlGet}`);
     const cacheKey = `delayed_call:${urlGet}`;
-    if (urlGet.includes('routescan'))
-      await new Promise((resolve) => setTimeout(resolve, 333));
+
+    if (this.queueName === 'routescan')
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
     const response = await axios.get(urlGet);
     await job.log(`Processed delayed call: ${urlGet}`);
 
@@ -132,7 +134,7 @@ export const queuesInstances: Map<string, BadgesQueueService> = new Map();
 
 export const getBadgesQueue = (service: string): BadgesQueueService => {
 
-  if(queuesInstances.size === 0) {
+  if (queuesInstances.size === 0) {
     queuesInstances.set('routescan', new BadgesQueueService('routescan'));
     queuesInstances.set('blockscout', new BadgesQueueService('blockscout'));
   }
