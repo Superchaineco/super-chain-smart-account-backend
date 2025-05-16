@@ -38,9 +38,9 @@ routes.get('/leaderboard', paginatedLeaderboard);
 
 routes.post('/validate-sponsorship', validateSponsorship);
 
-// routes.get('/vaults/:account', getVaults);
+routes.get('/vaults/:account', getVaults);
 
-// routes.post('/vaults/:account/refresh', refreshVaults)
+routes.post('/vaults/:account/refresh', refreshVaults)
 
 routes.post('/relay', relay);
 
@@ -48,6 +48,6 @@ routes.post('/user-op-reverse-proxy', verifyReverseProxy, reverseProxy);
 
 routes.use("/rpc", verifyInternalRequest, rpcReverseProxy);
 
-// routes.get('/campaigns/:account', getCampaigns);
+routes.get('/campaigns/:account', getCampaigns);
 
 export default routes;
