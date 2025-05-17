@@ -38,8 +38,7 @@ function delay(ms: number): Promise<void> {
 export async function rpcReverseProxy(req: Request, res: Response) {
   try {
     const method = req.method.toLowerCase() as AxiosRequestConfig['method'];
-    const isBlockNumberRequest =
-      method === 'post' && req.body?.method === 'eth_blockNumber';
+    const isBlockNumberRequest = false //=      method === 'post' && req.body?.method === 'eth_blockNumber';
     const isChainIdRequest =
       method === 'post' && req.body?.method === 'eth_chainId';
     const isGetCodeRequest =
@@ -52,14 +51,14 @@ export async function rpcReverseProxy(req: Request, res: Response) {
 
       if (isBlockNumberRequest) {
         cacheKey = 'eth_blockNumber';
-        ttl = 1; 
+        ttl = 1;
       } else if (isChainIdRequest) {
         cacheKey = 'eth_chainId';
-        ttl = 86400 * 30; 
+        ttl = 86400 * 30;
       } else if (isGetCodeRequest) {
         const contractAddress = req.body.params[0]?.toLowerCase();
         cacheKey = `eth_getCode_${contractAddress}`;
-        ttl = 86400 * 7; 
+        ttl = 86400 * 7;
       }
 
       delete req.headers.host;
