@@ -60,6 +60,7 @@ export class AttestationsService {
 
     try {
       const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+      await this.provider.waitForTransaction(executeTxResponse.hash, 1);
       return executeTxResponse.hash;
     } catch (e) {
       console.error('Unexpected error executing transaction with SAFE:', e);
