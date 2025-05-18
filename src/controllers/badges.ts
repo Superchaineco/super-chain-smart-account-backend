@@ -5,7 +5,6 @@ import { superChainAccountService } from "../services/superChainAccount.service"
 import { isAbleToSponsor } from "../services/sponsorship.service";
 import { AttestationsService } from "../services/attestations.service";
 import { redisService } from "@/services/redis.service";
-import { attestQueueService, AttestQueueService } from "@/services/badges/queue/attestQueue.service";
 export async function getBadges(req: Request, res: Response) {
     const account = req.params.account as string;
     if (!account || account === ZeroAddress) {
@@ -46,23 +45,16 @@ export async function claimBadges(req: Request, res: Response) {
         const badgesService = new BadgesServices();
         const eoas = await superChainAccountService.getEOAS(account);
         const badges = await badgesService.getBadges(eoas, account);
-        //const attestationsService = new AttestationsService();
-        
+        const attestationsService = new AttestationsService();
         const totalPoints = badgesService.getTotalPoints(badges);
         const badgeUpdates = badgesService.getBadgeUpdates(badges);
 
-        const response = await attestQueueService.queueAndWait({
+        const response = await attestationsService.attest(
             account,
             totalPoints,
             badges,
             badgeUpdates,
-        });
-        // const response = await attestationsService.attest(
-        //     account,
-        //     totalPoints,
-        //     badges,
-        //     badgeUpdates,
-        // );
+        );
         const cacheKey = `user_badges:${account}`;
         await redisService.deleteCachedData(cacheKey);
 
