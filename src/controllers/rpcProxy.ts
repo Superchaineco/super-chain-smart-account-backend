@@ -10,12 +10,11 @@ export function verifyInternalRequest(
   next: NextFunction
 ) {
   const allowedOrigins = [
-    "scsa-backend-production.up.railway.app",
-    "scsa-backend-staging.up.railway.app",
-    ...(process.env.NODE_ENV === "development" ? [
-      "localhost:3003",
-      "localhost:3000"
-    ] : [])
+    'scsa-backend-production.up.railway.app',
+    'scsa-backend-staging.up.railway.app',
+    ...(process.env.NODE_ENV === 'development'
+      ? ['localhost:3003', 'localhost:3000']
+      : []),
   ];
 
   const origin = req.get('origin') || req.get('referer') || '';
@@ -33,12 +32,13 @@ export function verifyInternalRequest(
 }
 
 function delay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 export async function rpcReverseProxy(req: Request, res: Response) {
   try {
     const method = req.method.toLowerCase() as AxiosRequestConfig['method'];
-    const isBlockNumberRequest = false //=      method === 'post' && req.body?.method === 'eth_blockNumber';
+    const isBlockNumberRequest =
+      method === 'post' && req.body?.method === 'eth_blockNumber';
     const isChainIdRequest =
       method === 'post' && req.body?.method === 'eth_chainId';
     const isGetCodeRequest =
@@ -51,7 +51,7 @@ export async function rpcReverseProxy(req: Request, res: Response) {
 
       if (isBlockNumberRequest) {
         cacheKey = 'eth_blockNumber';
-        ttl = 1;
+        ttl = 2;
       } else if (isChainIdRequest) {
         cacheKey = 'eth_chainId';
         ttl = 86400 * 30;
