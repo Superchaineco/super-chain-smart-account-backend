@@ -91,6 +91,10 @@ export async function rpcReverseProxy(req: Request, res: Response) {
         true
       );
 
+      if (cachedData?.jsonrpc === '2.0' && typeof req.body?.id !== 'undefined') {
+        cachedData.id = req.body.id;
+      }
+
       res.status(200).json(cachedData);
       return;
     }
