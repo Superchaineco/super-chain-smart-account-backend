@@ -51,7 +51,7 @@ export async function rpcReverseProxy(req: Request, res: Response) {
 
       if (isBlockNumberRequest) {
         cacheKey = 'eth_blockNumber';
-        ttl = 2;
+        ttl = 1;
       } else if (isChainIdRequest) {
         cacheKey = 'eth_chainId';
         ttl = 86400 * 30;
