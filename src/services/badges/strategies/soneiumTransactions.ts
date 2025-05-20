@@ -7,7 +7,7 @@ export class SoneiumTransactionsStrategy extends BaseBadgeStrategy {
 
     async getValue(eoas: string[]): Promise<number> {
         const cacheKey = `soneiumTransactions-${eoas.join(",")}`;
-        const ttl = 3600
+        const ttl = 7200
 
         const fetchFunction = async () => {
             const settings = {
