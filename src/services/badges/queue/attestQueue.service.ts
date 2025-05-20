@@ -38,11 +38,14 @@ export class AttestQueueService {
             this.worker = new Worker(
                 this.queueName,
                 async (job, token) => {
+
+                    if (this.isBatching) job.moveToDelayed(Date.now() + 5000, token);
+
                     this.batchBuffer.push({ job, token });
 
                     if (!this.batchTimer) {
                         this.batchTimer = setTimeout(() => {
-                            this.executeBatch();
+                            this.executeBatch().catch(console.error);
                         }, this.BATCH_TIMEOUT_MS);
                     }
 
@@ -69,6 +72,7 @@ export class AttestQueueService {
         this.isBatching = true;
 
         const jobsWithTokens = [...this.batchBuffer];
+        if (this.batchTimer) clearTimeout(this.batchTimer);
         this.batchBuffer = [];
         this.batchTimer = null;
 
@@ -76,6 +80,7 @@ export class AttestQueueService {
 
         try {
             console.log(`[Batching] Executing ${jobsWithTokens.length} attestations`);
+
             await service.batchAttest(
                 jobsWithTokens.map(({ job }) => ({
                     account: job.data.account,
@@ -85,28 +90,35 @@ export class AttestQueueService {
                 }))
             );
 
-            for (const { job, token } of jobsWithTokens) {
-                await job.updateProgress(100);
-                await job.moveToCompleted('done', token, true);
-            }
+            console.log(`[Batching] Completed ${jobsWithTokens.length} attestations`);
+
+            await Promise.all(
+                jobsWithTokens.map(({ job, token }) => {
+                    return job.updateProgress(100).then(() =>
+                        job.moveToCompleted('done', token, true)
+                    );
+                })
+            );
         } catch (error) {
             console.error('[Batching Error]', error);
-            for (const { job } of jobsWithTokens) {
-                await job.moveToDelayed(Date.now() + 5000);
-            }
+            await Promise.all(
+                jobsWithTokens.map(({ job, token }) =>
+                    job.moveToDelayed(Date.now() + 5000, token)
+                )
+            );
+        } finally {
+            this.isBatching = false;
         }
-
-        this.isBatching = false;
     }
 
-    public async queueAndWait(data: AttestJobData): Promise<any> {
+    public async queueAndWait(data: AttestJobData, isHuman: boolean): Promise<unknown> {
         const jobId = `attest-${data.account}`;
         console.log('🧑‍⚖️ Job ID:', jobId);
+
         const existing = await this.queue.getJob(jobId);
         if (existing) {
             const isDone = await existing.isCompleted();
             const isFailed = await existing.isFailed();
-
             if (!isDone && !isFailed) {
                 console.log('⏳ Job already pending, skipping enqueue.');
                 return {};
@@ -116,6 +128,7 @@ export class AttestQueueService {
         const job = await this.queue.add(this.queueName, data, {
             jobId,
             attempts: 1,
+            priority: isHuman ? 1 : 2,
             backoff: {
                 type: 'exponential',
                 delay: 1000,
@@ -127,9 +140,15 @@ export class AttestQueueService {
                 age: 86400,
             },
         });
+
         console.log('🧑‍⚖️ Waiting...', jobId);
 
-        return await job.waitUntilFinished(this.queueEvents);
+        try {
+            return await job.waitUntilFinished(this.queueEvents);
+        } catch (error) {
+            console.error('[Queue Wait Error]', error);
+            throw error;
+        }
     }
 }
 
