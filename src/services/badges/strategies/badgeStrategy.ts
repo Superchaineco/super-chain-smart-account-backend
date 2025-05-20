@@ -5,7 +5,7 @@ import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY,
 import { getBadgesQueue } from '../queue';
 
 
-type ExternalApiCall = {
+export type ExternalApiCall = {
   service: string;
   chain: string;
   chainId: string;
@@ -46,7 +46,7 @@ const buildUrl = (apiCall: ExternalApiCall) => {
   return urlByService[apiCall.service]();
 };
 
-const seasons: Season[] = [
+export const Seasons: Season[] = [
   {
     season: "S7",
     fromDate: new Date(2025, 0, 16),
@@ -76,60 +76,33 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
   public campaigns: string[] = []
 
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
-    let totalTransactions = 0;
+    let totalValue = 0;
 
     for (const eoa of apicall.eoas) {
 
       const newApicall = { ...apicall, eoa }
-      totalTransactions += await this.fetchAllTimeDataOfEOA(newApicall);
+      const response = await this.fetchDataOfEOA(newApicall);
+      const eoaValue = Number(
+        (response?.data?.result?.length || response?.data?.items?.length ||
+          response?.result?.length || response?.items?.length
+        ) ?? 0
+      );
+
+
+      totalValue += eoaValue
     }
 
-    return totalTransactions;
-  }
-  async getCachedSeasonedValue(apicall: ExternalApiCall): Promise<number> {
-    let value = 0;
-
-    for (const eoa of apicall.eoas) {
-      const newApicall = { ...apicall, eoa }
-      value += await this.fetchSeasonedDataOfEOA(newApicall)
-    }
-    return value;
+    return totalValue;
   }
 
-  async fetchAllTimeDataOfEOA(apicall: ExternalApiCall): Promise<number> {
-    apicall.fromBlock = '0';
 
-    const response = await this.fetchDataOfEOA(apicall);
-    const totalTransactions =
-      response?.result.filter(
-        (tx: any) => tx.from.toLowerCase() === apicall.eoa.toLowerCase()
-      ).length ?? 0;
 
-    return totalTransactions;
-  }
-  getSeason(): Season {
-    return seasons.find(season => season.fromDate < new Date() && season.toDate > new Date());
-  }
 
-  async fetchSeasonedDataOfEOA(apicall: ExternalApiCall): Promise<number> {
-    apicall.fromBlock = apicall.season.blockRanges[apicall.chain][0];
-    apicall.toBlock =
-      Date.now() >= new Date(2025, 5, 11).getTime()
-        ? '&to_block=' + apicall.season.blockRanges[apicall.chain][1]
-        : '';
 
-    const response = await this.fetchDataOfEOA(apicall);
-    const totalTransactions = Number(
-      (response?.data?.result?.length || response?.data?.items?.length ||
-        response?.result?.length || response?.items?.length
-      ) ?? 0
-    );
-    return totalTransactions;
-  }
+
 
   async fetchDataOfEOA(apicall: ExternalApiCall): Promise<any> {
     const urlGet = buildUrl(apicall);
-
     const queueService = getBadgesQueue(apicall.service)
     const response = await queueService.getCachedDelayedResponse(urlGet);
     return response;

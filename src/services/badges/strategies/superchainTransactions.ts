@@ -1,5 +1,5 @@
 import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
-import { BaseBadgeStrategy } from "./badgeStrategy";
+import { BaseBadgeStrategy, ExternalApiCall, Seasons } from "./badgeStrategy";
 import { Season } from "@/types/index.types";
 import { redisService } from "@/services/redis.service";
 
@@ -7,8 +7,8 @@ import { redisService } from "@/services/redis.service";
 
 export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
+    private readonly season = Seasons[0]
     async getValue(eoas: string[]) {
-        const season = this.getSeason();
 
         let totalTxs: number = 0;
 
@@ -17,13 +17,15 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         totalTxs += await this.getInk(eoas);
         totalTxs += await this.getUnichain(eoas);
         totalTxs += await this.getSoneium(eoas);
-        totalTxs += await this.getCachedSeasonedValue({
-            service: "blockscout",
-            chain: "mode-34443",
-            chainId: "34443",
-            eoas,
-            season,
-        });
+
+        const apiCall: ExternalApiCall = { service: "blockscout", chain: "mode-34443", chainId: "34443", eoas, season: this.season }
+        apiCall.fromBlock = apiCall.season.blockRanges[apiCall.chain][0];
+        apiCall.toBlock =
+            Date.now() >= new Date(2025, 5, 11).getTime()
+                ? '&to_block=' + apiCall.season.blockRanges[apiCall.chain][1]
+                : '';
+
+        totalTxs += await this.getCachedValue(apiCall);
 
         return totalTxs;
     }
@@ -32,7 +34,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     async getBase(eoas: string[]): Promise<number> {
         const chain = "base-8453";
         const cacheKey = `baseTransactions-S7-${eoas.join(",")}`;
-        const season = this.getSeason();
+        const season = this.season;
 
         const fetchFunction = async () => {
             const settings = {
@@ -75,7 +77,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     async getInk(eoas: string[]): Promise<number> {
         const chain = "ink-57073";
         const cacheKey = `inkTransactions-S7-${eoas.join(",")}`;
-        const season = this.getSeason();
+        const season = this.season;
 
         const fetchFunction = async () => {
             const settings = {
@@ -118,7 +120,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     async getUnichain(eoas: string[]): Promise<number> {
         const chain = "unichain-130";
         const cacheKey = `unichainTransactions-S7-${eoas.join(",")}`;
-        const season = this.getSeason();
+        const season = this.season;
 
         const fetchFunction = async () => {
             const settings = {
@@ -161,7 +163,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     async getSoneium(eoas: string[]): Promise<number> {
         const chain = "Soneium";
         const cacheKey = `soneiumTransactions-S7-${eoas.join(",")}`;
-        const season = this.getSeason();
+        const season = this.season;
 
         const fetchFunction = async () => {
             const settings = {
@@ -204,7 +206,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     async getOP(eoas: string[]): Promise<number> {
         const chain = "optimism-10";
         const cacheKey = `optimismTransactions-S7-${eoas.join(",")}`;
-        const season = this.getSeason();
+        const season = this.season;
 
         const fetchFunction = async () => {
             const settings = {
