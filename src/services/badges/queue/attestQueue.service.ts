@@ -83,30 +83,26 @@ export class AttestQueueService {
         console.log('🧑‍⚖️ Job ID:', jobId);
 
         const existing = await this.queue.getJob(jobId);
-        if (existing) {
-            const isDone = await existing.isCompleted();
-            const isFailed = await existing.isFailed();
-            if (!isDone && !isFailed) {
-                console.log('⏳ Job already pending, skipping enqueue.');
-            } else {
-                await existing.remove()
-                await this.queue.add(this.queueName, data, {
-                    jobId,
-                    attempts: 1,
-                    priority: isHuman ? 1 : 2,
-                    backoff: {
-                        type: 'exponential',
-                        delay: 1000,
-                    },
-                    removeOnComplete: {
-                        age: 86400,
-                    },
-                    removeOnFail: {
-                        age: 86400,
-                    },
-                });
-            }
+        const isDone = await existing?.isCompleted() ?? false;
+        const isFailed = await existing?.isFailed() ?? false;
 
+        if (existing && (isDone || isFailed) || !existing) {
+            await existing?.remove()
+            await this.queue.add(this.queueName, data, {
+                jobId,
+                attempts: 1,
+                priority: isHuman ? 1 : 2,
+                backoff: {
+                    type: 'exponential',
+                    delay: 1000,
+                },
+                removeOnComplete: {
+                    age: 86400,
+                },
+                removeOnFail: {
+                    age: 86400,
+                },
+            });
         }
         console.log('🧑‍⚖️ Waiting...', jobId);
         while (true) {
