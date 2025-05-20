@@ -7,24 +7,27 @@ import { redisService } from "@/services/redis.service";
 
 export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
-
     async getValue(eoas: string[]) {
         const season = this.getSeason();
 
-        const requests: Promise<number>[] = [
-            this.getOP(eoas),
-            this.getBase(eoas),
-            this.getInk(eoas),
-            this.getUnichain(eoas),
-            this.getSoneium(eoas),            
-            this.getCachedSeasonedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas, season }),
-        ];
+        let totalTxs: number = 0;
 
-        const results: number[] = await Promise.all(requests);
-        const totalTxs: number = results.reduce((acc, curr) => acc + curr, 0);
+        totalTxs += await this.getOP(eoas);
+        totalTxs += await this.getBase(eoas);
+        totalTxs += await this.getInk(eoas);
+        totalTxs += await this.getUnichain(eoas);
+        totalTxs += await this.getSoneium(eoas);
+        totalTxs += await this.getCachedSeasonedValue({
+            service: "routescan",
+            chain: "mode-34443",
+            chainId: "34443",
+            eoas,
+            season,
+        });
 
         return totalTxs;
     }
+
 
     async getBase(eoas: string[]): Promise<number> {
         const chain = "base-8453";
