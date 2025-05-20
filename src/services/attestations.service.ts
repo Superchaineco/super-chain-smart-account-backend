@@ -60,7 +60,7 @@ export class AttestationsService {
 
     try {
       const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
-      await this.provider.waitForTransaction(executeTxResponse.hash, 1);
+      //await this.provider.waitForTransaction(executeTxResponse.hash, 1);
       return executeTxResponse.hash;
     } catch (e) {
       console.error('Unexpected error executing transaction with SAFE:', e);
@@ -150,9 +150,13 @@ export class AttestationsService {
           revocable: false,
         },
       };
+      console.log('🤑🤑🤑🤑🤑🤑🤑Trying SAFE txData:', account);
       let attestSuccess = await this.tryAttestWithSafe(txData);
       if (!attestSuccess)
+      {
+        console.log('💸💸💸💸💸💸💸💸💸💸SAFE FAILED!!!!', account);
         attestSuccess = await this.tryAttestWithRelayKit(account, txData);
+      }
 
       if (!attestSuccess) throw new Error('Not enough funds');
       
