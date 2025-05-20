@@ -79,6 +79,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     let totalTransactions = 0;
 
     for (const eoa of apicall.eoas) {
+
       const newApicall = { ...apicall, eoa }
       totalTransactions += await this.fetchAllTimeDataOfEOA(newApicall);
     }
@@ -128,6 +129,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
 
   async fetchDataOfEOA(apicall: ExternalApiCall): Promise<any> {
     const urlGet = buildUrl(apicall);
+
     const queueService = getBadgesQueue(apicall.service)
     const response = await queueService.getCachedDelayedResponse(urlGet);
     return response;

@@ -77,7 +77,6 @@ export class BadgesQueueService {
     const cacheKey = `delayed_call:${urlGet}`;
     try {
       const cachedData: CachedData = await redisService.getCachedData(cacheKey);
-
       if (cachedData) {
         console.info(`Cache hit for key: ${cacheKey}`);
 
@@ -88,14 +87,13 @@ export class BadgesQueueService {
           console.log(`🆗🆗🆗🆗🆗🆗Cache no need to refresh key: ${cacheKey}`);
         }
 
-        return cachedData;
+        return cachedData.data;
       }
     } catch (error) {
       console.log('Error getting cached data', error);
-      await this.addJob(urlGet);
     }
 
-
+    await this.addJob(urlGet);
     return null;
   }
 
