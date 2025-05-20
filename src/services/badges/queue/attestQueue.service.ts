@@ -49,7 +49,7 @@ export class AttestQueueService {
         }
     }
 
-    public async queueAndWait(data: AttestJobData): Promise<any> {
+    public async queueAndWait(data: AttestJobData, isHuman: boolean): Promise<any> {
         const jobId = `attest-${data.account}`;
         console.log('🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️Job ID:', jobId);
         const existing = await this.queue.getJob(jobId);
@@ -68,6 +68,7 @@ export class AttestQueueService {
         //if (total > 5) throw new Error('Too many jobs in the queue, please try again later');
 
         const job = await this.queue.add(this.queueName, data, {
+            priority: isHuman ? 1 : 2,
             jobId,
             attempts: 1,
             backoff: {
