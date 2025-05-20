@@ -70,7 +70,7 @@ export class AttestQueueService {
                 delay: 1000,
             },
             removeOnComplete: {
-                age: 3600,
+                age: 86400,
             },
             removeOnFail: {
                 age: 86400,
