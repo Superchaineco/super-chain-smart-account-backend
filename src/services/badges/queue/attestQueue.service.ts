@@ -63,7 +63,7 @@ export class AttestQueueService {
 
         const jobCounts = await this.queue.getJobCounts('waiting', 'delayed', 'active')
         const total = jobCounts.waiting + jobCounts.delayed + jobCounts.active;
-        if (total > 5) throw new Error('Too many jobs in the queue, please try again later');
+        //if (total > 5) throw new Error('Too many jobs in the queue, please try again later');
 
         const job = await this.queue.add(this.queueName, data, {
             jobId,
