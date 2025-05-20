@@ -58,7 +58,7 @@ export async function claimBadges(req: Request, res: Response) {
       });
 
       const data = await captchaRes.json();
-      console.log("Captcha ", data)
+      console.log("Captcha ", account, ' isHuman: ', data.success)
       isHuman = data.success
     }
 
