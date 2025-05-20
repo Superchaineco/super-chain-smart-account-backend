@@ -33,7 +33,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
     }
     async getValue(eoas: string[]) {
         const season = this.getSeason();
-
+        
         const requests: Promise<number>[] = [
             this.getCachedSeasonedValue({ service: "blockscout", chain: "optimism-10", chainId: "10", eoas, season }),
             this.getCachedSeasonedValue({ service: "blockscout", chain: "base-8453", chainId: "8453", eoas, season }),

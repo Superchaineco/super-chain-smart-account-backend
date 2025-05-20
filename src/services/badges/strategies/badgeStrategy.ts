@@ -52,21 +52,13 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
   ): Promise<number | boolean>;
 
   public campaigns: string[] = []
-  
+
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
     let totalTransactions = 0;
 
     for (const eoa of apicall.eoas) {
-      const cacheKey = `${apicall.service}-${apicall.chain}-${eoa}`;
-      apicall.eoa = eoa;
-
-      const transactions = await redisService.getCachedDataWithCallback(
-        cacheKey,
-        () => this.fetchAllTimeDataOfEOA(apicall),
-        ttl
-      );
-
-      totalTransactions += transactions;
+      const newApicall = { ...apicall, eoa }
+      totalTransactions += await this.fetchAllTimeDataOfEOA(newApicall);
     }
 
     return totalTransactions;
@@ -75,15 +67,8 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     let value = 0;
 
     for (const eoa of apicall.eoas) {
-      const cacheKey = `${apicall.service}-${apicall.chain}-${apicall.season.season
-        }Transactions-${eoa}`;
-
-      apicall.eoa = eoa;
-      value += await redisService.getCachedDataWithCallback(
-        cacheKey,
-        () => this.fetchSeasonedDataOfEOA(apicall),
-        ttl
-      );
+      const newApicall = { ...apicall, eoa }
+      value += await this.fetchSeasonedDataOfEOA(newApicall)
     }
     return value;
   }
@@ -111,7 +96,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     const totalTransactions = Number(
       (response?.data?.result?.length || response?.data?.items?.length ||
         response?.result?.length || response?.items?.length
-       ) ?? 0
+      ) ?? 0
     );
     return totalTransactions;
   }
