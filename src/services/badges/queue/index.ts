@@ -8,6 +8,11 @@ interface BadgeJobData {
   urlGet: string;
 }
 
+interface CachedData {
+  data: any;
+  timestamp: number;
+}
+
 export class BadgesQueueService {
   public readonly queue: Queue;
   private readonly worker?: Worker;
@@ -55,25 +60,42 @@ export class BadgesQueueService {
   private async processJob(job: Job<BadgeJobData>): Promise<any> {
     const { urlGet } = job.data;
     await job.log(`Processing delayed call: ${urlGet}`);
-    const cacheKey = `delayed_call:${urlGet}`; 
+    const cacheKey = `delayed_call:${urlGet}`;
 
     const response = await axios.get(urlGet);
     await job.log(`Processed delayed call: ${urlGet}`);
+    const cachedData: CachedData = {
+      data: response.data,
+      timestamp: Date.now()
+    }
 
-
-    await redisService.setCachedData(cacheKey, response.data, 3600);
+    await redisService.setCachedData(cacheKey, cachedData, 0);
     return response.data;
   }
 
   public async getCachedDelayedResponse(urlGet: string): Promise<any> {
     const cacheKey = `delayed_call:${urlGet}`;
-    const cachedData = await redisService.getCachedData(cacheKey);
+    try {
+      const cachedData: CachedData = await redisService.getCachedData(cacheKey);
 
-    if (cachedData) {
-      console.info(`Cache hit for key: ${cacheKey}`);
-      return cachedData;
+      if (cachedData) {
+        console.info(`Cache hit for key: ${cacheKey}`);
+
+        if (!cachedData.timestamp || cachedData.timestamp + 3600000 < Date.now()) {
+          console.log(`⌚⌚⌚⌚⌚⌚⌚Refreshing cache for key: ${cacheKey}`);
+          await this.addJob(urlGet);
+        } else {
+          console.log(`🆗🆗🆗🆗🆗🆗Cache no need to refresh key: ${cacheKey}`);
+        }
+
+        return cachedData;
+      }
+    } catch (error) {
+      console.log('Error getting cached data', error);
+      await this.addJob(urlGet);
     }
-    await this.addJob(urlGet);
+
+
     return null;
   }
 
