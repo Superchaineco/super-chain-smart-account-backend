@@ -11,7 +11,7 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
         
 
         const amount = eoas.reduce(async (accPromise, eoa) => {
-            const urlGet = `https://blockscout.lisk.com/api?module=account&action=txlist&address=${eoa}`
+            const urlGet = `https://blockscout.lisk.com/api?&module=account&action=txlist&address=${eoa}`
             const queueService = getBadgesQueue('blockscout')
             const response = await queueService.getCachedDelayedResponse(urlGet);
             const total = response.result
