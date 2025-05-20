@@ -36,7 +36,10 @@ export class AttestQueueService {
         this.isRunning = true;
         console.log(`[Polling] Processing.....`);
         const jobs = await this.queue.getJobs(['prioritized', 'waiting'], 0, this.BATCH_SIZE - 1);
-        if (jobs.length === 0) return;
+        if (jobs.length === 0) {
+            this.isRunning = false;
+            return;
+        }
         console.log(`[Polling] Processing ${jobs.length} attestations`);
         try {
 
@@ -85,26 +88,26 @@ export class AttestQueueService {
             if (!isDone && !isFailed) {
                 console.log('⏳ Job already pending, skipping enqueue.');
                 return {};
+            } else {
+                await existing.remove()
+                const job = await this.queue.add(this.queueName, data, {
+                    jobId,
+                    attempts: 1,
+                    priority: isHuman ? 1 : 2,
+                    backoff: {
+                        type: 'exponential',
+                        delay: 1000,
+                    },
+                    removeOnComplete: {
+                        age: 86400,
+                    },
+                    removeOnFail: {
+                        age: 86400,
+                    },
+                });
             }
-            await existing.remove()
+
         }
-
-        const job = await this.queue.add(this.queueName, data, {
-            jobId,
-            attempts: 1,
-            priority: isHuman ? 1 : 2,
-            backoff: {
-                type: 'exponential',
-                delay: 1000,
-            },
-            removeOnComplete: {
-                age: 86400,
-            },
-            removeOnFail: {
-                age: 86400,
-            },
-        });
-
         console.log('🧑‍⚖️ Waiting...', jobId);
         while (true) {
             const result = this.resultMap.get(data.account.toLowerCase());
