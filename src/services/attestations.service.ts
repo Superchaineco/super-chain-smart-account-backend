@@ -1,6 +1,12 @@
 import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/typechain-types/factories/contracts/EAS__factory';
 
-import { ethers, JsonRpcProvider, Wallet, ZeroAddress, zeroPadValue } from 'ethers';
+import {
+  ethers,
+  JsonRpcProvider,
+  Wallet,
+  ZeroAddress,
+  zeroPadValue,
+} from 'ethers';
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
@@ -27,11 +33,27 @@ export class AttestationsService {
   private eas = EAS__factory.connect(this.easContractAddress, this.wallet);
   private schemaEncoder = new SchemaEncoder(this.schemaString);
 
+  async createSafeTransactions(txDatas: any[]) {
+    const safeTransactions: MetaTransactionData[] = [];
+    for (const txData of txDatas) {
+      const data = this.eas.interface.encodeFunctionData('attest', [txData]);
+
+      const safeTransactionData: MetaTransactionData = {
+        to: this.easContractAddress,
+        value: '0',
+        data: data,
+      };
+      safeTransactions.push(safeTransactionData);
+    }
+    return safeTransactions;
+  }
+
   async tryAttestWithSafe(txData: any): Promise<string | boolean> {
     const onchainAnalytics: OnchainAnalyticsProps = {
       project: 'SuperAccounts',
       platform: 'Web',
     };
+
     // @ts-expect-error ESM import
     const safeSdk = await Safe.default.init({
       provider: JSON_RPC_PROVIDER,
@@ -40,16 +62,10 @@ export class AttestationsService {
       onchainAnalytics,
     });
 
-    const data = this.eas.interface.encodeFunctionData('attest', [txData]);
-
-    const safeTransactionData: MetaTransactionData = {
-      to: this.easContractAddress,
-      value: '0',
-      data: data,
-    };
+    const safeTransactions = await this.createSafeTransactions([txData]);
 
     const safeTransaction = await safeSdk.createTransaction({
-      transactions: [safeTransactionData],
+      transactions: safeTransactions,
     });
 
     const isValid = await safeSdk.isValidTransaction(safeTransaction, {
@@ -59,7 +75,9 @@ export class AttestationsService {
     if (!isValid) return isValid;
 
     try {
-      const executeTxResponse = await safeSdk.executeTransaction(safeTransaction)
+      const executeTxResponse = await safeSdk.executeTransaction(
+        safeTransaction
+      );
       //await this.provider.waitForTransaction(executeTxResponse.hash, 1);
       return executeTxResponse.hash;
     } catch (e) {
@@ -119,6 +137,98 @@ export class AttestationsService {
     }
   }
 
+  public async batchAttest(
+    batchData: {
+      account: string;
+      totalPoints: number;
+      badges: ResponseBadge[];
+      badgeUpdates: { badgeId: number; level: number; points: number }[];
+    }[]
+  ) {
+    const onchainAnalytics: OnchainAnalyticsProps = {
+      project: 'SuperAccounts',
+      platform: 'Web',
+    };
+
+    // @ts-expect-error ESM import
+    const safeSdk = await Safe.default.init({
+      provider: JSON_RPC_PROVIDER,
+      signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
+      safeAddress: SAFE_ADDRESS,
+      onchainAnalytics,
+    });
+
+    const txDatas = [];
+    for (const data of batchData) {
+      const encodedData = this.schemaEncoder.encodeData([
+        {
+          name: 'badges',
+          value: data.badgeUpdates,
+          type: '(uint256,uint256)[]',
+        },
+      ]);
+
+      txDatas.push({
+        schema: SUPER_CHAIN_ATTESTATION_SCHEMA,
+        data: {
+          recipient: data.account,
+          data: encodedData,
+          expirationTime: BigInt(0),
+          value: BigInt(0),
+          refUID: ethers.ZeroHash,
+          revocable: false,
+        },
+      });
+    }
+
+    const safeTransactions = await this.createSafeTransactions(txDatas);
+
+    const safeTransaction = await safeSdk.createTransaction({
+      transactions: safeTransactions,
+    });
+
+    try {
+      const executeTxResponse = await safeSdk.executeTransaction(
+        safeTransaction
+      );
+
+      await this.provider.waitForTransaction(executeTxResponse.hash, 1);
+      
+      await Promise.all(
+        batchData.map(async (data) =>
+          await this.claimBadgesOptimistically(data.account, data.badgeUpdates)
+        )
+      );
+
+      // Crear un array de respuestas similar al formato de attest
+      const responses = await Promise.all(
+        batchData.map(async (data) => {
+          const isLevelUp = await superChainAccountService.getIsLevelUp(
+            data.account,
+            data.totalPoints
+          );
+
+          const updatedBadges = data.badges.filter((badge) =>
+            data.badgeUpdates.some((update) => update.badgeId === badge.badgeId)
+          );
+
+          return {
+            hash: executeTxResponse.hash,
+            isLevelUp,
+            totalPoints: data.totalPoints,
+            badgeUpdates: data.badgeUpdates,
+            updatedBadges,
+          };
+        })
+      );
+
+      return responses;
+    } catch (e) {
+      console.error('Unexpected error executing transaction with SAFE:', e);
+      throw e;
+    }
+  }
+
   public async attest(
     account: string,
     totalPoints: number,
@@ -152,20 +262,19 @@ export class AttestationsService {
       };
       console.log('🤑🤑🤑🤑🤑🤑🤑Trying SAFE txData:', account);
       let attestSuccess = await this.tryAttestWithSafe(txData);
-      if (!attestSuccess)
-      {
+      if (!attestSuccess) {
         console.log('💸💸💸💸💸💸💸💸💸💸SAFE FAILED!!!!', account);
         attestSuccess = await this.tryAttestWithRelayKit(account, txData);
       }
 
       if (!attestSuccess) throw new Error('Not enough funds');
-      
+
       if (typeof attestSuccess === 'string') {
         await this.provider.waitForTransaction(attestSuccess, 1);
       }
 
-      const updatedBadges = badges.filter(badge => 
-        badgeUpdates.some(update => update.badgeId === badge.badgeId)
+      const updatedBadges = badges.filter((badge) =>
+        badgeUpdates.some((update) => update.badgeId === badge.badgeId)
       );
 
       await this.claimBadgesOptimistically(account, badgeUpdates);
