@@ -53,12 +53,14 @@ export class AttestQueueService {
         const jobId = `attest-${data.account}`;
         console.log('🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️Job ID:', jobId);
         const existing = await this.queue.getJob(jobId);
-        if (
-            existing &&
-            !(await existing.isCompleted()) &&
-            !(await existing.isFailed())
-        ) {
-            await existing.remove();
+        if (existing) {
+            const isDone = await existing.isCompleted();
+            const isFailed = await existing.isFailed();
+
+            if (!isDone && !isFailed) {
+                console.log('⏳ Job already pending, skipping enqueue.');
+                return {};
+            }
         }
 
         const jobCounts = await this.queue.getJobCounts('waiting', 'delayed', 'active')
