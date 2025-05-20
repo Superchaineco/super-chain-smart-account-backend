@@ -28,19 +28,22 @@ export class AttestQueueService {
         });
 
         if (ENV !== ENVIRONMENTS.development) {
-            setInterval(() => this.pollAndProcess().catch(console.error), 10000);
+            setInterval(() => this.pollAndProcess(), 10000);
         }
     }
 
     private async pollAndProcess() {
-        
+
+        console.log(`[Polling] Processing.....`);
         const jobs = await this.queue.getJobs(['prioritized', 'waiting'], 0, this.BATCH_SIZE - 1);
         if (jobs.length === 0) return;
-
-        const service = new AttestationsService();
-
+        console.log(`[Polling] Processing ${jobs.length} attestations`);
         try {
-            console.log(`[Polling] Processing ${jobs.length} attestations`);
+
+            
+
+            const service = new AttestationsService();
+            
 
             const results = await service.batchAttest(
                 jobs.map((job) => ({
@@ -85,7 +88,7 @@ export class AttestQueueService {
                 console.log('⏳ Job already pending, skipping enqueue.');
                 return {};
             }
-            existing.remove()
+            await existing.remove()
         }
 
         const job = await this.queue.add(this.queueName, data, {
