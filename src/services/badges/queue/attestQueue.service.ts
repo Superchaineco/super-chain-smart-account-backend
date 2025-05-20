@@ -39,7 +39,7 @@ export class AttestQueueService {
                 this.queueName,
                 async (job, token) => {
 
-                    if (this.isBatching) job.moveToDelayed(Date.now() + 5000, token);
+                    if (this.isBatching) job.moveToDelayed(Date.now() + 10000, token);
 
                     this.batchBuffer.push({ job, token });
 
@@ -152,7 +152,11 @@ export class AttestQueueService {
         console.log('🧑‍⚖️ Waiting...', jobId);
 
         try {
-            return await job.waitUntilFinished(this.queueEvents);
+            await job.waitUntilFinished(this.queueEvents);
+            while (job.returnvalue == null) {
+                await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+            return job.returnvalue
         } catch (error) {
             console.error('[Queue Wait Error]', error);
             throw error;
