@@ -34,7 +34,7 @@ export class AttestQueueService {
             connection: redisWorker,
         });
 
-        if (ENV === ENVIRONMENTS.production) {
+        if (ENV !== ENVIRONMENTS.development) {
             this.worker = new Worker(
                 this.queueName,
                 async (job, token) => {
@@ -81,7 +81,7 @@ export class AttestQueueService {
         try {
             console.log(`[Batching] Executing ${jobsWithTokens.length} attestations`);
 
-            await service.batchAttest(
+            const results = await service.batchAttest(
                 jobsWithTokens.map(({ job }) => ({
                     account: job.data.account,
                     totalPoints: job.data.totalPoints,
@@ -92,10 +92,18 @@ export class AttestQueueService {
 
             console.log(`[Batching] Completed ${jobsWithTokens.length} attestations`);
 
+            const resultMap = new Map<string, any>();
+            for (const r of results) {
+                resultMap.set(r.account.toLowerCase(), r);
+            }
+
             await Promise.all(
                 jobsWithTokens.map(({ job, token }) => {
-                    return job.updateProgress(100).then(() =>
-                        job.moveToCompleted('done', token, true)
+                    return job.updateProgress(100).then(() => {
+                        const result = resultMap.get(job.data.account.toLowerCase()) ?? null
+                        job.moveToCompleted(result, token, true)
+                    }
+
                     );
                 })
             );

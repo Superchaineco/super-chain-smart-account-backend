@@ -33,14 +33,14 @@ export class BadgesQueueService {
       }
     });
 
-    if (ENV === ENVIRONMENTS.production) {
+    if (ENV !== ENVIRONMENTS.development) {
       this.worker = this.initializeWorker();
       this.attachLifecycleHandlers();
     }
   }
 
   private initializeWorker(): Worker {
-    if (ENV !== ENVIRONMENTS.production) {
+    if (ENV === ENVIRONMENTS.development) {
       throw new Error('Worker should not be initialized in development');
     }
     return new Worker(
@@ -152,7 +152,7 @@ export const queuesInstances: Map<string, BadgesQueueService> = new Map();
 export const getBadgesQueue = (service: string): BadgesQueueService => {
 
   if (queuesInstances.size === 0) {
-   // queuesInstances.set('routescan', new BadgesQueueService('routescan'));
+    // queuesInstances.set('routescan', new BadgesQueueService('routescan'));
     queuesInstances.set('blockscout', new BadgesQueueService('blockscout'));
   }
 

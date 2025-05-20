@@ -7,7 +7,7 @@ import { attestQueueService } from '@/services/badges/queue/attestQueue.service'
 
 export const setupBullBoard = (app: any) => {
 
-  if (ENV !== ENVIRONMENTS.development) {
+  if (ENV === ENVIRONMENTS.production) {
     return;
   }
 
@@ -18,7 +18,7 @@ export const setupBullBoard = (app: any) => {
     ...Array.from(queuesInstances.values()).map(
       (serviceInstance) => new BullMQAdapter(serviceInstance.queue)
     ),
-    new BullMQAdapter(attestQueueService.queue), 
+    new BullMQAdapter(attestQueueService.queue),
   ];
   createBullBoard({
     queues: queueAdapters,

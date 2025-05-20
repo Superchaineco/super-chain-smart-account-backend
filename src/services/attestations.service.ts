@@ -193,14 +193,14 @@ export class AttestationsService {
       );
 
       await this.provider.waitForTransaction(executeTxResponse.hash, 1);
-      
+
       await Promise.all(
         batchData.map(async (data) =>
           await this.claimBadgesOptimistically(data.account, data.badgeUpdates)
         )
       );
 
-      // Crear un array de respuestas similar al formato de attest
+
       const responses = await Promise.all(
         batchData.map(async (data) => {
           const isLevelUp = await superChainAccountService.getIsLevelUp(
@@ -208,11 +208,14 @@ export class AttestationsService {
             data.totalPoints
           );
 
+
           const updatedBadges = data.badges.filter((badge) =>
             data.badgeUpdates.some((update) => update.badgeId === badge.badgeId)
           );
 
+          await this.claimBadgesOptimistically(data.account, data.badgeUpdates);
           return {
+            account: data.account,
             hash: executeTxResponse.hash,
             isLevelUp,
             totalPoints: data.totalPoints,
