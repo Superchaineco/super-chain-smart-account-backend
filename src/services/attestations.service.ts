@@ -160,6 +160,7 @@ export class AttestationsService {
 
     const txDatas = [];
     for (const data of batchData) {
+      console.log("Attesting:", data.account)
       const encodedData = this.schemaEncoder.encodeData([
         {
           name: 'badges',

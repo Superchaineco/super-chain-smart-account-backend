@@ -1,4 +1,5 @@
-import { Job, Queue, QueueEvents, Worker } from 'bullmq';
+// Este nuevo enfoque elimina el Worker de BullMQ y procesa los jobs manualmente cada 10 segundos
+import { Job, Queue, QueueEvents } from 'bullmq';
 import { redisWorker } from '@/utils/cache';
 import { ENV, ENVIRONMENTS } from '@/config/superChain/constants';
 import { AttestationsService } from '@/services/attestations.service';
@@ -11,19 +12,11 @@ interface AttestJobData {
     badgeUpdates: { badgeId: number; level: number; points: number }[];
 }
 
-type JobWithToken = { job: Job<AttestJobData>; token: string };
-
 export class AttestQueueService {
     private readonly queueName = 'attestQueue';
     public readonly queue: Queue<AttestJobData>;
     private readonly queueEvents: QueueEvents;
-    private readonly worker?: Worker<AttestJobData>;
-
-    private batchBuffer: JobWithToken[] = [];
-    private batchTimer: NodeJS.Timeout | null = null;
     private readonly BATCH_SIZE = 50;
-    private readonly BATCH_TIMEOUT_MS = 10000;
-    private isBatching = false;
 
     constructor() {
         this.queue = new Queue(this.queueName, {
@@ -35,87 +28,48 @@ export class AttestQueueService {
         });
 
         if (ENV !== ENVIRONMENTS.development) {
-            this.worker = new Worker(
-                this.queueName,
-                async (job, token) => {
-
-                    if (this.isBatching) job.moveToDelayed(Date.now() + 10000, token);
-
-                    this.batchBuffer.push({ job, token });
-
-                    if (!this.batchTimer) {
-                        this.batchTimer = setTimeout(() => {
-                            this.executeBatch().catch(console.error);
-                        }, this.BATCH_TIMEOUT_MS);
-                    }
-
-                    if (this.batchBuffer.length >= this.BATCH_SIZE) {
-                        clearTimeout(this.batchTimer!);
-                        this.batchTimer = null;
-                        await this.executeBatch();
-                    }
-                },
-                {
-                    concurrency: 1,
-                    connection: redisWorker,
-                }
-            );
-
-            this.worker.on('error', (err) => {
-                console.error('[Attest Worker Error]', err);
-            });
+            setInterval(() => this.pollAndProcess().catch(console.error), 10000);
         }
     }
 
-    private async executeBatch() {
-        if (this.isBatching || this.batchBuffer.length === 0) return;
-        this.isBatching = true;
-
-        const jobsWithTokens = [...this.batchBuffer];
-        if (this.batchTimer) clearTimeout(this.batchTimer);
-        this.batchBuffer = [];
-        this.batchTimer = null;
+    private async pollAndProcess() {
+        
+        const jobs = await this.queue.getJobs(['waiting'], 0, this.BATCH_SIZE - 1);
+        if (jobs.length === 0) return;
 
         const service = new AttestationsService();
 
         try {
-            console.log(`[Batching] Executing ${jobsWithTokens.length} attestations`);
+            console.log(`[Polling] Processing ${jobs.length} attestations`);
 
             const results = await service.batchAttest(
-                jobsWithTokens.map(({ job }) => ({
+                jobs.map((job) => ({
                     account: job.data.account,
                     totalPoints: job.data.totalPoints,
                     badges: job.data.badges,
                     badgeUpdates: job.data.badgeUpdates,
                 }))
             );
-
-            console.log(`[Batching] Completed ${jobsWithTokens.length} attestations`);
-
+            console.log(`[Polling] Executed! ${jobs.length} attestations`);
             const resultMap = new Map<string, any>();
             for (const r of results) {
                 resultMap.set(r.account.toLowerCase(), r);
             }
 
             await Promise.all(
-                jobsWithTokens.map(({ job, token }) => {
-                    return job.updateProgress(100).then(() => {
-                        const result = resultMap.get(job.data.account.toLowerCase()) ?? null
-                        job.moveToCompleted(result, token, true)
-                    }
-
-                    );
+                jobs.map(async (job) => {
+                    const result = resultMap.get(job.data.account.toLowerCase()) ?? null;
+                    await job.updateProgress(100);
+                    await job.moveToCompleted(result, job.token!, true);
                 })
             );
         } catch (error) {
-            console.error('[Batching Error]', error);
+            console.error('[Polling Batch Error]', error);
             await Promise.all(
-                jobsWithTokens.map(({ job, token }) =>
-                    job.moveToDelayed(Date.now() + 5000, token)
-                )
+                jobs.map(async (job) => {
+                    await job.moveToDelayed(Date.now() + 5000, job.token!);
+                })
             );
-        } finally {
-            this.isBatching = false;
         }
     }
 
@@ -142,7 +96,7 @@ export class AttestQueueService {
                 delay: 1000,
             },
             removeOnComplete: {
-                age: 3600,
+                age: 86400,
             },
             removeOnFail: {
                 age: 86400,
@@ -150,17 +104,7 @@ export class AttestQueueService {
         });
 
         console.log('🧑‍⚖️ Waiting...', jobId);
-
-        try {
-            await job.waitUntilFinished(this.queueEvents);
-            while (job.returnvalue == null) {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-            }
-            return job.returnvalue
-        } catch (error) {
-            console.error('[Queue Wait Error]', error);
-            throw error;
-        }
+        return await job.waitUntilFinished(this.queueEvents);
     }
 }
 
