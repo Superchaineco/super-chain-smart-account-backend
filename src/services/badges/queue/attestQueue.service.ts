@@ -69,7 +69,7 @@ export class AttestQueueService {
 
         const job = await this.queue.add(this.queueName, data, {
             jobId,
-            attempts: 3,
+            attempts: 1,
             backoff: {
                 type: 'exponential',
                 delay: 1000,
