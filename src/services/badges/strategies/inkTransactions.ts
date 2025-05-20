@@ -2,26 +2,32 @@ import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 import axios from "axios";
 import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
+import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
 
 export class InkTransactionsStrategy extends BaseBadgeStrategy {
 
 
   async getValue(eoas: string[]): Promise<number> {
+    const cacheKey = `inkTransactions-${eoas.join(",")}`;
+    const ttl = 3600
 
-    return await this.getCachedValue({ service: "routescan", chain: "ink-57073", chainId: "57073", eoas });
-    // const cacheKey = `inkTransactions-${eoas.join(",")}`;
-    // const ttl = 3600
+    const fetchFunction = async () => {
+      const settings = {
+        apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+        network: Network.INK_MAINNET,
+      };
+      const alchemy = new Alchemy(settings);
+      const transactions = await eoas.reduce(async (accPromise, eoa) => {
+        const acc = await accPromise;
+        const result = await alchemy.core.getTransactionCount(eoa);
+        return acc + result;
+      }, Promise.resolve(0));
 
-    // const fetchFunction = async () => {
-    //   const transactions = eoas.reduce(async (accPromise, eoa) => {
-    //     const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/57073/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=0&endblock=99999999&page=1&offset=250&sort=asc`)
-    //     const transactions = response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
-    //     return (await accPromise) + transactions;
-    //   }, Promise.resolve(0));
+      return transactions;
+    };
 
-    //   return transactions;
-    // };
-
-    // return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
+
+
 }

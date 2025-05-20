@@ -45,6 +45,27 @@ const buildUrl = (apiCall: ExternalApiCall) => {
   return urlByService[apiCall.service]();
 };
 
+const seasons: Season[] = [
+  {
+    season: "S7",
+    fromDate: new Date(2025, 0, 16),
+    toDate: new Date(2025, 5, 11),
+    blockRanges: {
+      "optimism-10": [130693412, 137000612],//2 secs x block
+      "base-8453": [25098127, 31405327], //2 secs x block
+      "unichain-130": [10151172, 22765572], //1 sec x block
+      "mode-34443": [18418009, 24725209], //2 secs x block
+      "ink-57073": [3505189, 16119589],//1 sec x block
+      "Soneium": [1934425, 8241625], //2 secs x block
+      //Not relevante yet
+      "mint-185": [0, 0],
+      "swell-1923": [0, 0],
+      "Metal": [0, 0]
+    }
+  }
+]
+
+
 export abstract class BaseBadgeStrategy implements BadgeStrategy {
   abstract getValue(
     eoas: string[],
@@ -83,6 +104,9 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
       ).length ?? 0;
 
     return totalTransactions;
+  }
+  getSeason(): Season {
+    return seasons.find(season => season.fromDate < new Date() && season.toDate > new Date());
   }
 
   async fetchSeasonedDataOfEOA(apicall: ExternalApiCall): Promise<number> {
