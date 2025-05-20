@@ -214,7 +214,6 @@ export class AttestationsService {
             data.badgeUpdates.some((update) => update.badgeId === badge.badgeId)
           );
 
-          await this.claimBadgesOptimistically(data.account, data.badgeUpdates);
           return {
             account: data.account,
             hash: executeTxResponse.hash,

@@ -34,7 +34,7 @@ export class AttestQueueService {
 
     private async pollAndProcess() {
         
-        const jobs = await this.queue.getJobs(['waiting'], 0, this.BATCH_SIZE - 1);
+        const jobs = await this.queue.getJobs(['prioritized', 'waiting'], 0, this.BATCH_SIZE - 1);
         if (jobs.length === 0) return;
 
         const service = new AttestationsService();
@@ -85,6 +85,7 @@ export class AttestQueueService {
                 console.log('⏳ Job already pending, skipping enqueue.');
                 return {};
             }
+            existing.remove()
         }
 
         const job = await this.queue.add(this.queueName, data, {
