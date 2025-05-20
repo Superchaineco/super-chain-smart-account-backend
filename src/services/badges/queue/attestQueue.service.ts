@@ -31,6 +31,7 @@ export class AttestQueueService {
     }
 
     private async pollAndProcess() {
+        console.log(`Entered pooling is running?`, this.isRunning);
         if (this.isRunning) return;
         this.isRunning = true;
         console.log(`[Polling] Processing.....`);
@@ -65,6 +66,7 @@ export class AttestQueueService {
                     await job.remove()
                 })
             );
+            this.isRunning = false;
         } catch (error) {
             console.error('[Polling Batch Error]', error);
         } finally {
