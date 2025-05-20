@@ -18,7 +18,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         totalTxs += await this.getUnichain(eoas);
         totalTxs += await this.getSoneium(eoas);
         totalTxs += await this.getCachedSeasonedValue({
-            service: "routescan",
+            service: "blockscout",
             chain: "mode-34443",
             chainId: "34443",
             eoas,

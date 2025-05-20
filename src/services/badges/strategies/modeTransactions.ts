@@ -7,7 +7,7 @@ export class ModeTransactionsStrategy extends BaseBadgeStrategy {
 
 
   async getValue(eoas: string[]): Promise<number> {
-    return await this.getCachedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas });
+    return await this.getCachedValue({ service: "blockscout", chain: "mode-34443", chainId: "34443", eoas });
     // const cacheKey = `modeTransactions-${eoas.join(",")}`;
     // const ttl = 3600
 
