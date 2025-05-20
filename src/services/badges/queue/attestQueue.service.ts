@@ -26,7 +26,7 @@ export class AttestQueueService {
 
 
         if (ENV !== ENVIRONMENTS.development) {
-            setInterval(() => this.pollAndProcess(), 15000);
+            setInterval(() => this.pollAndProcess(), 5000);
         }
     }
 
@@ -37,6 +37,7 @@ export class AttestQueueService {
         console.log(`[Polling] Processing.....`);
         const jobs = await this.queue.getJobs(['prioritized', 'waiting'], 0, this.BATCH_SIZE - 1);
         if (jobs.length === 0) {
+            console.log(`[Polling] Nothing to process.....`);
             this.isRunning = false;
             return;
         }
