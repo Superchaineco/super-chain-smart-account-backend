@@ -15,35 +15,36 @@ interface AttestJobData {
 export class AttestQueueService {
     private readonly queueName = 'attestQueue';
     public readonly queue: Queue<AttestJobData>;
-    private readonly queueEvents: QueueEvents;
     private readonly BATCH_SIZE = 50;
-
+    private resultMap = new Map<string, any>();
+    private isRunning: boolean = false;
     constructor() {
         this.queue = new Queue(this.queueName, {
             connection: redisWorker,
         });
 
-        this.queueEvents = new QueueEvents(this.queueName, {
-            connection: redisWorker,
-        });
+
 
         if (ENV !== ENVIRONMENTS.development) {
-            setInterval(() => this.pollAndProcess(), 10000);
+            setInterval(() => this.pollAndProcess(), 15000);
         }
     }
 
     private async pollAndProcess() {
-
+        if (this.isRunning) return;
+        this.isRunning = true;
         console.log(`[Polling] Processing.....`);
         const jobs = await this.queue.getJobs(['prioritized', 'waiting'], 0, this.BATCH_SIZE - 1);
         if (jobs.length === 0) return;
         console.log(`[Polling] Processing ${jobs.length} attestations`);
         try {
 
-            
+            for (const j of jobs) {
+                this.resultMap.delete(j.data.account.toLowerCase());
+            }
 
             const service = new AttestationsService();
-            
+
 
             const results = await service.batchAttest(
                 jobs.map((job) => ({
@@ -54,25 +55,20 @@ export class AttestQueueService {
                 }))
             );
             console.log(`[Polling] Executed! ${jobs.length} attestations`);
-            const resultMap = new Map<string, any>();
+
             for (const r of results) {
-                resultMap.set(r.account.toLowerCase(), r);
+                this.resultMap.set(r.account.toLowerCase(), r);
             }
 
             await Promise.all(
                 jobs.map(async (job) => {
-                    const result = resultMap.get(job.data.account.toLowerCase()) ?? null;
-                    await job.updateProgress(100);
-                    await job.moveToCompleted(result, job.token!, true);
+                    await job.remove()
                 })
             );
         } catch (error) {
             console.error('[Polling Batch Error]', error);
-            await Promise.all(
-                jobs.map(async (job) => {
-                    await job.moveToDelayed(Date.now() + 5000, job.token!);
-                })
-            );
+        } finally {
+            this.isRunning = false;
         }
     }
 
@@ -108,7 +104,16 @@ export class AttestQueueService {
         });
 
         console.log('🧑‍⚖️ Waiting...', jobId);
-        return await job.waitUntilFinished(this.queueEvents);
+        while (true) {
+            const result = this.resultMap.get(data.account.toLowerCase());
+            if (result) {
+                console.log('🧑‍⚖️ Result found:', result);
+                this.resultMap.delete(data.account.toLowerCase());
+                return result;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+
     }
 }
 
