@@ -1,113 +1,249 @@
 import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
-import { BaseBadgeStrategy } from "./badgeStrategy";
-import { redisService } from "../../redis.service";
-import axios from "axios";
+import { BaseBadgeStrategy, ExternalApiCall, Seasons } from "./badgeStrategy";
 import { Season } from "@/types/index.types";
-import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
-import { badgesQueueService } from "../queue";
-
-
-
-
-
-const seasons: Season[] = [
-    {
-        season: "S7",
-        fromDate: new Date(2025, 0, 16),
-        toDate: new Date(2025, 5, 11),
-        blockRanges: {
-            "optimism-10": [130693412, 137000612],//2 secs x block
-            "base-8453": [25098127, 31405327], //2 secs x block
-            "unichain-130": [10151172, 22765572], //1 sec x block
-            "mode-34443": [18418009, 24725209], //2 secs x block
-            "ink-57073": [3505189, 16119589],//1 sec x block
-            "Soneium": [1934425, 8241625], //2 secs x block
-            //Not relevante yet
-            "mint-185": [0, 0],
-            "swell-1923": [0, 0],
-            "Metal": [0, 0]
-        }
-    }
-]
-
+import { redisService } from "@/services/redis.service";
 
 
 
 export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
-    getSeason(): Season {
-        return seasons.find(season => season.fromDate < new Date() && season.toDate > new Date());
-    }
+    private readonly season = Seasons[0]
     async getValue(eoas: string[]) {
-        const season = this.getSeason();
 
-        const requests: Promise<number>[] = [
-            this.getCachedSeasonedValue({ service: "blockscout", chain: "optimism-10", chainId: "10", eoas, season }),
-            this.getCachedSeasonedValue({ service: "blockscout", chain: "base-8453", chainId: "8453", eoas, season }),
-            this.getCachedSeasonedValue({ service: "blockscout", chain: "ink-57073", chainId: "57073", eoas, season }),
-            this.getCachedSeasonedValue({ service: "blockscout", chain: "unichain-130", chainId: "130", eoas, season }),
-            this.getCachedSeasonedValue({ service: "blockscout", chain: "Soneium", chainId: "", eoas, season }),
-            this.getCachedSeasonedValue({ service: "routescan", chain: "mode-34443", chainId: "34443", eoas, season }),
-        ];
+        let totalTxs: number = 0;
 
-        const results: number[] = await Promise.all(requests);
-        const totalTxs: number = results.reduce((acc, curr) => acc + curr, 0);
+        totalTxs += await this.getOP(eoas);
+        totalTxs += await this.getBase(eoas);
+        totalTxs += await this.getInk(eoas);
+        totalTxs += await this.getUnichain(eoas);
+        totalTxs += await this.getSoneium(eoas);
+
+        const apiCall: ExternalApiCall = { service: "blockscout", chain: "mode-34443", chainId: "34443", eoas, season: this.season }
+        apiCall.fromBlock = apiCall.season.blockRanges[apiCall.chain][0];
+        apiCall.toBlock =
+            Date.now() >= new Date(2025, 5, 11).getTime()
+                ? '&to_block=' + apiCall.season.blockRanges[apiCall.chain][1]
+                : '';
+
+        totalTxs += await this.getCachedValue(apiCall);
 
         return totalTxs;
     }
 
 
+    async getBase(eoas: string[]): Promise<number> {
+        const chain = "base-8453";
+        const cacheKey = `baseTransactions-S7-${eoas.join(",")}`;
+        const season = this.season;
+
+        const fetchFunction = async () => {
+            const settings = {
+                apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+                network: Network.BASE_MAINNET,
+            };
+            const alchemy = new Alchemy(settings);
+            const transactions = await eoas.reduce(async (accPromise, eoa) => {
+                const acc = await accPromise;
+
+                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                    ? season.blockRanges[chain][1]
+                    : null;
+                const outgoingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    fromAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
+
+                const incomingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    toAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
+
+                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+            }, Promise.resolve(0));
+
+            return transactions;
+        };
+
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+    }
 
 
+    async getInk(eoas: string[]): Promise<number> {
+        const chain = "ink-57073";
+        const cacheKey = `inkTransactions-S7-${eoas.join(",")}`;
+        const season = this.season;
 
+        const fetchFunction = async () => {
+            const settings = {
+                apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+                network: Network.INK_MAINNET,
+            };
+            const alchemy = new Alchemy(settings);
+            const transactions = await eoas.reduce(async (accPromise, eoa) => {
+                const acc = await accPromise;
 
+                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                    ? season.blockRanges[chain][1]
+                    : null;
+                const outgoingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    fromAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
 
+                const incomingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    toAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
 
-    // async getBlockscoutValue(chain: string, eoas: string[], season: Season): Promise<number> {
+                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+            }, Promise.resolve(0));
 
-    //     let value = 0;
-    //     const fetchDataOfAddress = async (eoa: string) => {
+            return transactions;
+        };
 
-    //         const fromBlock = season.blockRanges[chain][0];
-    //         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&to_block=' + season.blockRanges[chain][1] : ''
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
 
+    }
 
-    //         const baseUrl = chain === "Soneium" ? "https://soneium.blockscout.com" : `https://unichain.blockscout.com`
-    //         const urlGet = `${baseUrl}/api/v2/addresses/${eoa}/transactions?from_block=${fromBlock}${toBlock}`
-    //         const response = await badgesQueueService.getCachedDelayedResponse(urlGet)
-    //         const totalTransactions = Number(response?.data.items.length ?? 0);
-    //         return totalTransactions;
-    //     };
-    //     for (const eoa of eoas) {
-    //         const cacheKey = `${chain}-${season.season}Transactions-${eoa}`;
-    //         value += await redisService.getCachedDataWithCallback(cacheKey, () => fetchDataOfAddress(eoa), ttl);
-    //     }
-    //     return value;
+    async getUnichain(eoas: string[]): Promise<number> {
+        const chain = "unichain-130";
+        const cacheKey = `unichainTransactions-S7-${eoas.join(",")}`;
+        const season = this.season;
 
-    // }
+        const fetchFunction = async () => {
+            const settings = {
+                apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+                network: Network.UNICHAIN_MAINNET,
+            };
+            const alchemy = new Alchemy(settings);
+            const transactions = await eoas.reduce(async (accPromise, eoa) => {
+                const acc = await accPromise;
 
-    // async getRoutescanValue(chain: string, eoas: string[], season: Season): Promise<number> {
-    //     const cacheKey = `${chain}-${season.season}Transactions-${eoas.join(",")}`;
+                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                    ? season.blockRanges[chain][1]
+                    : null;
+                const outgoingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    fromAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
 
+                const incomingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    toAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
 
-    //     const fetchFunction = async () => {
-    //         const chainId = chain.split("-")[1];
-    //         const fromBlock = season.blockRanges[chain][0];
-    //         const toBlock = Date.now() >= new Date(2025, 5, 11).getTime() ? '&startblock=' + season.blockRanges[chain][1] : ''
-    //         let totalTransactions = 0;
+                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+            }, Promise.resolve(0));
 
-    //         for (const eoa of eoas) {
-    //             const response = await axios.get(`https://api.routescan.io/v2/network/mainnet/evm/${chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${eoa}&startblock=${fromBlock}${toBlock}&page=1&offset=1000&sort=asc`)
-    //             totalTransactions += response.data.result.filter((tx: any) => tx.from.toLowerCase() === eoa.toLowerCase()).length;
+            return transactions;
+        };
 
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
 
-    //         }
+    }
 
-    //         return totalTransactions;
-    //     };
+    async getSoneium(eoas: string[]): Promise<number> {
+        const chain = "Soneium";
+        const cacheKey = `soneiumTransactions-S7-${eoas.join(",")}`;
+        const season = this.season;
 
-    //     return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
-    // }
+        const fetchFunction = async () => {
+            const settings = {
+                apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+                network: Network.SONEIUM_MAINNET,
+            };
+            const alchemy = new Alchemy(settings);
+            const transactions = await eoas.reduce(async (accPromise, eoa) => {
+                const acc = await accPromise;
 
+                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                    ? season.blockRanges[chain][1]
+                    : null;
+                const outgoingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    fromAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
+
+                const incomingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    toAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
+
+                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+            }, Promise.resolve(0));
+
+            return transactions;
+        };
+
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+
+    }
+
+    async getOP(eoas: string[]): Promise<number> {
+        const chain = "optimism-10";
+        const cacheKey = `optimismTransactions-S7-${eoas.join(",")}`;
+        const season = this.season;
+
+        const fetchFunction = async () => {
+            const settings = {
+                apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+                network: Network.OPT_MAINNET,
+            };
+            const alchemy = new Alchemy(settings);
+            const transactions = await eoas.reduce(async (accPromise, eoa) => {
+                const acc = await accPromise;
+
+                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                    ? season.blockRanges[chain][1]
+                    : null;
+                const outgoingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    fromAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
+
+                const incomingResult = await alchemy.core.getAssetTransfers({
+                    fromBlock: season.blockRanges[chain][0],
+                    toBlock: toBlock,
+                    toAddress: eoa,
+                    excludeZeroValue: false,
+                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                });
+
+                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+            }, Promise.resolve(0));
+
+            return transactions;
+        };
+
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+
+    }
 
 }

@@ -6,7 +6,7 @@ export class BaseTransactionsStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `baseTransactions-${eoas.join(",")}`;
-    const ttl = 3600
+    const ttl = 7200
 
     const fetchFunction = async () => {
       const settings = {

@@ -8,12 +8,18 @@ interface BadgeJobData {
   urlGet: string;
 }
 
-export class BadgesQueueService {
-  private readonly queue: Queue;
-  private readonly worker?: Worker;
-  private readonly queueName = 'apiCallQueue';
+interface CachedData {
+  data: any;
+  timestamp: number;
+}
 
-  constructor() {
+export class BadgesQueueService {
+  public readonly queue: Queue;
+  private readonly worker?: Worker;
+  private queueName = 'apiCallQueue';
+
+  constructor(queueName: string) {
+    this.queueName = queueName;
     this.queue = new Queue(this.queueName, {
       connection: redis, defaultJobOptions: {
         removeOnComplete: {
@@ -42,9 +48,9 @@ export class BadgesQueueService {
       async (job: Job<BadgeJobData>) => this.processJob(job),
       {
         connection: redisWorker,
-        concurrency: 3,
+        concurrency: this.queueName === 'routescan' ? 1 : 3,
         limiter: {
-          max: 5,
+          max: this.queueName === 'routescan' ? 2 : 5,
           duration: 1000,
         },
       }
@@ -55,21 +61,38 @@ export class BadgesQueueService {
     const { urlGet } = job.data;
     await job.log(`Processing delayed call: ${urlGet}`);
     const cacheKey = `delayed_call:${urlGet}`;
+
     const response = await axios.get(urlGet);
     await job.log(`Processed delayed call: ${urlGet}`);
-    //await new Promise((resolve) => setTimeout(resolve, 300));
-    await redisService.setCachedData(cacheKey, response.data, 3600);
+    const cachedData: CachedData = {
+      data: response.data,
+      timestamp: Date.now()
+    }
+
+    await redisService.setCachedData(cacheKey, cachedData, 0);
     return response.data;
   }
 
   public async getCachedDelayedResponse(urlGet: string): Promise<any> {
     const cacheKey = `delayed_call:${urlGet}`;
-    const cachedData = await redisService.getCachedData(cacheKey);
+    try {
+      const cachedData: CachedData = await redisService.getCachedData(cacheKey);
+      if (cachedData) {
+        console.info(`Cache hit for key: ${cacheKey}`);
 
-    if (cachedData) {
-      console.info(`Cache hit for key: ${cacheKey}`);
-      return cachedData;
+        if (!cachedData.timestamp || cachedData.timestamp + 3600000 < Date.now()) {
+          console.log(`⌚⌚⌚⌚⌚⌚⌚Refreshing cache for key: ${cacheKey}`);
+          await this.addJob(urlGet);
+        } else {
+          console.log(`🆗🆗🆗🆗🆗🆗Cache no need to refresh key: ${cacheKey}`);
+        }
+
+        return cachedData.data;
+      }
+    } catch (error) {
+      console.log('Error getting cached data', error);
     }
+
     await this.addJob(urlGet);
     return null;
   }
@@ -90,7 +113,7 @@ export class BadgesQueueService {
           attempts: 5,
           backoff: {
             type: 'exponential',
-            delay: 1000,
+            delay: 2000,
           },
           removeOnComplete: {
             age: 3600,
@@ -123,5 +146,17 @@ export class BadgesQueueService {
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
   }
 }
+export const queuesInstances: Map<string, BadgesQueueService> = new Map();
 
-export const badgesQueueService = new BadgesQueueService();
+
+export const getBadgesQueue = (service: string): BadgesQueueService => {
+
+  if (queuesInstances.size === 0) {
+   // queuesInstances.set('routescan', new BadgesQueueService('routescan'));
+    queuesInstances.set('blockscout', new BadgesQueueService('blockscout'));
+  }
+
+
+  return queuesInstances.get(service);
+}
+

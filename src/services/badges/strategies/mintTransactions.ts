@@ -8,7 +8,7 @@ export class MintTransactionsStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `mintTransactions-${eoas.join(",")}`;
-    const ttl = 3600
+    const ttl = 7200
 
     const fetchFunction = async () => {
       const transactions = eoas.reduce(async (accPromise, eoa) => {

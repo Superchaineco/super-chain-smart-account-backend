@@ -1,20 +1,24 @@
 import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
-import axios from "axios";
+import { Alchemy, Network } from "alchemy-sdk";
 
 export class SoneiumTransactionsStrategy extends BaseBadgeStrategy {
 
 
     async getValue(eoas: string[]): Promise<number> {
         const cacheKey = `soneiumTransactions-${eoas.join(",")}`;
-        const ttl = 3600
+        const ttl = 7200
 
         const fetchFunction = async () => {
-            const transactions = eoas.reduce(async (accPromise, eoa) => {
-                
-                const response = await axios.get(`https://soneium.blockscout.com/api/v2/addresses/${eoa}/counters`)                
-                const transactions = Number(response.data.transactions_count);
-                return (await accPromise) + transactions;
+            const settings = {
+                apiKey: process.env.ALCHEMY_PRIVATE_KEY!,
+                network: Network.SONEIUM_MAINNET,
+            };
+            const alchemy = new Alchemy(settings);
+            const transactions = await eoas.reduce(async (accPromise, eoa) => {
+                const acc = await accPromise;
+                const result = await alchemy.core.getTransactionCount(eoa);
+                return acc + result;
             }, Promise.resolve(0));
 
             return transactions;

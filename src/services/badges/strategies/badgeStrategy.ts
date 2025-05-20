@@ -2,9 +2,10 @@ import { Badge, ResponseBadge } from '../badges.service';
 import { redisService } from '../../redis.service';
 import { Season } from '@/types/index.types';
 import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY, ROUTESCAN_API_KEY, SONEIUM_BLOCKSCOUT_API_KEY, UNICHAIN_BLOCKSCOUT_API_URL } from '@/config/superChain/constants';
-import { badgesQueueService } from '../queue';
+import { getBadgesQueue } from '../queue';
 
-type ExternalApiCall = {
+
+export type ExternalApiCall = {
   service: string;
   chain: string;
   chainId: string;
@@ -32,7 +33,8 @@ const buildUrl = (apiCall: ExternalApiCall) => {
         "unichain-130": `https://unichain.blockscout.com/api?apikey=${UNICHAIN_BLOCKSCOUT_API_URL}`,
         "ink-57073": `https://explorer.inkonchain.com/api?apikey=${INK_BLOCKSCOUT_API_KEY}`,
         "optimism-10": `https://optimism.blockscout.com/api?apikey=${OP_BLOCKSCOUT_API_KEY}`,
-        "base-8453": `https://base.blockscout.com/api?apikey=${BASE_BLOCKSCOUT_API_KEY}`
+        "base-8453": `https://base.blockscout.com/api?apikey=${BASE_BLOCKSCOUT_API_KEY}`,
+        "mode-34443": `https://explorer.mode.network/api?`
       }
       const urlGet = `${baseUrls[apiCall.chain]}&module=account&action=txlist&address=${apiCall.eoa}&sort=asc&startblock=${apiCall.fromBlock}&endblock=${apiCall.toBlock}`;
       return urlGet;
@@ -44,6 +46,27 @@ const buildUrl = (apiCall: ExternalApiCall) => {
   return urlByService[apiCall.service]();
 };
 
+export const Seasons: Season[] = [
+  {
+    season: "S7",
+    fromDate: new Date(2025, 0, 16),
+    toDate: new Date(2025, 5, 11),
+    blockRanges: {
+      "optimism-10": [130693412, 137000612],//2 secs x block
+      "base-8453": [25098127, 31405327], //2 secs x block
+      "unichain-130": [10151172, 22765572], //1 sec x block
+      "mode-34443": [18418009, 24725209], //2 secs x block
+      "ink-57073": [3505189, 16119589],//1 sec x block
+      "Soneium": [1934425, 8241625], //2 secs x block
+      //Not relevante yet
+      "mint-185": [0, 0],
+      "swell-1923": [0, 0],
+      "Metal": [0, 0]
+    }
+  }
+]
+
+
 export abstract class BaseBadgeStrategy implements BadgeStrategy {
   abstract getValue(
     eoas: string[],
@@ -51,73 +74,37 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
   ): Promise<number | boolean>;
 
   public campaigns: string[] = []
-  
+
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
-    let totalTransactions = 0;
+    let totalValue = 0;
 
     for (const eoa of apicall.eoas) {
-      const cacheKey = `${apicall.service}-${apicall.chain}-${eoa}`;
-      apicall.eoa = eoa;
 
-      const transactions = await redisService.getCachedDataWithCallback(
-        cacheKey,
-        () => this.fetchAllTimeDataOfEOA(apicall),
-        ttl
+      const newApicall = { ...apicall, eoa }
+      const response = await this.fetchDataOfEOA(newApicall);
+      const eoaValue = Number(
+        (response?.data?.result?.length || response?.data?.items?.length ||
+          response?.result?.length || response?.items?.length
+        ) ?? 0
       );
 
-      totalTransactions += transactions;
+
+      totalValue += eoaValue
     }
 
-    return totalTransactions;
-  }
-  async getCachedSeasonedValue(apicall: ExternalApiCall): Promise<number> {
-    let value = 0;
-
-    for (const eoa of apicall.eoas) {
-      const cacheKey = `${apicall.service}-${apicall.chain}-${apicall.season.season
-        }Transactions-${eoa}`;
-
-      apicall.eoa = eoa;
-      value += await redisService.getCachedDataWithCallback(
-        cacheKey,
-        () => this.fetchSeasonedDataOfEOA(apicall),
-        ttl
-      );
-    }
-    return value;
+    return totalValue;
   }
 
-  async fetchAllTimeDataOfEOA(apicall: ExternalApiCall): Promise<number> {
-    apicall.fromBlock = '0';
 
-    const response = await this.fetchDataOfEOA(apicall);
-    const totalTransactions =
-      response?.result.filter(
-        (tx: any) => tx.from.toLowerCase() === apicall.eoa.toLowerCase()
-      ).length ?? 0;
 
-    return totalTransactions;
-  }
 
-  async fetchSeasonedDataOfEOA(apicall: ExternalApiCall): Promise<number> {
-    apicall.fromBlock = apicall.season.blockRanges[apicall.chain][0];
-    apicall.toBlock =
-      Date.now() >= new Date(2025, 5, 11).getTime()
-        ? '&to_block=' + apicall.season.blockRanges[apicall.chain][1]
-        : '';
 
-    const response = await this.fetchDataOfEOA(apicall);
-    const totalTransactions = Number(
-      (response?.data?.result?.length || response?.data?.items?.length ||
-        response?.result?.length || response?.items?.length
-       ) ?? 0
-    );
-    return totalTransactions;
-  }
+
 
   async fetchDataOfEOA(apicall: ExternalApiCall): Promise<any> {
     const urlGet = buildUrl(apicall);
-    const response = await badgesQueueService.getCachedDelayedResponse(urlGet);
+    const queueService = getBadgesQueue(apicall.service)
+    const response = await queueService.getCachedDelayedResponse(urlGet);
     return response;
   }
 

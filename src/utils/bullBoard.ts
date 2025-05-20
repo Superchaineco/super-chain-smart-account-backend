@@ -1,34 +1,27 @@
 import { ExpressAdapter } from '@bull-board/express';
 import { createBullBoard } from '@bull-board/api';
-import { Queue } from 'bullmq';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ENV, ENVIRONMENTS } from '../config/superChain/constants';
-
-import { redis } from './cache';
+import { getBadgesQueue, queuesInstances } from '@/services/badges/queue';
+import { attestQueueService } from '@/services/badges/queue/attestQueue.service';
 
 export const setupBullBoard = (app: any) => {
-  // Solo configurar Bull Board en desarrollo
+
   if (ENV !== ENVIRONMENTS.development) {
     return;
   }
 
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
-
-  const badgesQueue = new Queue('apiCallQueue', {
-    connection: redis, defaultJobOptions: {
-      removeOnComplete: {
-        age: 3600,
-        count: 1000
-      },
-      removeOnFail: {
-        age: 86400,
-        count: 500
-      }
-    }
-  });
+  getBadgesQueue('blockscout')
+  const queueAdapters = [
+    ...Array.from(queuesInstances.values()).map(
+      (serviceInstance) => new BullMQAdapter(serviceInstance.queue)
+    ),
+    new BullMQAdapter(attestQueueService.queue), 
+  ];
   createBullBoard({
-    queues: [new BullMQAdapter(badgesQueue) as any],
+    queues: queueAdapters,
     serverAdapter,
   });
 

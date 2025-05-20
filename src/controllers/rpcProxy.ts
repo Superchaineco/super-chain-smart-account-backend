@@ -10,12 +10,11 @@ export function verifyInternalRequest(
   next: NextFunction
 ) {
   const allowedOrigins = [
-    "scsa-backend-production.up.railway.app",
-    "scsa-backend-staging.up.railway.app",
-    ...(process.env.NODE_ENV === "development" ? [
-      "localhost:3003",
-      "localhost:3000"
-    ] : [])
+    'scsa-backend-production.up.railway.app',
+    'scsa-backend-staging.up.railway.app',
+    ...(process.env.NODE_ENV === 'development'
+      ? ['localhost:3003', 'localhost:3000']
+      : []),
   ];
 
   const origin = req.get('origin') || req.get('referer') || '';
@@ -33,7 +32,7 @@ export function verifyInternalRequest(
 }
 
 function delay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 export async function rpcReverseProxy(req: Request, res: Response) {
   try {
@@ -52,14 +51,14 @@ export async function rpcReverseProxy(req: Request, res: Response) {
 
       if (isBlockNumberRequest) {
         cacheKey = 'eth_blockNumber';
-        ttl = 2; // 2 segundos para blockNumber
+        ttl = 1;
       } else if (isChainIdRequest) {
         cacheKey = 'eth_chainId';
-        ttl = 86400 * 30; // 30 días para chainId
+        ttl = 86400 * 30;
       } else if (isGetCodeRequest) {
         const contractAddress = req.body.params[0]?.toLowerCase();
         cacheKey = `eth_getCode_${contractAddress}`;
-        ttl = 86400 * 7; // 7 días para getCode
+        ttl = 86400 * 7;
       }
 
       delete req.headers.host;
@@ -91,6 +90,10 @@ export async function rpcReverseProxy(req: Request, res: Response) {
         ttl,
         true
       );
+
+      if (cachedData?.jsonrpc === '2.0' && typeof req.body?.id !== 'undefined') {
+        cachedData.id = req.body.id;
+      }
 
       res.status(200).json(cachedData);
       return;
