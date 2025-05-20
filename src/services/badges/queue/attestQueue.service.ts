@@ -88,10 +88,9 @@ export class AttestQueueService {
             const isFailed = await existing.isFailed();
             if (!isDone && !isFailed) {
                 console.log('⏳ Job already pending, skipping enqueue.');
-                return {};
             } else {
                 await existing.remove()
-                const job = await this.queue.add(this.queueName, data, {
+                await this.queue.add(this.queueName, data, {
                     jobId,
                     attempts: 1,
                     priority: isHuman ? 1 : 2,
