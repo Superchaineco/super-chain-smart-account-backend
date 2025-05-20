@@ -49,7 +49,7 @@ export class AttestQueueService {
         }
     }
 
-    public async queueAndWait(data: AttestJobData): Promise<any> {
+    public async queueAndWait(data: AttestJobData, isHuman: boolean): Promise<any> {
         const jobId = `attest-${data.account}`;
         console.log('🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️🧑‍⚖️Job ID:', jobId);
         const existing = await this.queue.getJob(jobId);
@@ -62,6 +62,7 @@ export class AttestQueueService {
         }
 
         const job = await this.queue.add(this.queueName, data, {
+            priority: isHuman ? 1 : 2,
             jobId,
             attempts: 3,
             backoff: {
