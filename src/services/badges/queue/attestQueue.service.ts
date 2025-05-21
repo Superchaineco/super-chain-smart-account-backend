@@ -26,7 +26,7 @@ export class AttestQueueService {
 
 
         if (ENV !== ENVIRONMENTS.development) {
-            setInterval(() => this.pollAndProcess(), 15000);
+            setInterval(() => this.pollAndProcess(), 5000);
         }
     }
 
