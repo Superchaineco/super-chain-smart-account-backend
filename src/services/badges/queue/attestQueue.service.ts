@@ -65,15 +65,16 @@ export class AttestQueueService {
                 this.resultMap.set(r.account.toLowerCase(), r);
             }
 
+
+            this.isRunning = false;
+        } catch (error) {
+            console.error('[Polling Batch Error]', error);
+        } finally {
             await Promise.all(
                 jobs.map(async (job) => {
                     await job.remove()
                 })
             );
-            this.isRunning = false;
-        } catch (error) {
-            console.error('[Polling Batch Error]', error);
-        } finally {
             this.isRunning = false;
         }
     }

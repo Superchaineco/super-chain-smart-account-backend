@@ -19,7 +19,7 @@ import {
 import { superChainAccountService } from './superChainAccount.service';
 import { redisService } from './redis.service';
 import { ResponseBadge } from './badges/badges.service';
-import Safe, { OnchainAnalyticsProps } from '@safe-global/protocol-kit';
+import Safe, { encodeMultiSendData, OnchainAnalyticsProps } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
 import Safe4337Pack from '@safe-global/relay-kit/dist/src/packs/safe-4337/Safe4337Pack';
 import { MetaTransactionData, OperationType } from '@safe-global/types-kit';
@@ -187,6 +187,8 @@ export class AttestationsService {
     const safeTransaction = await safeSdk.createTransaction({
       transactions: safeTransactions,
     });
+    const multiSendData = encodeMultiSendData(safeTransactions);
+    console.log('🧾🧾🧾🧾🧾 Calldata sent to Safe (batch multiSend):', multiSendData);
 
     try {
       const executeTxResponse = await safeSdk.executeTransaction(
