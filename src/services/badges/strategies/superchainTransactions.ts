@@ -1,5 +1,5 @@
 import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
-import { BaseBadgeStrategy, ExternalApiCall, Seasons } from "./badgeStrategy";
+import { BaseBadgeStrategy, DEFAULT_TTL, ExternalApiCall, Seasons } from "./badgeStrategy";
 import { Season } from "@/types/index.types";
 import { redisService } from "@/services/redis.service";
 
@@ -70,7 +70,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
     }
 
 
@@ -113,7 +113,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 
@@ -156,7 +156,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 
@@ -199,7 +199,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 
@@ -242,7 +242,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 

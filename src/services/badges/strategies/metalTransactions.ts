@@ -1,4 +1,4 @@
-import { BaseBadgeStrategy } from "./badgeStrategy";
+import { BaseBadgeStrategy, DEFAULT_TTL } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 import axios from "axios";
 
@@ -6,7 +6,6 @@ export class MetalTransactionsStrategy extends BaseBadgeStrategy {
 
     async getValue(eoas: string[]): Promise<number> {
         const cacheKey = `metalTransactions-${eoas.join(",")}`;
-        const ttl = 7200
 
         const fetchFunction = async () => {
             const transactions = eoas.reduce(async (accPromise, eoa) => {
@@ -18,6 +17,6 @@ export class MetalTransactionsStrategy extends BaseBadgeStrategy {
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
     }
 }

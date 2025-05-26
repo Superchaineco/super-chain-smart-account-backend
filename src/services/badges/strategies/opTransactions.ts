@@ -1,12 +1,11 @@
 import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
-import { BaseBadgeStrategy } from "./badgeStrategy";
+import { BaseBadgeStrategy, DEFAULT_TTL } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 
 export class OpTransactionsStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `optimisimTransactions-${eoas.join(",")}`;
-    const ttl = 7200
 
     const fetchFunction = async () => {
       const settings = {
@@ -24,6 +23,6 @@ export class OpTransactionsStrategy extends BaseBadgeStrategy {
       return transactions;
     };
 
-    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
   }
 }

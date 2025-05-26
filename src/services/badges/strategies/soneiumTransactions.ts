@@ -1,4 +1,4 @@
-import { BaseBadgeStrategy } from "./badgeStrategy";
+import { BaseBadgeStrategy, DEFAULT_TTL } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 import { Alchemy, Network } from "alchemy-sdk";
 
@@ -7,7 +7,6 @@ export class SoneiumTransactionsStrategy extends BaseBadgeStrategy {
 
     async getValue(eoas: string[]): Promise<number> {
         const cacheKey = `soneiumTransactions-${eoas.join(",")}`;
-        const ttl = 7200
 
         const fetchFunction = async () => {
             const settings = {
@@ -24,6 +23,6 @@ export class SoneiumTransactionsStrategy extends BaseBadgeStrategy {
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
     }
 }
