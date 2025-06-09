@@ -4,11 +4,13 @@ dotenv.config();
 export enum ENVIRONMENTS {
   development = 'development',
   production = 'production',
-  staging = 'staging'
+  staging = 'staging',
 }
 
-export const ENV = Object.values(ENVIRONMENTS).includes(process.env.NODE_ENV as ENVIRONMENTS)
-  ? process.env.NODE_ENV as ENVIRONMENTS
+export const ENV = Object.values(ENVIRONMENTS).includes(
+  process.env.NODE_ENV as ENVIRONMENTS
+)
+  ? (process.env.NODE_ENV as ENVIRONMENTS)
   : ENVIRONMENTS.development;
 
 const config = {
@@ -25,17 +27,18 @@ const config = {
   //     SAFE_ADDRESS: "0x54efe9c4d7D91E2690f257A7855AAD4b21e20745"
   //   },
   //   production: {
-  SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS: process.env.SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS, //    "0x1Ee397850c3CA629d965453B3cF102E9A8806Ded",
+  SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS:
+    process.env.SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS, //    "0x1Ee397850c3CA629d965453B3cF102E9A8806Ded",
   SUPER_CHAIN_ATTESTATION_SCHEMA: process.env.SUPER_CHAIN_ATTESTATION_SCHEMA, //      "0xb77b597c6b8404139df340a738e9252ff7e758564562d34694ebfd8270270865",
   EAS_CONTRACT_ADDRESS: process.env.EAS_CONTRACT_ADDRESS, // "0x4200000000000000000000000000000000000021",
   JSON_RPC_PROVIDER: process.env.JSON_RPC_PROVIDER,
   ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
+  BADGES_RPC_URL: process.env.BADGES_RPC_URL,
   DOMAIN: process.env.DOMAIN, // "https://account.superchain.eco",
   REDIS: process.env.REDIS_URL,
   SUNNY_AIRDROP_ADDRESS: '0x89622D291439Bf4deD4264169AD4530363a023Cb',
   SUNNY_TOKEN_ADDRESS: '0x2ee45205567ae257e9a21755d4db02afacb555e4',
   SAFE_ADDRESS: process.env.SAFE_ADDRESS, //"0x54efe9c4d7D91E2690f257A7855AAD4b21e20745"
-
 }; //,
 // }[ENV];
 
@@ -59,7 +62,7 @@ export const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY!;
 export const GELATO_API_KEY = process.env.GELATO_API_KEY!;
 export const SUBGRAPH_API_KEY = process.env.SUBGRAPH_API_KEY!;
 export const WC_PROJECT_ID = process.env.WC_PROJECT_ID!;
-export const DOMAIN = config.DOMAIN.split(',').map(origin => origin.trim());
+export const DOMAIN = config.DOMAIN.split(',').map((origin) => origin.trim());
 export const SESSION_SECRET = process.env.SESSION_SECRET!;
 export const DUNE_API_KEY = process.env.DUNE_API_KEY!;
 export const SAFE_ADDRESS = config.SAFE_ADDRESS;
@@ -68,12 +71,14 @@ export const SUNNY_TOKEN_ADDRESS = config.SUNNY_TOKEN_ADDRESS;
 export const SUNNY_AIRDROP_ADDRESS = config.SUNNY_AIRDROP_ADDRESS;
 export const SUBGRAPH_URI = process.env.SUBGRAPH_URI!;
 export const ROUTESCAN_API_KEY = process.env.ROUTESCAN_API_KEY!;
-
+export const BADGES_RPC_URL = config.BADGES_RPC_URL;
 export const INK_BLOCKSCOUT_API_KEY = process.env.INK_BLOCKSCOUT_API_KEY!;
 export const OP_BLOCKSCOUT_API_KEY = process.env.OP_BLOCKSCOUT_API_KEY!;
 export const BASE_BLOCKSCOUT_API_KEY = process.env.BASE_BLOCKSCOUT_API_KEY!;
-export const SONEIUM_BLOCKSCOUT_API_KEY = process.env.SONEIUM_BLOCKSCOUT_API_KEY!;
-export const UNICHAIN_BLOCKSCOUT_API_URL = process.env.UNICHAIN_BLOCKSCOUT_API_URL!;
+export const SONEIUM_BLOCKSCOUT_API_KEY =
+  process.env.SONEIUM_BLOCKSCOUT_API_KEY!;
+export const UNICHAIN_BLOCKSCOUT_API_URL =
+  process.env.UNICHAIN_BLOCKSCOUT_API_URL!;
 export const RPC_PROVIDER = process.env.RPC_PROVIDER!;
 export const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
 export const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY;

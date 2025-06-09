@@ -10,8 +10,8 @@ import {
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
+  BADGES_RPC_URL,
   EAS_CONTRACT_ADDRESS,
-  JSON_RPC_PROVIDER,
   PIMLICO_API_KEY,
   SAFE_ADDRESS,
   SUPER_CHAIN_ATTESTATION_SCHEMA,
@@ -19,7 +19,10 @@ import {
 import { superChainAccountService } from './superChainAccount.service';
 import { redisService } from './redis.service';
 import { ResponseBadge } from './badges/badges.service';
-import Safe, { encodeMultiSendData, OnchainAnalyticsProps } from '@safe-global/protocol-kit';
+import Safe, {
+  encodeMultiSendData,
+  OnchainAnalyticsProps,
+} from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
 import Safe4337Pack from '@safe-global/relay-kit/dist/src/packs/safe-4337/Safe4337Pack';
 import { MetaTransactionData, OperationType } from '@safe-global/types-kit';
@@ -28,7 +31,7 @@ import config from '@/config';
 export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
   private schemaString = '(uint256 badgeId, uint256 level)[] badges';
-  private provider = new JsonRpcProvider(JSON_RPC_PROVIDER);
+  private provider = new JsonRpcProvider(BADGES_RPC_URL);
   private wallet = new Wallet(ATTESTATOR_SIGNER_PRIVATE_KEY, this.provider);
   private eas = EAS__factory.connect(this.easContractAddress, this.wallet);
   private schemaEncoder = new SchemaEncoder(this.schemaString);
@@ -56,7 +59,7 @@ export class AttestationsService {
 
     // @ts-expect-error ESM import
     const safeSdk = await Safe.default.init({
-      provider: JSON_RPC_PROVIDER,
+      provider: BADGES_RPC_URL,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       safeAddress: SAFE_ADDRESS,
       onchainAnalytics,
@@ -96,7 +99,7 @@ export class AttestationsService {
     const safe4337Pack = await (
       await Safe4337Pack
     ).Safe4337Pack.init({
-      provider: JSON_RPC_PROVIDER,
+      provider: BADGES_RPC_URL,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       bundlerUrl: `https://api.pimlico.io/v2/${config.constants.OPTIMISM_CHAIN_ID}/rpc?apikey=${PIMLICO_API_KEY}`,
       options: {
@@ -152,7 +155,7 @@ export class AttestationsService {
 
     // @ts-expect-error ESM import
     const safeSdk = await Safe.default.init({
-      provider: JSON_RPC_PROVIDER,
+      provider: BADGES_RPC_URL,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
       safeAddress: SAFE_ADDRESS,
       onchainAnalytics,
@@ -160,7 +163,7 @@ export class AttestationsService {
 
     const txDatas = [];
     for (const data of batchData) {
-      console.log("Attesting:", data.account)
+      console.log('Attesting:', data.account);
       const encodedData = this.schemaEncoder.encodeData([
         {
           name: 'badges',
@@ -188,7 +191,10 @@ export class AttestationsService {
       transactions: safeTransactions,
     });
     const multiSendData = encodeMultiSendData(safeTransactions);
-    console.log('🧾🧾🧾🧾🧾 Calldata sent to Safe (batch multiSend):', multiSendData);
+    console.log(
+      '🧾🧾🧾🧾🧾 Calldata sent to Safe (batch multiSend):',
+      multiSendData
+    );
 
     try {
       const executeTxResponse = await safeSdk.executeTransaction(
@@ -198,11 +204,14 @@ export class AttestationsService {
       await this.provider.waitForTransaction(executeTxResponse.hash, 1);
 
       await Promise.all(
-        batchData.map(async (data) =>
-          await this.claimBadgesOptimistically(data.account, data.badgeUpdates)
+        batchData.map(
+          async (data) =>
+            await this.claimBadgesOptimistically(
+              data.account,
+              data.badgeUpdates
+            )
         )
       );
-
 
       const responses = await Promise.all(
         batchData.map(async (data) => {
@@ -210,7 +219,6 @@ export class AttestationsService {
             data.account,
             data.totalPoints
           );
-
 
           const updatedBadges = data.badges.filter((badge) =>
             data.badgeUpdates.some((update) => update.badgeId === badge.badgeId)
