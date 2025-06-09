@@ -1,4 +1,4 @@
-import { BaseBadgeStrategy } from "./badgeStrategy";
+import { BaseBadgeStrategy, DEFAULT_TTL } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
 import axios from "axios";
 import { ROUTESCAN_API_KEY } from "@/config/superChain/constants";
@@ -9,7 +9,6 @@ export class InkTransactionsStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `inkTransactions-${eoas.join(",")}`;
-    const ttl = 7200
 
     const fetchFunction = async () => {
       const settings = {
@@ -26,7 +25,7 @@ export class InkTransactionsStrategy extends BaseBadgeStrategy {
       return transactions;
     };
 
-    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
   }
 
 

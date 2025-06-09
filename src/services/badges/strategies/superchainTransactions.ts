@@ -1,5 +1,5 @@
 import { Alchemy, AssetTransfersCategory, Network } from "alchemy-sdk";
-import { BaseBadgeStrategy, ExternalApiCall, Seasons } from "./badgeStrategy";
+import { BaseBadgeStrategy, DEFAULT_TTL, ExternalApiCall, Seasons } from "./badgeStrategy";
 import { Season } from "@/types/index.types";
 import { redisService } from "@/services/redis.service";
 
@@ -56,21 +56,21 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
                     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
                 });
 
-                const incomingResult = await alchemy.core.getAssetTransfers({
-                    fromBlock: season.blockRanges[chain][0],
-                    toBlock: toBlock,
-                    toAddress: eoa,
-                    excludeZeroValue: false,
-                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
-                });
+                // const incomingResult = await alchemy.core.getAssetTransfers({
+                //     fromBlock: season.blockRanges[chain][0],
+                //     toBlock: toBlock,
+                //     toAddress: eoa,
+                //     excludeZeroValue: false,
+                //     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                // });
 
-                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+                return acc + outgoingResult.transfers.length //+ incomingResult.transfers.length;
             }, Promise.resolve(0));
 
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
     }
 
 
@@ -99,21 +99,21 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
                     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
                 });
 
-                const incomingResult = await alchemy.core.getAssetTransfers({
-                    fromBlock: season.blockRanges[chain][0],
-                    toBlock: toBlock,
-                    toAddress: eoa,
-                    excludeZeroValue: false,
-                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
-                });
+                // const incomingResult = await alchemy.core.getAssetTransfers({
+                //     fromBlock: season.blockRanges[chain][0],
+                //     toBlock: toBlock,
+                //     toAddress: eoa,
+                //     excludeZeroValue: false,
+                //     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                // });
 
-                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+                return acc + outgoingResult.transfers.length //+ incomingResult.transfers.length;
             }, Promise.resolve(0));
 
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 
@@ -142,21 +142,21 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
                     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
                 });
 
-                const incomingResult = await alchemy.core.getAssetTransfers({
-                    fromBlock: season.blockRanges[chain][0],
-                    toBlock: toBlock,
-                    toAddress: eoa,
-                    excludeZeroValue: false,
-                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
-                });
+                // const incomingResult = await alchemy.core.getAssetTransfers({
+                //     fromBlock: season.blockRanges[chain][0],
+                //     toBlock: toBlock,
+                //     toAddress: eoa,
+                //     excludeZeroValue: false,
+                //     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                // });
 
-                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+                return acc + outgoingResult.transfers.length //+ incomingResult.transfers.length;
             }, Promise.resolve(0));
 
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 
@@ -185,21 +185,21 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
                     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
                 });
 
-                const incomingResult = await alchemy.core.getAssetTransfers({
-                    fromBlock: season.blockRanges[chain][0],
-                    toBlock: toBlock,
-                    toAddress: eoa,
-                    excludeZeroValue: false,
-                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
-                });
+                // const incomingResult = await alchemy.core.getAssetTransfers({
+                //     fromBlock: season.blockRanges[chain][0],
+                //     toBlock: toBlock,
+                //     toAddress: eoa,
+                //     excludeZeroValue: false,
+                //     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                // });
 
-                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+                return acc + outgoingResult.transfers.length //+ incomingResult.transfers.length;
             }, Promise.resolve(0));
 
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 
@@ -228,21 +228,21 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
                     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
                 });
 
-                const incomingResult = await alchemy.core.getAssetTransfers({
-                    fromBlock: season.blockRanges[chain][0],
-                    toBlock: toBlock,
-                    toAddress: eoa,
-                    excludeZeroValue: false,
-                    category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
-                });
+                // const incomingResult = await alchemy.core.getAssetTransfers({
+                //     fromBlock: season.blockRanges[chain][0],
+                //     toBlock: toBlock,
+                //     toAddress: eoa,
+                //     excludeZeroValue: false,
+                //     category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20, AssetTransfersCategory.ERC1155]
+                // });
 
-                return acc + outgoingResult.transfers.length + incomingResult.transfers.length;
+                return acc + outgoingResult.transfers.length //+ incomingResult.transfers.length;
             }, Promise.resolve(0));
 
             return transactions;
         };
 
-        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, 3600);
+        return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
 
     }
 

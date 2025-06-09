@@ -1,4 +1,4 @@
-import { BaseBadgeStrategy } from './badgeStrategy';
+import { BaseBadgeStrategy, DEFAULT_TTL } from './badgeStrategy';
 import { redisService } from '../../redis.service';
 import axios from 'axios';
 
@@ -8,7 +8,6 @@ export class SuperStacksStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `superStacks-${eoas.join(',')}`;
-    const ttl = 7200;
 
     const fetchFunction = async () => {
       let points = 0;
@@ -22,6 +21,6 @@ export class SuperStacksStrategy extends BaseBadgeStrategy {
       return points;
     };
 
-    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, DEFAULT_TTL);
   }
 }

@@ -67,6 +67,8 @@ export const Seasons: Season[] = [
 ]
 
 
+export const DEFAULT_TTL = 60 * 60; // 1 hour
+
 export abstract class BaseBadgeStrategy implements BadgeStrategy {
   abstract getValue(
     eoas: string[],
