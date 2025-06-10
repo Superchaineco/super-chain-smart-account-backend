@@ -1,5 +1,6 @@
 
 import { BadgeStrategy } from './badgeStrategy';
+import { BaseNounsCheckStrategy } from './baseNounsCheckStrategy';
 import { BaseTransactionsStrategy } from './baseTransactions';
 import { CitizenCheckStrategy } from './citizenCheck';
 import { EarlyAdoptersStrategy } from './EarlyAdopters';
@@ -64,6 +65,10 @@ export class BadgeStrategyContext {
                 return new SuperStacksStrategy()
             case "Lisk Surge":
                 return new LiskSurgeStrategy()
+            case "Based Nouns Holder":
+                return new BaseNounsCheckStrategy()
+            case "Lil Nouns Holder":
+                return new BaseNounsCheckStrategy()
 
             //NOT RELEVANT FOR NOW
             // case "Mint User":

@@ -22,7 +22,13 @@ setupBullBoard(app);
 
 app.use(
   cors({
-    origin: DOMAIN,
+    origin: (origin, callback) => {
+      if (!origin || DOMAIN.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );

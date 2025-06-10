@@ -14,6 +14,7 @@ import { paginatedLeaderboard, rankByAccount } from '@/controllers/leaderboard';
 import { getAirdrop } from '@/controllers/airdrop';
 import { rpcReverseProxy, verifyInternalRequest } from '@/controllers/rpcProxy';
 import { getVaults, refreshVaults } from '@/controllers/vaults';
+import { raffleClaim } from '@/controllers/raffle';
 export const routes = Router();
 
 routes.get('/user/:account', getUser);
@@ -49,5 +50,7 @@ routes.post('/user-op-reverse-proxy', verifyReverseProxy, reverseProxy);
 routes.use('/rpc', verifyInternalRequest, rpcReverseProxy);
 
 routes.get('/campaigns/:account', getCampaigns);
+
+routes.post('/raffle/claim', raffleClaim);
 
 export default routes;
