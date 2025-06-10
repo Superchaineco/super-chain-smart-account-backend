@@ -7,6 +7,7 @@ import { EarlyAdoptersStrategy } from './EarlyAdopters';
 import { GitcoinDonationsStrategy } from './gitcoinDonations';
 import { GivethDonationsStrategy } from './givethDonations';
 import { InkTransactionsStrategy } from './inkTransactions';
+import { LilNounsCheckStrategy } from './lilNounsCheckStrategy';
 import { LiskBuildGuildAirdropStrategy } from './liskBuildGuildAirdrop';
 import { LiskSurgeStrategy } from './liskSurgeStrategy';
 import { LiskTransactionsStrategy } from './liskTransactions';
@@ -68,7 +69,7 @@ export class BadgeStrategyContext {
             case "Based Nouns Holder":
                 return new BaseNounsCheckStrategy()
             case "Lil Nouns Holder":
-                return new BaseNounsCheckStrategy()
+                return new LilNounsCheckStrategy()
 
             //NOT RELEVANT FOR NOW
             // case "Mint User":

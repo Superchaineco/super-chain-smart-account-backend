@@ -4,7 +4,7 @@ import { redisService } from "../../redis.service";
 
 export class BaseNounsCheckStrategy extends BaseBadgeStrategy {
   async getValue(eoas: string[]): Promise<number> {
-    const cacheKey = `hasNouns-${eoas.join(",")}`;
+    const cacheKey = `hasBaseNouns-${eoas.join(",")}`;
     const ttl = 86400;
 
     const fetchFunction = async () => {
