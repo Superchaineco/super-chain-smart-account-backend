@@ -99,22 +99,20 @@ export async function getCampaignDetailsWithData(
     })
   );
 
-  const campaign_badges = await Promise.all(
-    campaign.campaign_badges.map(async (badge) => {
-      const userBadge = userBadges.find(
-        (b) => b.metadata?.name === badge.badgeName
-      );
-      const badgeLevel = userBadge ? userBadge.tier : 0;
-      const applies = badgeLevel > userBadge?.badgeTiers.length;
-      return {
-        ...badge,
-        currentLevel: badgeLevel,
-        maxLevel: userBadge?.badgeTiers.length || 0,
-        image: userBadge?.metadata?.image || undefined,
-        applies,
-      };
-    })
-  );
+  const campaign_badges = campaign.campaign_badges.map((badge) => {
+    const userBadge = userBadges.find(
+      (b) => b.metadata?.name === badge.badgeName
+    );
+    const badgeLevel = userBadge ? userBadge.tier : 0;
+    const applies = badgeLevel > userBadge?.badgeTiers.length;
+    return {
+      ...badge,
+      currentLevel: badgeLevel,
+      maxLevel: userBadge?.badgeTiers.length || 0,
+      image: userBadge?.metadata?.image || undefined,
+      applies,
+    };
+  });
 
   return {
     id: campaign.id,
