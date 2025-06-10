@@ -65,9 +65,9 @@ export class BadgeStrategyContext {
                 return new SuperStacksStrategy()
             case "Lisk Surge":
                 return new LiskSurgeStrategy()
-            case "Base Nouns":
+            case "Based Nouns Holder":
                 return new BaseNounsCheckStrategy()
-            case "Lil Nouns":
+            case "Lil Nouns Holder":
                 return new BaseNounsCheckStrategy()
 
             //NOT RELEVANT FOR NOW
