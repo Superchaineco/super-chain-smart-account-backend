@@ -15,6 +15,7 @@ import { getAirdrop } from '@/controllers/airdrop';
 import { rpcReverseProxy, verifyInternalRequest } from '@/controllers/rpcProxy';
 import { getVaults, refreshVaults } from '@/controllers/vaults';
 import { raffleClaim } from '@/controllers/raffle';
+import { verifyWorldId } from '@/controllers/worldID';
 export const routes = Router();
 
 routes.get('/user/:account', getUser);
@@ -52,5 +53,10 @@ routes.use('/rpc', verifyInternalRequest, rpcReverseProxy);
 routes.get('/campaigns/:account', getCampaigns);
 
 routes.post('/raffle/claim', raffleClaim);
+
+routes.get('/campaigns/:account', getCampaigns);
+
+routes.post('/world-id/verify',verifyOwner, verifyWorldId);
+
 
 export default routes;
