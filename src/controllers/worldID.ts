@@ -4,7 +4,7 @@ import { Bytes, Hex, Hash } from 'ox'
 export async function verifyWorldId(req, res) {
     const { proof, merkle_root, nullifier_hash, verification_level } = req.body;
     const action = 'super-account-badge-validation'
-    const app_id = process.env.WORLD_ID_APP_ID ?? 'app_staging_7b1ab4e8a1f7e1e26a23b6040af1bded'
+    const app_id = 'app_staging_7b1ab4e8a1f7e1e26a23b6040af1bded'
     const signal = "verify"
     try {
         const response = await axios.post(`https://developer.worldcoin.org/api/v2/verify/${app_id}`, {
