@@ -21,7 +21,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         const apiCall: ExternalApiCall = { service: "blockscout", chain: "mode-34443", chainId: "34443", eoas, season: this.season }
         apiCall.fromBlock = apiCall.season.blockRanges[apiCall.chain][0];
         apiCall.toBlock =
-            Date.now() >= new Date(2025, 5, 11).getTime()
+            Date.now() >= this.season.toDate.getTime()
                 ? '&to_block=' + apiCall.season.blockRanges[apiCall.chain][1]
                 : '';
 
@@ -45,7 +45,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             const transactions = await eoas.reduce(async (accPromise, eoa) => {
                 const acc = await accPromise;
 
-                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                const toBlock = Date.now() >= this.season.toDate.getTime()
                     ? season.blockRanges[chain][1]
                     : null;
                 const outgoingResult = await alchemy.core.getAssetTransfers({
@@ -88,7 +88,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             const transactions = await eoas.reduce(async (accPromise, eoa) => {
                 const acc = await accPromise;
 
-                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                const toBlock = Date.now() >= this.season.toDate.getTime()
                     ? season.blockRanges[chain][1]
                     : null;
                 const outgoingResult = await alchemy.core.getAssetTransfers({
@@ -131,7 +131,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             const transactions = await eoas.reduce(async (accPromise, eoa) => {
                 const acc = await accPromise;
 
-                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                const toBlock = Date.now() >= this.season.toDate.getTime()
                     ? season.blockRanges[chain][1]
                     : null;
                 const outgoingResult = await alchemy.core.getAssetTransfers({
@@ -174,7 +174,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             const transactions = await eoas.reduce(async (accPromise, eoa) => {
                 const acc = await accPromise;
 
-                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                const toBlock = Date.now() >= this.season.toDate.getTime()
                     ? season.blockRanges[chain][1]
                     : null;
                 const outgoingResult = await alchemy.core.getAssetTransfers({
@@ -217,7 +217,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
             const transactions = await eoas.reduce(async (accPromise, eoa) => {
                 const acc = await accPromise;
 
-                const toBlock = Date.now() >= new Date(2025, 5, 11).getTime()
+                const toBlock = Date.now() >= this.season.toDate.getTime()
                     ? season.blockRanges[chain][1]
                     : null;
                 const outgoingResult = await alchemy.core.getAssetTransfers({
