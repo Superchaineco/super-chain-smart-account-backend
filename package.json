@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "sleep 3 && tsx --watch src/index.ts",
-    "start": "sleep 3 && tsx src/index.ts",
-    "postinstall": "yarn install --force"
+    "start": "sleep 3 && tsx src/index.ts"
   },
   "type": "module",
   "keywords": [],
@@ -28,7 +27,6 @@
     "@safe-global/safe-core-sdk-types": "^4.1.0",
     "@safe-global/types-kit": "^1.0.1",
     "@supabase/supabase-js": "^2.43.1",
-    "@worldcoin/idkit-core": "^2.1.0",
     "alchemy-sdk": "^3.5.4",
     "axios": "^1.7.2",
     "bullmq": "^5.48.0",
@@ -44,7 +42,6 @@
     "ioredis": "^5.4.1",
     "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
-    "ox": "^0.8.0",
     "redis": "^4.7.0",
     "siwe": "^2.3.2"
   },
