@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "sleep 3 && tsx --watch src/index.ts",
-    "start": "sleep 3 && tsx src/index.ts"
+    "start": "sleep 3 && tsx src/index.ts",
+    "postinstall": "yarn install --force"
   },
   "type": "module",
   "keywords": [],
