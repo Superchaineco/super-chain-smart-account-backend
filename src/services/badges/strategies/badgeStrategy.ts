@@ -54,7 +54,7 @@ export const Seasons: Season[] = [
     blockRanges: {
       "optimism-10": [130693412, 137000612],//2 secs x block
       "base-8453": [25098127, 31405327], //2 secs x block
-      "unichain-130": [6273241, 18974041], //1 sec x block
+      "unichain-130": [6273241, 18894840], //1 sec x block
       "mode-34443": [18418009, 24725209], //2 secs x block
       "ink-57073": [3505189, 16119589],//1 sec x block
       "Soneium": [1934425, 8241625], //2 secs x block
