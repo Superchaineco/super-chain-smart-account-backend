@@ -1,3 +1,5 @@
+import { redisService } from "@/services/redis.service";
+import { superChainAccountService } from "@/services/superChainAccount.service";
 import axios from "axios";
 import { Bytes, Hex, Hash } from 'ox'
 
@@ -6,6 +8,9 @@ export async function verifyWorldId(req, res) {
     const action = 'super-account-badge-validation'
     const app_id = 'app_staging_7b1ab4e8a1f7e1e26a23b6040af1bded'
     const signal = "verify"
+    const account = req.params.account;
+    const eoas = await superChainAccountService.getEOAS(account);
+    const CACHE_KEY = `worldID-${eoas.join(',')}`;
     try {
         const response = await axios.post(`https://developer.worldcoin.org/api/v2/verify/${app_id}`, {
             app_id,
@@ -19,11 +24,17 @@ export async function verifyWorldId(req, res) {
         });
         console.log(response.data)
         if (response.data.success) {
+
+            redisService.setCachedData(CACHE_KEY, req.body, 10 * 60)
             return res.json({ success: true });
         } else {
             return res.status(400).json({ success: false, message: "Verification failed." });
         }
     } catch (err) {
+        if (err.response?.data.code == 'max_verifications_reached') {
+            redisService.setCachedData(CACHE_KEY, req.body, 10 * 60)
+            return res.json({ success: true });
+        }
         console.error("World ID verification error:", err.response?.data);
         return res.status(500).json({ success: false, message: "Server error." });
     }

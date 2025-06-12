@@ -54,9 +54,7 @@ routes.get('/campaigns/:account', getCampaigns);
 
 routes.post('/raffle/claim', raffleClaim);
 
-routes.get('/campaigns/:account', getCampaigns);
-
-routes.post('/world-id/verify',verifyOwner, verifyWorldId);
+routes.post('/world-id/verify/:account',verifyOwner, verifyWorldId);
 
 
 export default routes;
