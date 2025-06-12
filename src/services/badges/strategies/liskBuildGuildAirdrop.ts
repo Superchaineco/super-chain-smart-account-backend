@@ -32,7 +32,7 @@ export class LiskBuildGuildAirdropStrategy extends BaseBadgeStrategy {
                         }
                     }
                 } catch (e) {
-                    if (axios.isAxiosError(e) && e.response?.status === 404) {
+                    if (axios.isAxiosError(e) && (e.response?.status === 404 || e.response?.status === 503)) {
                         continue;
                     }
                     console.error(e)
