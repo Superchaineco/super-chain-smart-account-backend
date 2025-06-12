@@ -15,7 +15,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         totalTxs += await this.getOP(eoas);
         totalTxs += await this.getBase(eoas);
         totalTxs += await this.getInk(eoas);
-        totalTxs += await this.getUnichain(eoas);
+
         totalTxs += await this.getSoneium(eoas);
 
         const apiCall: ExternalApiCall = { service: "blockscout", chain: "mode-34443", chainId: "34443", eoas, season: this.season }
@@ -26,7 +26,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
                 : '';
 
         totalTxs += await this.getCachedValue(apiCall);
-
+        totalTxs += await this.getUnichain(eoas);
         return totalTxs;
     }
 
