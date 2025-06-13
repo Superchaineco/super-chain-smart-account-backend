@@ -4,6 +4,7 @@ import { BaseNounsCheckStrategy } from './baseNounsCheckStrategy';
 import { BaseTransactionsStrategy } from './baseTransactions';
 import { CitizenCheckStrategy } from './citizenCheck';
 import { EarlyAdoptersStrategy } from './EarlyAdopters';
+import { FarcasterLinkStrategy } from './farcasterLinkStrategy';
 import { GitcoinDonationsStrategy } from './gitcoinDonations';
 import { GivethDonationsStrategy } from './givethDonations';
 import { InkTransactionsStrategy } from './inkTransactions';
@@ -70,6 +71,8 @@ export class BadgeStrategyContext {
                 return new BaseNounsCheckStrategy()
             case "Lil Nouns Holder":
                 return new LilNounsCheckStrategy()
+            case "Farcaster Link":
+                return new FarcasterLinkStrategy()
 
             //NOT RELEVANT FOR NOW
             // case "Mint User":
