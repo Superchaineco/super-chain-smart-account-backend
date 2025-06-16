@@ -1,3 +1,4 @@
+import { WORLD_ID_ACTION, WORLD_ID_APP_ID, WORLD_ID_SIGNAL } from "@/config/superChain/constants";
 import { redisService } from "@/services/redis.service";
 import { superChainAccountService } from "@/services/superChainAccount.service";
 import axios from "axios";
@@ -5,9 +6,9 @@ import { Bytes, Hex, Hash } from 'ox'
 
 export async function verifyWorldId(req, res) {
     const { proof, merkle_root, nullifier_hash, verification_level } = req.body;
-    const action = 'super-account-badge-validation'
-    const app_id = 'app_staging_7b1ab4e8a1f7e1e26a23b6040af1bded'
-    const signal = "verify"
+    const action = WORLD_ID_ACTION
+    const app_id = WORLD_ID_APP_ID
+    const signal = WORLD_ID_SIGNAL
     const account = req.params.account;
     const eoas = await superChainAccountService.getEOAS(account);
     const CACHE_KEY = `worldID-${eoas.join(',')}`;
