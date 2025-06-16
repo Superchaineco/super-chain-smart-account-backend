@@ -69,6 +69,10 @@ export class AttestQueueService {
             this.isRunning = false;
         } catch (error) {
             console.error('[Polling Batch Error]', error);
+
+            for (const j of jobs) {
+                this.resultMap.set(j.data.account.toLowerCase(), { message: "Error" });
+            }
         } finally {
             await Promise.all(
                 jobs.map(async (job) => {
