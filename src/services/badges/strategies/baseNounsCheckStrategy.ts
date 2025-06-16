@@ -5,7 +5,7 @@ import { redisService } from "../../redis.service";
 export class BaseNounsCheckStrategy extends BaseBadgeStrategy {
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `hasBaseNouns-${eoas.join(",")}`;
-    const ttl = 86400;
+    const ttl = 600;
 
     const fetchFunction = async () => {
       const provider = new ethers.JsonRpcProvider(process.env.JSON_RPC_BASE_PROVIDER);
