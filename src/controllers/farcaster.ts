@@ -11,6 +11,7 @@ export async function verifyFarcaster(req, res) {
         ethereum: viemConnector(),
     });
 
+    console.log("Verifying Farcaster link with:", req.body);
     const verifyResponse = await appClient.verifySignInMessage({
         message: message as string,
         signature: signature as `0x${string}`,
@@ -18,10 +19,12 @@ export async function verifyFarcaster(req, res) {
         nonce: nonce,
     });
     const { success, fid } = verifyResponse;
-
+    console.log("Response Farcaster link :", verifyResponse);
     if (!success) {
         return res.status(400).json({ success: false, message: "Verification failed." });
     }
+
+    console.log("Saved!!");
     const account = req.params.account;
     const eoas = await superChainAccountService.getEOAS(account);
     const CACHE_KEY = `farcasterLink-${eoas.join(',')}`;
