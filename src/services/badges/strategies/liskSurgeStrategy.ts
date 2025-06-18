@@ -11,7 +11,7 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
   campaigns: string[] = ['Lisk Surge'];
 
   async getValue(eoas: string[]): Promise<number> {
-        const cacheKey = `liskSurge-${eoas.join(',')}`;
+    const cacheKey = `liskSurge-${eoas.join(',')}`;
     const ttl = 3600;
 
     const fetchFunction = async () => {
@@ -28,7 +28,14 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
         '0x136a421299b14574fc884a2f601f6252a2e9e6aa08e6e96e36fcdd1e1e41a53c',
         '0xdeb7be5e0c3a25c373cdcba03e53ec8e2d1f93099f13b68b96b4d879a6be5675',
         '0x08c27c3a6ca68c409ee9dbcb0faa3119e55e854abbaeea4ca6cd57ffc68bedb1',
-        '0x81452ff9a16dcdcd5910240a5b05d3a2449faea08a881883c11c8d32ff57fa0b'
+        '0x81452ff9a16dcdcd5910240a5b05d3a2449faea08a881883c11c8d32ff57fa0b',
+        '0x44ba48f18fcf2d835430f373a8d5bfde0a3c3f583f493195958dbce90fc1704e',
+        '0xb2f200620e6cc5eacb73b0ba6476f31be9b10c3e212fe828c69bc7b2c76d70b2',
+        '0x7caccb9d30c9d27bc369715539b429ecf644640b05df8c5b4e70f33effd746f3',
+        '0xd55c6d0d842675304dd2e54202853e87fa0be30e21175d6146982f27263ad4b5',
+        '0xfcc0fabcf6ca8b5a08c3cc8ea9ad6b091d6da2ec5aef2f0f1f218b48c4898427',
+        '0xf2d96ebbfe5c39829e0fa79358837f6c64f8f9209e99cf700ac9b1bba0c79046',
+        '0xd4be8b7b132eccfffe2aa242013a0a4dfd969320767114d24508900248b91bf1'
       ];
 
       const merkl = MerklApi('https://api.merkl.xyz').v4;
