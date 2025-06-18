@@ -22,6 +22,7 @@ import { SuperStacksStrategy } from './superStacks';
 import { TalentScoreStrategy } from './talentScore';
 import { UnichainTransactionsStrategy } from './unichainTransactions';
 import { WorldCoinCheckStrategy } from './worldCoinCheck';
+import { WorldIdCoinTransactionsStrategy } from './worldIdCoinTransactions';
 
 
 
@@ -73,6 +74,9 @@ export class BadgeStrategyContext {
                 return new LilNounsCheckStrategy()
             case "Farcaster Link":
                 return new FarcasterLinkStrategy()
+            case "World User":
+                return new WorldIdCoinTransactionsStrategy()
+
 
             //NOT RELEVANT FOR NOW
             // case "Mint User":
