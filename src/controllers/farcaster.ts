@@ -17,7 +17,7 @@ export async function verifyFarcaster(req, res) {
     const verifyResponse = await appClient.verifySignInMessage({
         message: message as string,
         signature: signature as `0x${string}`,
-        domain: DOMAIN[0],//"staging.account.superchain.eco",
+        domain: "staging.account.superchain.eco",//DOMAIN[0],
         nonce: nonce,
     });
     const { success, fid } = verifyResponse;
