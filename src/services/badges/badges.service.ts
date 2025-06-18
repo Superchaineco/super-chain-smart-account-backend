@@ -74,7 +74,8 @@ export class BadgesServices {
         } as GetUserBadgesQueryVariables);
       if (errors) {
         console.error('Error fetching badges:', errors);
-        throw new Error('Error fetching badges');
+        return {}
+        // throw new Error('Error fetching badges');
       }
       return data;
     };

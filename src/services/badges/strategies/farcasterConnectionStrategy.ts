@@ -4,7 +4,7 @@ import { redisService } from "../../redis.service";
 
 
 
-export class FarcasterLinkStrategy extends BaseBadgeStrategy {
+export class FarcasterConnectionStrategy extends BaseBadgeStrategy {
 
 
     async getValue(eoas: string[]): Promise<boolean> {
