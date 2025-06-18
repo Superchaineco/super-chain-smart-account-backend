@@ -1,7 +1,9 @@
 
+import { DOMAIN } from "@/config/superChain/constants";
 import { redisService } from "@/services/redis.service";
 import { superChainAccountService } from "@/services/superChainAccount.service";
 import { createAppClient, viemConnector } from "@farcaster/auth-client";
+import { config } from "dotenv";
 
 
 export async function verifyFarcaster(req, res) {
@@ -15,7 +17,7 @@ export async function verifyFarcaster(req, res) {
     const verifyResponse = await appClient.verifySignInMessage({
         message: message as string,
         signature: signature as `0x${string}`,
-        domain: "localhost",//"staging.account.superchain.eco",
+        domain: DOMAIN[0],//"staging.account.superchain.eco",
         nonce: nonce,
     });
     const { success, fid } = verifyResponse;
