@@ -27,7 +27,8 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
         '0x530a145cb44795b7801aa5adbf39c280aa3edeb1cff04042598747067e43a161',
         '0x136a421299b14574fc884a2f601f6252a2e9e6aa08e6e96e36fcdd1e1e41a53c',
         '0xdeb7be5e0c3a25c373cdcba03e53ec8e2d1f93099f13b68b96b4d879a6be5675',
-        '0x08c27c3a6ca68c409ee9dbcb0faa3119e55e854abbaeea4ca6cd57ffc68bedb1'
+        '0x08c27c3a6ca68c409ee9dbcb0faa3119e55e854abbaeea4ca6cd57ffc68bedb1',
+        '0x81452ff9a16dcdcd5910240a5b05d3a2449faea08a881883c11c8d32ff57fa0b'
       ];
 
       const merkl = MerklApi('https://api.merkl.xyz').v4;
