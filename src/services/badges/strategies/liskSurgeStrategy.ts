@@ -69,7 +69,8 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
             });
           if (response.data.length > 0) {
             const campaigns = response.data[0].rewards[0].breakdowns.filter(
-              (breakdown) => campaignsIds.includes(breakdown.campaignId)
+              (breakdown) =>
+                campaignsIds.some((id) => id.toLowerCase() === breakdown.campaignId.toLowerCase())
             );
 
             const eoaTotal = campaigns.reduce((campaignAcc, campaign) => {
