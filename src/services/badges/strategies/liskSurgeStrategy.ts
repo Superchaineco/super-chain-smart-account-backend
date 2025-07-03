@@ -53,7 +53,6 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
         '0x6a9d192a6f2abb384355e8d637e81758f4cc33919e8e450c8958eae416c77bfa',
         '0x097e407e289d42ee9a70895450e2e9f74400b3de4769c19516c1222300c6a880'
       ];
-
       const merkl = MerklApi('https://api.merkl.xyz').v4;
       try {
         const total = await eoas.reduce(async (accPromise, eoa) => {
