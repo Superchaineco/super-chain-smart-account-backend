@@ -12,6 +12,7 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `liskSurge-${eoas.join(',')}`;
+    const cacheKey = `liskSurge-${eoas.join(',')}`;
     const ttl = 3600;
 
     const fetchFunction = async () => {
@@ -51,7 +52,7 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
         '0x6e9a117074d1cd995bca296aac6f24d5b3c02f8d2affbf796dd7b3e15095fd82',
         '0x079ea27414a663ee03ee32ae104c5894f6e1d7c866216d8fbb5dc940fce5f3ed',
         '0x6a9d192a6f2abb384355e8d637e81758f4cc33919e8e450c8958eae416c77bfa',
-        '0x097e407e289d42ee9a70895450e2e9f74400b3de4769c19516c1222300c6a880'
+        '0x097e407e289d42ee9a70895450e2e9f74400b3de4769c19516c1222300c6a880',
       ];
       const merkl = MerklApi('https://api.merkl.xyz').v4;
       try {
@@ -67,10 +68,7 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
               },
             });
           if (response.data.length > 0) {
-            const campaigns = response.data[0].rewards[0].breakdowns.filter(
-              (breakdown) =>
-                campaignsIds.some((id) => id.toLowerCase() === breakdown.campaignId.toLowerCase())
-            );
+            const campaigns = response.data[0].rewards[0].breakdowns;
 
             const eoaTotal = campaigns.reduce((campaignAcc, campaign) => {
               return campaignAcc + BigInt(campaign.claimed);
@@ -89,6 +87,7 @@ export class LiskSurgeStrategy extends BaseBadgeStrategy {
       }
     };
 
-    return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
+    return fetchFunction();
+    // return redisService.getCachedDataWithCallback(cacheKey, fetchFunction, ttl);
   }
 }
