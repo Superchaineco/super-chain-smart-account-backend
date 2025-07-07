@@ -2,10 +2,8 @@ import { ZeroAddress } from 'ethers';
 import { Request, Response } from 'express';
 import { BadgesServices } from '../services/badges/badges.service';
 import { superChainAccountService } from '../services/superChainAccount.service';
-import { isAbleToSponsor } from '../services/sponsorship.service';
-import { AttestationsService } from '../services/attestations.service';
 import { redisService } from '@/services/redis.service';
-import { attestQueueService, AttestQueueService } from "@/services/badges/queue/attestQueue.service";
+import { attestQueueService } from "@/services/badges/queue/attestQueue.service";
 import { TURNSTILE_SECRET_KEY } from '@/config/superChain/constants';
 export async function getBadges(req: Request, res: Response) {
   const account = req.params.account as string;

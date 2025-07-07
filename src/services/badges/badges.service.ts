@@ -14,6 +14,7 @@ export type ResponseBadge = {
   points: string;
   tier: string;
   campaigns?: string[];
+  currentCount: number | undefined
 } & Badge['badge'] & {
   claimableTier: number | null;
   claimable: boolean;
