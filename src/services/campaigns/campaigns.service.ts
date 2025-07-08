@@ -103,8 +103,8 @@ export async function getCampaignDetailsWithData(
     const userBadge = userBadges.find(
       (b) => b.metadata?.name === badge.badgeName
     );
-    const badgeLevel = userBadge ? userBadge.tier : 0;
-    const applies = badgeLevel > userBadge?.badgeTiers.length;
+   const badgeLevel = userBadge ? Number(userBadge.tier) || 0 : 0;
+    const applies = badgeLevel >= 1// userBadge?.badgeTiers.length;
     return {
       ...badge,
       currentLevel: badgeLevel,
