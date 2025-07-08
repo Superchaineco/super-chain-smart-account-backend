@@ -45,6 +45,7 @@ app.use(
       secure: ENV === ENVIRONMENTS.development ? false : true,
       sameSite: 'none',
       maxAge: 7 * 24 * 3600 * 1000,
+      domain: DOMAIN[0],
     },
     rolling: true,
   })
