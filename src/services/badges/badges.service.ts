@@ -41,7 +41,7 @@ export class BadgesServices {
     if (optimisticData && cachedData) {
       console.log('Optimistic data found for badges. Returning optimistic data...');
       fetchFunction(false).then((freshData) => {
-        if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
+        if (JSON.stringify(freshData) !== JSON.stringify(optimisticData)) {
           console.log('Data fetch differs from optimistic data. Updating main cache and clearing optimistic data.');
           redisService.deleteCachedData(OPTIMISTIC_UPDATED_CACHE_KEY);
           redisService.setCachedData(CACHE_KEY, freshData, null);
