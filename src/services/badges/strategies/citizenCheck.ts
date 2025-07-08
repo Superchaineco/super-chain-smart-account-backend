@@ -1,30 +1,15 @@
-import { BaseBadgeStrategy } from './badgeStrategy';
-import fs from 'fs';
-import csv from 'csv-parser';
+import { redisService } from '@/services/redis.service';
+import { BaseBadgeStrategy, DEFAULT_TTL } from './badgeStrategy';
 import axios from 'axios';
 
-type CsvRow = {
-  Address: string;
-  ENS: string;
-};
-
-const CitizenFilePath = 'src/data/citizen.csv';
-
 export class CitizenCheckStrategy extends BaseBadgeStrategy {
-  // private async loadCsvData(filePath: string): Promise<CsvRow[]> {
-  //     return new Promise((resolve, reject) => {
-  //         const results: CsvRow[] = [];
-  //         fs.createReadStream(filePath)
-  //             .pipe(csv())
-  //             .on("data", (data: CsvRow) => results.push(data))
-  //             .on("end", () => resolve(results));
-  //     });
-  // }
-
   async getValue(eoas: string[]): Promise<boolean> {
-    const citizenApiUrl = 'https://optimism.easscan.org/graphql';
+    const cacheKey = `citizenCheck-${eoas.join(',')}`;
 
-    const citizenQuery = `
+    const fetchFunction = async () => {
+      const citizenApiUrl = 'https://optimism.easscan.org/graphql';
+
+      const citizenQuery = `
     query AddressGivethDonations($addresses: [String!]!) {
       attestations(
         take: 10,
@@ -43,15 +28,22 @@ export class CitizenCheckStrategy extends BaseBadgeStrategy {
       }
     }`;
 
-    const response = await axios.post(citizenApiUrl, {
-      query: citizenQuery,
-      variables: {
-        addresses: eoas,
-      },
-    });
+      const response = await axios.post(citizenApiUrl, {
+        query: citizenQuery,
+        variables: {
+          addresses: eoas,
+        },
+      });
 
-    if (response.data.data.attestations.length > 0) return true;
+      if (response.data.data.attestations.length > 0) return true;
 
-    return false;
+      return false;
+    };
+
+    return redisService.getCachedDataWithCallback(
+      cacheKey,
+      fetchFunction,
+      DEFAULT_TTL
+    );
   }
 }
