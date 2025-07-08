@@ -50,7 +50,7 @@ export const Seasons: Season[] = [
   {
     season: "S7",
     fromDate: new Date(2025, 0, 16),
-    toDate: new Date(2025, 5, 11,23,59,59, 999),
+    toDate: new Date(2025, 5, 11, 23, 59, 59, 999),
     blockRanges: {
       "optimism-10": [130693412, 137000612],//2 secs x block
       "base-8453": [25098127, 31405327], //2 secs x block
@@ -139,7 +139,8 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
         tier: badgeData.tier,
         claimableTier,
         claimable,
-        campaigns: this.campaigns
+        campaigns: this.campaigns,
+        currentCount: typeof value == 'number' ? value : undefined
       };
     } catch (error) {
       console.error('Error calculating tier', error);
