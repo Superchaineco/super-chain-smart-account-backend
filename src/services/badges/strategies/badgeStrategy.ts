@@ -49,8 +49,8 @@ const buildUrl = (apiCall: ExternalApiCall) => {
 export const Seasons: Season[] = [
   {
     season: "S7",
-    fromDate: new Date(2025, 0, 16),
-    toDate: new Date(2025, 5, 11, 23, 59, 59, 999),
+    fromDate:new Date(Date.UTC(2025, 0, 16, 0, 0, 0, 0)),
+    toDate: new Date(Date.UTC(2025, 6, 16, 23, 59, 59, 999)),
     blockRanges: {
       "optimism-10": [130693412, 137000612],//2 secs x block
       "base-8453": [25098127, 31405327], //2 secs x block
