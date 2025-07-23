@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { superChainAccountService } from "../services/superChainAccount.service";
 import { ENV, ENVIRONMENTS } from "../config/superChain/constants";
+import { verifyJwt } from "@/utils/jwt";
 
 export async function verifyOwner(req: Request, res: Response, next: NextFunction) {
     // Development environment bypass
@@ -9,7 +10,7 @@ export async function verifyOwner(req: Request, res: Response, next: NextFunctio
     }
 
     try {
-        const { address } = verifySession(req, res);
+        const { address } = verifySession(req);
 
         const account = req.params.account as string;
 
@@ -38,7 +39,7 @@ export async function verifyReverseProxy(req: Request, res: Response, next: Next
     }
 
     try {
-        const { address } = verifySession(req, res);
+        const { address } = verifySession(req);
         if (req.body.method == "eth_sendUserOperation") {
             const account = req.body.params[0].sender;
             const isOwner = await superChainAccountService.isOwnerOfSmartAccount(address, account);
@@ -58,11 +59,25 @@ export async function verifyReverseProxy(req: Request, res: Response, next: Next
 }
 
 
-function verifySession(req, res) {
-    if (!req.session.siwe || !req.session.siwe.address) {
-        console.debug("Session", req.session);
-        throw new Error('Unauthorized');
-    }
-    return { address: req.session.siwe.address, chainId: req.session.siwe.chainId };
+// function verifySession(req, res) {
+//     if (!req.session.siwe || !req.session.siwe.address) {
+//         console.debug("Session", req.session);
+//         throw new Error('Unauthorized');
+//     }
+//     return { address: req.session.siwe.address, chainId: req.session.siwe.chainId };
 
+// }
+
+function verifySession(req: Request) {
+  const auth = req.headers.authorization;
+  if (!auth?.startsWith("Bearer ")) {
+    throw new Error("Unauthorized");
+  }
+
+  const token = auth.slice(7);
+  const payload = verifyJwt(token) as { address: string; chainId: number };
+
+  if (!payload.address) throw new Error("Unauthorized");
+
+  return payload;
 }
