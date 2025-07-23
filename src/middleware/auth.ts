@@ -69,15 +69,15 @@ export async function verifyReverseProxy(req: Request, res: Response, next: Next
 // }
 
 function verifySession(req: Request) {
-  const auth = req.headers.authorization;
-  if (!auth?.startsWith("Bearer ")) {
-    throw new Error("Unauthorized");
-  }
+    const auth = req.headers.authorization;
+    if (!auth?.startsWith("Bearer ")) {
+        throw new Error("Unauthorized - Invalid Authorization header format");
+    }
 
-  const token = auth.slice(7);
-  const payload = verifyJwt(token) as { address: string; chainId: number };
+    const token = auth.slice(7);
+    const payload = verifyJwt(token) as { address: string; chainId: number };
 
-  if (!payload.address) throw new Error("Unauthorized");
+    if (!payload.address) throw new Error("Unauthorized - Address not found in token payload");
 
-  return payload;
+    return payload;
 }
