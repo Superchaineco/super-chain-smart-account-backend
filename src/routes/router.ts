@@ -33,7 +33,7 @@ routes.get('/perks/:level', perksByLevel);
 
 routes.get('/user/:account/sponsorship-balance', getBalance);
 
-routes.post('/user/:account/badges/claim', claimBadges);
+routes.post('/user/:account/badges/claim', verifyOwner, claimBadges);
 
 routes.get('/leaderboard/:account', rankByAccount);
 
@@ -55,9 +55,9 @@ routes.get('/campaigns/:account', getCampaigns);
 
 routes.post('/raffle/claim', raffleClaim);
 
-routes.post('/world-id/verify/:account',verifyOwner, verifyWorldId);
+routes.post('/world-id/verify/:account', verifyOwner, verifyWorldId);
 
-routes.post('/farcaster/verify/:account',verifyOwner, verifyFarcaster);
+routes.post('/farcaster/verify/:account', verifyOwner, verifyFarcaster);
 
 
 
