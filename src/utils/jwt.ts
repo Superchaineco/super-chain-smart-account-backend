@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = SESSION_SECRET ;
 
-export function signJwt(payload: object, expiresIn = '1h') {
+export function signJwt(payload: object, expiresIn = '15d') {
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }
 
