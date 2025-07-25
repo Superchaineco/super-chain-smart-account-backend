@@ -20,35 +20,46 @@ console.log('DOMAIN:', JSON.stringify(DOMAIN));
 
 setupBullBoard(app);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || DOMAIN.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  })
-);
-
 app.use(express.json());
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || DOMAIN.includes(origin)) {
+      callback(null, origin);
+    } else {
+      console.warn('[CORS] Blocked:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  // credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
 app.use(
-  Session({
-    name: 'Super-account-SIWE',
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: new RedisStore({ client: redis, prefix: 'super-account-siwe:' }),
-    cookie: {
-      secure: ENV === ENVIRONMENTS.development ? false : true,
-      sameSite: 'none',
-      maxAge: 7 * 24 * 3600 * 1000,
-    },
-    rolling: true,
-  })
+  cors(corsOptions)
 );
+app.options('*', cors(corsOptions));
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    console.log('[CORS] Preflight from', req.headers.origin);
+  }
+  next();
+});
+// app.use(
+//   Session({
+//     name: 'Super-account-SIWE',
+//     secret: SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     store: new RedisStore({ client: redis, prefix: 'super-account-siwe:' }),
+//     cookie: {
+//       secure: ENV === ENVIRONMENTS.development ? false : true,
+//       sameSite: 'none',
+//       maxAge: 7 * 24 * 3600 * 1000,
+//     },
+//     rolling: true,
+//   })
+// );
 
 app.set('trust proxy', 1);
 app.use(morgan('tiny'));
