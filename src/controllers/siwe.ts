@@ -10,6 +10,7 @@ export function getNonce(_, res) {
 
 
 async function validateSignature(req, res) {
+    const start = Date.now();
     if (!req.body.message) {
         return res.status(400).json({ error: 'SiweMessage is undefined' });
     }
@@ -26,12 +27,15 @@ async function validateSignature(req, res) {
         chainId,
         projectId,
     });
+    console.log("[verifySignature] Duration:", Date.now() - start, "ms");
     return { isValid, address, chainId, message };
 }
 
 export async function verifySignature(req, res) {
     try {
+        console.time("validateSignature");
         let { isValid, address, chainId } = await validateSignature(req, res);
+        console.timeEnd("validateSignature");
         if (!isValid) {
             throw new Error('Invalid signature');
         }
