@@ -46,22 +46,35 @@ const buildUrl = (apiCall: ExternalApiCall) => {
   return urlByService[apiCall.service]();
 };
 
+
+export const getSeasonByCode = (seasonCode: string): Season | undefined => {
+  return Seasons.find(season => season.season === seasonCode);
+}
 export const Seasons: Season[] = [
   {
     season: "S7",
-    fromDate:new Date(Date.UTC(2025, 0, 16, 0, 0, 0, 0)),
+    fromDate: new Date(Date.UTC(2025, 0, 16, 0, 0, 0, 0)),
     toDate: new Date(Date.UTC(2025, 6, 16, 23, 59, 59, 999)),
     blockRanges: {
-      "optimism-10": [130693412, 137000612],//2 secs x block
-      "base-8453": [25098127, 31405327], //2 secs x block
-      "unichain-130": [6273241, 18894840], //1 sec x block
-      "mode-34443": [18418009, 24725209], //2 secs x block
-      "ink-57073": [3505189, 16119589],//1 sec x block
-      "Soneium": [1934425, 8241625], //2 secs x block
-      //Not relevante yet
-      "mint-185": [0, 0],
-      "swell-1923": [0, 0],
-      "Metal": [0, 0]
+      "optimism-10": [130693412, 138555811],//2 secs x block
+      "base-8453": [25098127, 32960527], //2 secs x block
+      "unichain-130": [6237241, 21962041], //1 sec x block
+      "mode-34443": [18409009, 26271409], //2 secs x block
+      "ink-57073": [3505189, 19211989],//1 sec x block
+      "Soneium": [1925425, 9787825], //2 secs x block
+    }
+  },
+  {
+    season: "S8",
+    fromDate: new Date(Date.UTC(2025, 6, 31, 0, 0, 0, 0)),
+    toDate: new Date(Date.UTC(2025, 11, 24, 23, 59, 59, 999)),
+    blockRanges: {
+      "optimism-10": [139160613, 145511013],
+      "base-8453": [33565329, 39915729],
+      "unichain-130": [23171643, 35872443],
+      "mode-34443": [26876211, 33226611],
+      "ink-57073": [20421591, 33122391],
+      "Soneium": [10392627, 16743027]
     }
   }
 ]

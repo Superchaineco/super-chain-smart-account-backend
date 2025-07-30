@@ -1,5 +1,5 @@
 
-import { BadgeStrategy } from './badgeStrategy';
+import { BadgeStrategy, getSeasonByCode, Seasons } from './badgeStrategy';
 import { BaseNounsCheckStrategy } from './baseNounsCheckStrategy';
 import { BaseTransactionsStrategy } from './baseTransactions';
 import { CitizenCheckStrategy } from './citizenCheck';
@@ -63,7 +63,11 @@ export class BadgeStrategyContext {
             case "Unichain User":
                 return new UnichainTransactionsStrategy()
             case "S7 Super User":
-                return new SuperChainTransactionsStrategy()
+                const season7 = getSeasonByCode("S7");
+                return new SuperChainTransactionsStrategy(season7)
+            case "S8 Super User":
+                const season8 = getSeasonByCode("S8");
+                return new SuperChainTransactionsStrategy(season8)
             case "SuperStacks":
                 return new SuperStacksStrategy()
             case "Lisk Surge":

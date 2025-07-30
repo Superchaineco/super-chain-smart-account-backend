@@ -7,7 +7,11 @@ import { redisService } from "@/services/redis.service";
 
 export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
-    private readonly season = Seasons[0]
+    constructor(private readonly season: Season) {
+        super();
+    }
+
+
     async getValue(eoas: string[]) {
 
         let totalTxs: number = 0;
