@@ -3,6 +3,7 @@ import { redisService } from '../../redis.service';
 import { Season } from '@/types/index.types';
 import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY, ROUTESCAN_API_KEY, SONEIUM_BLOCKSCOUT_API_KEY, UNICHAIN_BLOCKSCOUT_API_URL } from '@/config/superChain/constants';
 import { getBadgesQueue } from '../queue';
+import { Network } from 'alchemy-sdk';
 
 
 export type ExternalApiCall = {
@@ -23,29 +24,54 @@ export interface BadgeStrategy {
   ): Promise<ResponseBadge>;
 }
 
+
+export const CHAIN_KEYS = {
+  OPTIMISM: "optimism-10",
+  BASE: "base-8453",
+  INK: "ink-57073",
+  SONEIUM: "Soneium",
+  UNICHAIN: "unichain-130",
+  MODE: "mode-34443",
+} as const;
+
+export const NETWORKS: Record<(typeof CHAIN_KEYS)[keyof typeof CHAIN_KEYS], Network> = {
+  [CHAIN_KEYS.OPTIMISM]: Network.OPT_MAINNET,
+  [CHAIN_KEYS.BASE]: Network.BASE_MAINNET,
+  [CHAIN_KEYS.INK]: Network.INK_MAINNET,
+  [CHAIN_KEYS.SONEIUM]: Network.SONEIUM_MAINNET,
+  [CHAIN_KEYS.UNICHAIN]: Network.UNICHAIN_MAINNET,
+  [CHAIN_KEYS.MODE]: Network.ETH_MAINNET,
+};
+
+export enum EXPLORER_SERVICES {
+  BLOCKSCOUT = "blockscout",
+  ROUTESCAN = "routescan",
+}
+
 const ttl = 3600;
 
-const buildUrl = (apiCall: ExternalApiCall) => {
+export const buildUrl = (apiCall: ExternalApiCall): string => {
+  const baseUrls: Record<string, string> = {
+    [CHAIN_KEYS.SONEIUM]: `https://soneium.blockscout.com/api?apikey=${SONEIUM_BLOCKSCOUT_API_KEY}`,
+    [CHAIN_KEYS.UNICHAIN]: `https://unichain.blockscout.com/api?apikey=${UNICHAIN_BLOCKSCOUT_API_URL}`,
+    [CHAIN_KEYS.INK]: `https://explorer.inkonchain.com/api?apikey=${INK_BLOCKSCOUT_API_KEY}`,
+    [CHAIN_KEYS.OPTIMISM]: `https://optimism.blockscout.com/api?apikey=${OP_BLOCKSCOUT_API_KEY}`,
+    [CHAIN_KEYS.BASE]: `https://base.blockscout.com/api?apikey=${BASE_BLOCKSCOUT_API_KEY}`,
+    [CHAIN_KEYS.MODE]: `https://explorer.mode.network/api?`,
+  };
+
   const urlByService = {
-    blockscout: () => {
-      const baseUrls = {
-        "Soneium": `https://soneium.blockscout.com/api?apikey=${SONEIUM_BLOCKSCOUT_API_KEY}`,
-        "unichain-130": `https://unichain.blockscout.com/api?apikey=${UNICHAIN_BLOCKSCOUT_API_URL}`,
-        "ink-57073": `https://explorer.inkonchain.com/api?apikey=${INK_BLOCKSCOUT_API_KEY}`,
-        "optimism-10": `https://optimism.blockscout.com/api?apikey=${OP_BLOCKSCOUT_API_KEY}`,
-        "base-8453": `https://base.blockscout.com/api?apikey=${BASE_BLOCKSCOUT_API_KEY}`,
-        "mode-34443": `https://explorer.mode.network/api?`
-      }
-      const urlGet = `${baseUrls[apiCall.chain]}&module=account&action=txlist&address=${apiCall.eoa}&sort=asc&startblock=${apiCall.fromBlock}&endblock=${apiCall.toBlock}`;
-      return urlGet;
+    [EXPLORER_SERVICES.BLOCKSCOUT]: (): string => {
+      const baseUrl = baseUrls[apiCall.chain];
+      return `${baseUrl}&module=account&action=txlist&address=${apiCall.eoa}&sort=asc&startblock=${apiCall.fromBlock}&endblock=${apiCall.toBlock}`;
     },
-    routescan: () => {
+    [EXPLORER_SERVICES.ROUTESCAN]: (): string => {
       return `https://api.routescan.io/v2/network/mainnet/evm/${apiCall.chainId}/etherscan/api?apikey=${ROUTESCAN_API_KEY}&module=account&action=txlist&address=${apiCall.eoa}&startblock=${apiCall.fromBlock}&page=1&offset=301&sort=asc`;
     },
   };
+
   return urlByService[apiCall.service]();
 };
-
 
 export const getSeasonByCode = (seasonCode: string): Season | undefined => {
   return Seasons.find(season => season.season === seasonCode);
@@ -56,28 +82,28 @@ export const Seasons: Season[] = [
     fromDate: new Date(Date.UTC(2025, 0, 16, 0, 0, 0, 0)),
     toDate: new Date(Date.UTC(2025, 6, 16, 23, 59, 59, 999)),
     blockRanges: {
-      "optimism-10": [130693412, 138555811],//2 secs x block
-      "base-8453": [25098127, 32960527], //2 secs x block
-      "unichain-130": [6237241, 21962041], //1 sec x block
-      "mode-34443": [18409009, 26271409], //2 secs x block
-      "ink-57073": [3505189, 19211989],//1 sec x block
-      "Soneium": [1925425, 9787825], //2 secs x block
-    }
+      [CHAIN_KEYS.OPTIMISM]: [130_693_412, 138_555_811],
+      [CHAIN_KEYS.BASE]: [25_098_127, 32_960_527],
+      [CHAIN_KEYS.UNICHAIN]: [6_237_241, 21_962_041],
+      [CHAIN_KEYS.MODE]: [18_409_009, 26_271_409],
+      [CHAIN_KEYS.INK]: [3_505_189, 19_211_989],
+      [CHAIN_KEYS.SONEIUM]: [1_925_425, 9_787_825],
+    },
   },
   {
     season: "S8",
     fromDate: new Date(Date.UTC(2025, 6, 31, 0, 0, 0, 0)),
     toDate: new Date(Date.UTC(2025, 11, 24, 23, 59, 59, 999)),
     blockRanges: {
-      "optimism-10": [139160613, 145511013],
-      "base-8453": [33565329, 39915729],
-      "unichain-130": [23171643, 35872443],
-      "mode-34443": [26876211, 33226611],
-      "ink-57073": [20421591, 33122391],
-      "Soneium": [10392627, 16743027]
-    }
-  }
-]
+      [CHAIN_KEYS.OPTIMISM]: [139_160_613, 145_511_013],
+      [CHAIN_KEYS.BASE]: [33_565_329, 39_915_729],
+      [CHAIN_KEYS.UNICHAIN]: [23_171_643, 35_872_443],
+      [CHAIN_KEYS.MODE]: [26_876_211, 33_226_611],
+      [CHAIN_KEYS.INK]: [20_421_591, 33_122_391],
+      [CHAIN_KEYS.SONEIUM]: [10_392_627, 16_743_027],
+    },
+  },
+];
 
 
 export const DEFAULT_TTL = 60 * 60; // 1 hour
