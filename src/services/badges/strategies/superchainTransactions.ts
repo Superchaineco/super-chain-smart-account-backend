@@ -7,8 +7,10 @@ import { redisService } from "@/services/redis.service";
 
 export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
+    
     constructor(private readonly season: Season) {
         super();
+
     }
 
 
@@ -37,7 +39,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
     async getBase(eoas: string[]): Promise<number> {
         const chain = "base-8453";
-        const cacheKey = `baseTransactions-S7-${eoas.join(",")}`;
+        const cacheKey = `baseTransactions-${this.season.season}-${eoas.join(",")}`;
         const season = this.season;
 
         const fetchFunction = async () => {
@@ -80,7 +82,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
     async getInk(eoas: string[]): Promise<number> {
         const chain = "ink-57073";
-        const cacheKey = `inkTransactions-S7-${eoas.join(",")}`;
+        const cacheKey = `inkTransactions-${this.season.season}-${eoas.join(",")}`;
         const season = this.season;
 
         const fetchFunction = async () => {
@@ -123,7 +125,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
     async getUnichain(eoas: string[]): Promise<number> {
         const chain = "unichain-130";
-        const cacheKey = `unichainTransactions-S7-${eoas.join(",")}`;
+        const cacheKey = `unichainTransactions-${this.season.season}-${eoas.join(",")}`;
         const season = this.season;
 
         const fetchFunction = async () => {
@@ -166,7 +168,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
     async getSoneium(eoas: string[]): Promise<number> {
         const chain = "Soneium";
-        const cacheKey = `soneiumTransactions-S7-${eoas.join(",")}`;
+        const cacheKey = `soneiumTransactions-${this.season.season}-${eoas.join(",")}`;
         const season = this.season;
 
         const fetchFunction = async () => {
@@ -209,7 +211,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
 
     async getOP(eoas: string[]): Promise<number> {
         const chain = "optimism-10";
-        const cacheKey = `optimismTransactions-S7-${eoas.join(",")}`;
+        const cacheKey = `optimismTransactions-${this.season.season}-${eoas.join(",")}`;
         const season = this.season;
 
         const fetchFunction = async () => {
