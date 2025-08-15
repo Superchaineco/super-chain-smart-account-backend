@@ -19,6 +19,7 @@ import { SoneiumTransactionsStrategy } from './soneiumTransactions';
 import { SuperChainTransactionsStrategy } from './superchainTransactions';
 import { SuperCohort0Strategy } from './superCohort0Strategy';
 import { SuperStacksStrategy } from './superStacks';
+import { TalentCreatorScoreStrategy } from './talentCreatorScoreStrategy';
 import { TalentScoreStrategy } from './talentScore';
 import { UnichainTransactionsStrategy } from './unichainTransactions';
 import { WorldCoinCheckStrategy } from './worldCoinCheck';
@@ -80,8 +81,8 @@ export class BadgeStrategyContext {
                 return new FarcasterConnectionStrategy()
             case "World User":
                 return new WorldIdCoinTransactionsStrategy()
-
-
+            case "Creator Score":
+                return new TalentCreatorScoreStrategy()
             //NOT RELEVANT FOR NOW
             // case "Mint User":
             //     return new MintTransactionsStrategy()
