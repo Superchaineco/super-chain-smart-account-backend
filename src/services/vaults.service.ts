@@ -2,6 +2,7 @@ import { JSON_RPC_PROVIDER } from '@/config/superChain/constants';
 import axios from 'axios';
 import { Contract, formatUnits, JsonRpcProvider } from 'ethers';
 import { RedisService } from './redis.service';
+import { getAssetPrice } from './assetPricing.service';
 
 const tokenImages = {
   WETH: 'https://staging.account.superchain.eco/images/currencies/ethereum.svg',
@@ -103,12 +104,19 @@ export class VaultsService {
         );
 
         console.log({ account })
+
+
         const balance = await comet.balanceOf(account);
-        return formatUnits(balance, vault.decimals);
+
+
+        const assetPrice = await getAssetPrice(vault.asset);
+        console.debug('Asset price for vault:', vault.asset, assetPrice);
+
+        return { balance: formatUnits(balance, vault.decimals), price: assetPrice }
 
       } catch (error: any) {
         console.error(error)
-        return 0;
+        return { balance: 0, price: 0 };
         //throw new Error(error)
       }
     };
@@ -128,7 +136,8 @@ export class VaultsService {
 
         return {
           ...vault,
-          balance: balance?.toString(),
+          balance: balance?.balance.toString(),
+          asset_price: balance?.price.toString(),
           interest_apr: interest_apr?.toString()
         };
       })
