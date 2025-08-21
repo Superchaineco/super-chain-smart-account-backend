@@ -136,8 +136,8 @@ export class VaultsService {
 
         return {
           ...vault,
-          balance: balance?.balance.toString(),
-          asset_price: balance?.price.toString(),
+          balance: balance?.balance?.toString() || balance?.toString(), 
+          asset_price: balance?.price?.toString() || 0,
           interest_apr: interest_apr?.toString()
         };
       })
