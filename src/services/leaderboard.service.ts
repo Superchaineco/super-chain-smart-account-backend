@@ -15,7 +15,7 @@ export class LeaderBoardService {
   }
 
   constructor() {
-    this.dune = new DuneClient(DUNE_API_KEY);
+    this.dune = new DuneClient("CxOvw0qTs1ZhymWb45RQOiJL1ibXpJBR");
   }
 
   public async refreshLeaderBoardCache(): Promise<void> {
@@ -143,15 +143,17 @@ export class LeaderBoardService {
   }
 
   private cleanData(rows: any[]): any[] {
-    return rows.map((row) => {
-      const addressMatch = row.superaccount.match(/0x[a-fA-F0-9]{40}/);
-      const address = addressMatch ? addressMatch[0] : row.superaccount;
+    return rows
+      .filter(row => typeof row?.superaccount === 'string')
+      .map((row) => {
+        const addressMatch = row.superaccount.match(/0x[a-fA-F0-9]{40}/);
+        const address = addressMatch ? addressMatch[0] : row.superaccount;
 
-      return {
-        ...row,
-        superaccount: address,
-      };
-    });
+        return {
+          ...row,
+          superaccount: address,
+        };
+      });
   }
   public async rebuildHashFromZSet(): Promise<void> {
     const zsetExists = await redis.exists(this.zsetKey);
