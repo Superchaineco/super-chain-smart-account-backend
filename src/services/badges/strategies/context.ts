@@ -22,6 +22,7 @@ import { SuperStacksStrategy } from './superStacks';
 import { TalentCreatorScoreStrategy } from './talentCreatorScoreStrategy';
 import { TalentScoreStrategy } from './talentScore';
 import { UnichainTransactionsStrategy } from './unichainTransactions';
+import { VaultsStrategy } from './vaultsStrategy';
 import { WorldCoinCheckStrategy } from './worldCoinCheck';
 import { WorldIdCoinTransactionsStrategy } from './worldIdCoinTransactions';
 
@@ -83,6 +84,8 @@ export class BadgeStrategyContext {
                 return new WorldIdCoinTransactionsStrategy()
             case "Creator Score":
                 return new TalentCreatorScoreStrategy()
+            case "ETH Vault Deposits":
+                return new VaultsStrategy()
             //NOT RELEVANT FOR NOW
             // case "Mint User":
             //     return new MintTransactionsStrategy()
