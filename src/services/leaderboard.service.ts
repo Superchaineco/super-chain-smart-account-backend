@@ -15,7 +15,7 @@ export class LeaderBoardService {
   }
 
   constructor() {
-    this.dune = new DuneClient("CxOvw0qTs1ZhymWb45RQOiJL1ibXpJBR");
+    this.dune = new DuneClient(DUNE_API_KEY);
   }
 
   public async refreshLeaderBoardCache(): Promise<void> {

@@ -64,7 +64,7 @@ export const SUBGRAPH_API_KEY = process.env.SUBGRAPH_API_KEY!;
 export const WC_PROJECT_ID = process.env.WC_PROJECT_ID!;
 export const DOMAIN = config.DOMAIN.split(',').map((origin) => origin.trim());
 export const SESSION_SECRET = process.env.SESSION_SECRET!;
-export const DUNE_API_KEY = "tq5GizmXNOoH1FktB2GAg7FseeFxtmTw";
+export const DUNE_API_KEY = process.env.DUNE_API_KEY;
 export const SAFE_ADDRESS = config.SAFE_ADDRESS;
 export const PIMLICO_API_KEY = process.env.PIMLICO_API_KEY;
 export const SUNNY_TOKEN_ADDRESS = config.SUNNY_TOKEN_ADDRESS;
