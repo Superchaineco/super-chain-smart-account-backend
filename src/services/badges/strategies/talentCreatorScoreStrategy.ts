@@ -42,7 +42,7 @@ export class TalentCreatorScoreStrategy extends BaseBadgeStrategy {
           );
 
           if (creator && creator.points > highestTalentScore)
-            highestTalentScore = creator.points
+            highestTalentScore = Number(creator.points)
         }
       }
       return highestTalentScore;
