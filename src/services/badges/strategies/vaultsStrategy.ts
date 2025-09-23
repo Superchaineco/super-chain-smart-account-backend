@@ -77,6 +77,10 @@ export class VaultsStrategy extends BaseBadgeStrategy {
               outCount++;
             }
 
+            if (currentBalance < BigInt(0)) {
+              currentBalance = BigInt(0);
+            }
+
             log(`🔁 TX ${tx.direction.toUpperCase()}: ${formatEther(amount)} ETH at ${txTime.toISOString()} → balance: ${formatEther(currentBalance)} ETH`);
 
             if (currentBalance >= thresholdAmount) {
