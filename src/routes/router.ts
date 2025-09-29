@@ -65,16 +65,15 @@ routes.post('/farcaster/verify/:account', verifyOwner, verifyFarcaster);
 
 const CHAIN_MAP: Record<string, string> = {
   '10': 'oeth',
-  // agrega más mappings...
+  // ...
 };
 
-// Reinyectar body JSON (equivalente a fixRequestBody) usando tipos de node
 function forwardJsonBody(proxyReq: ClientRequest, req: IncomingMessage) {
   const anyReq = req as any;
-  const method: string | undefined = anyReq.method;
+  const method = anyReq.method?.toUpperCase?.();
   const body = anyReq.body;
   if (!body) return;
-  if (method && ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
+  if (method && ['POST', 'PUT', 'PATCH'].includes(method)) {
     const bodyStr = typeof body === 'string' ? body : JSON.stringify(body);
     proxyReq.setHeader('Content-Type', 'application/json');
     proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyStr));
@@ -82,53 +81,65 @@ function forwardJsonBody(proxyReq: ClientRequest, req: IncomingMessage) {
   }
 }
 
-
-routes.use(
-  '/safe/v1/chains/:chainId/safes/:address',
-  createProxyMiddleware({
-    target: 'https://api.safe.global',
-    changeOrigin: true,
-
-    pathRewrite: (path, req) => {
-      const anyReq = req as any;
-      const chainId: string | undefined = anyReq.params?.chainId;
-      const address: string | undefined = anyReq.params?.address;
-      const key = chainId ? CHAIN_MAP[chainId] : undefined;
-      if (!key || !address) return path; // sin mapping → deja caer al fallback
-
-      const rewritten = `/tx-service/${key}/api/v1/safes/${address}/`; // barra final
-      console.log('[SAFE REDIRECT] rewrite:', path, '->', rewritten);
-      return rewritten;
+/**
+ * 1) Proxy específico: solo para la ruta EXACTA:
+ *    /safe/v1/chains/:chainId/safes/:address  (sin segmentos extras)
+ */
+const specificProxy = createProxyMiddleware({
+  target: 'https://api.safe.global',
+  changeOrigin: true,
+  pathRewrite: (path, req) => {
+    // path aquí incluirá el prefijo /safe, porque montamos en routes.use('/safe', ...)
+    // p.ej. "/v1/chains/10/safes/0x...".
+    const match = path.match(/^\/v1\/chains\/(\d+)\/safes\/([^/]+)\/?$/);
+    if (!match) return path;
+    const [, chainId, address] = match;
+    const key = CHAIN_MAP[chainId];
+    if (!key) return path;
+    return `/tx-service/${key}/api/v1/safes/${address}/`;
+  },
+  on: {
+    proxyReq: (proxyReq, req) => {
+      const token = process.env.SAFE_API_TOKEN;
+      if (token) proxyReq.setHeader('authorization', `Bearer ${token}`);
+      // quitar cookies innecesarias
+      // @ts-ignore
+      if (typeof (proxyReq as any).removeHeader === 'function') (proxyReq as any).removeHeader('cookie');
+      forwardJsonBody(proxyReq as ClientRequest, req as IncomingMessage);
     },
-
-    on: {
-      proxyReq: (proxyReq, req, res) => {
-        const token = process.env.SAFE_API_TOKEN;
-        if (token) proxyReq.setHeader('authorization', `Bearer ${token}`);
-
-        // Quita cookies si no sirven
-        // @ts-ignore: removeHeader existe en ClientRequest de node >=18
-        if (typeof (proxyReq as any).removeHeader === 'function') {
-          (proxyReq as any).removeHeader('cookie');
-        }
-
-        forwardJsonBody(proxyReq as ClientRequest, req as IncomingMessage);
-
-        const p: any = proxyReq as any; // props internas para log
-        console.log(`[SAFE REDIRECT] ${(req as any).method} -> ${p.protocol}//${p.host}${p.path}`);
-      },
-
-      error: (err, _req, res) => {
-        const sres = res as ServerResponse;
-        const anyErr = err as { code?: string; message?: string };
-        console.error('[SAFE REDIRECT ERROR]', anyErr?.code, anyErr?.message);
-        sres.statusCode = 502;
-        sres.end(`Upstream error: ${anyErr?.code ?? 'UNKNOWN'}`);
-      },
+    error: (err, _req, res) => {
+      const sres = res as ServerResponse;
+      const anyErr = err as { code?: string; message?: string };
+      sres.statusCode = 502;
+      sres.end(`Upstream error: ${anyErr?.code ?? 'UNKNOWN'}`);
     },
-  })
-);
+  },
+});
 
+/**
+ * Middleware selector: si req.path (dentro del router) coincide EXACTAMENTE con
+ * /v1/chains/:chainId/safes/:address[/], entonces delega al specificProxy.
+ * En cualquier otro caso, llamamos next() para que lo maneje el fallback.
+ */
+routes.use('/safe', (req, res, next) => {
+  // req.path dentro del router será "/v1/..." si montas routes como app.use('/api', routes)
+  const path = req.path || req.url || '';
+  const exactSafeRegex = /^\/v1\/chains\/(\d+)\/safes\/([^/]+)\/?$/;
+  const match = path.match(exactSafeRegex);
+
+  if (match) {
+    // Si no hay mapping de chain, podemos devolver 400 o dejar que el fallback lo procese.
+    const chainId = match[1];
+    if (!CHAIN_MAP[chainId]) {
+      return res.status(400).json({ error: `Unsupported chainId ${chainId}` });
+    }
+    // Llama al proxy específico (usa la instancia creada arriba)
+    return specificProxy(req as any, res as any, next as any);
+  }
+
+  // No es la ruta exacta del safe => continuar al proxy general (fallback)
+  return next();
+});
 
 routes.use(
   '/safe',
