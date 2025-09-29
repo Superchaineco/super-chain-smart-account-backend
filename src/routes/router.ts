@@ -65,7 +65,7 @@ routes.use(
   '/safe',
   createProxyMiddleware({
     target: 'https://safe-client.safe.global', // URL de destino
-    changeOrigin: false,
+    changeOrigin: true,
     pathRewrite: {
       '^/safe': '', // elimina el prefijo /safe al reenviar
     }
