@@ -17,6 +17,8 @@ import { getVaults, refreshVaults } from '@/controllers/vaults';
 import { raffleClaim } from '@/controllers/raffle';
 import { verifyWorldId } from '@/controllers/worldID';
 import { verifyFarcaster } from '@/controllers/farcaster';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+
 export const routes = Router();
 
 routes.get('/user/:account', getUser);
@@ -59,7 +61,16 @@ routes.post('/world-id/verify/:account', verifyOwner, verifyWorldId);
 
 routes.post('/farcaster/verify/:account', verifyOwner, verifyFarcaster);
 
-
+routes.use(
+  '/safe',
+  createProxyMiddleware({
+    target: 'https://safe-client.safe.global', // URL de destino
+    changeOrigin: true,
+    pathRewrite: {
+      '^/safe': '', // elimina el prefijo /safe al reenviar
+    }
+  })
+);
 
 
 export default routes;
