@@ -27,6 +27,7 @@ export class SuperChainAccountService {
     const fetchFunction = async () => {
       // @ts-expect-error ESM import
       const protocolKit = await Safe.default.init({
+        
         provider: JSON_RPC_PROVIDER,
         safeAddress: address,
       });
