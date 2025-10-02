@@ -34,7 +34,7 @@ export class VaultsService {
           decimals: apr.base_asset.decimals,
           image: tokenImages[apr.base_asset.symbol] || null,
           depreciated: false, // TODO: add depreciated field,
-          min_deposit: apr.base_asset.symbol === 'WETH' ? 0.01 : 100 // TODO: add min_deposit field
+          min_deposit: apr.base_asset.symbol === 'WETH' ? 0.00001 : 1 // TODO: add min_deposit field
         }));
     };
 
