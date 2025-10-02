@@ -49,12 +49,15 @@ function upstreamUrlFromReq(req: Request): string {
 }
 
 
+type HeaderEntry = { key: string; value: string };
+
 type CachedResponse = {
-    url: string
-    headers: Record<string, string>[];
+    url: string;
+    headers: HeaderEntry[];
     status: number;
     body: any;
-}
+};
+
 
 
 async function passthroughUpstream(req: Request, res: Response, ttl?: number): Promise<void> {
@@ -77,7 +80,7 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
 
         const upstream = await fetch(url, init);
 
-        const headers: Record<string, string>[] = [];
+        const headers: HeaderEntry[] = [];
         upstream.headers.forEach((value, key) => {
             if (!['content-security-policy'].includes(key)) headers.push({ key, value });
         });
@@ -91,25 +94,33 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
 
     }
 
-    let response: CachedResponse;
 
-    if (ttl && ttl > 0) {
-        response = await redisService.getCachedDataWithCallback(
-            url,
-            fetchApi,
-            ttl,
-            true
-        );
-    } else {
-        response = await fetchApi();
-    }
+    const canCache = method === 'GET' && ttl && ttl > 0;
+    const response: CachedResponse = canCache
+        ? await redisService.getCachedDataWithCallback(url, fetchApi, ttl, true)
+        : await fetchApi();
 
     res.status(response.status);
 
-    Object.entries(response.headers).forEach(([key, value], index) => {
-
-        if (!['content-security-policy'].includes(key)) res.setHeader(key, value[key]);
-    });
+    for (const { key, value } of response.headers) {
+        // Salta headers problemáticos/hop-by-hop
+        if (
+            ![
+                'content-security-policy',
+                'transfer-encoding',
+                'connection',
+                'keep-alive',
+                'proxy-authenticate',
+                'proxy-authorization',
+                'te',
+                'trailer',
+                'upgrade',
+                // opcionalmente: 'set-cookie', 'content-length', 'content-encoding'
+            ].includes(key.toLowerCase())
+        ) {
+            if (value !== undefined) res.setHeader(key, value);
+        }
+    }
 
 
     res.json(response.body);
