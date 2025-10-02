@@ -166,7 +166,7 @@ export async function handleBalancesUsd(req: Request, res: Response): Promise<vo
     const chainId = getChainId(req);
     const address = getAddress(req);
     // TODO: enriquecer balances, normalizar formato, cache/currency rates
-    await passthroughUpstream(req, res, 120);
+    await passthroughUpstream(req, res, 15);
     return;
 }
 
@@ -211,6 +211,6 @@ export async function handleModuleTx(req: Request, res: Response): Promise<void>
     // const m = req.path.match(/module_(0x[a-fA-F0-9]{40})_id([0-9a-f]{64})/);
     // const moduleAddr = m?.[1]; const idHash = m?.[2];
     // TODO: confirmar esquema exacto y transformar a tu shape
-    await passthroughUpstream(req, res);
+    await passthroughUpstream(req, res, 60);
     return;
 }
