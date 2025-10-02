@@ -144,6 +144,14 @@ function getAddress(req: Request): string | undefined {
     return m?.[0];
 }
 
+
+
+
+export async function handleTxPropose(req: Request, res: Response): Promise<void> {
+  // Va a SAFE_CLIENT_BASE + req.url y añade Bearer automáticamente
+  await passthroughUpstream(req, res);
+  return;
+}
 /** GET safe detail: /v1/chains/:chainId/safes/:address */
 export async function handleSafeDetail(req: Request, res: Response): Promise<void> {
     const chainId = getChainId(req);

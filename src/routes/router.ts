@@ -18,7 +18,7 @@ import { raffleClaim } from '@/controllers/raffle';
 import { verifyWorldId } from '@/controllers/worldID';
 import { verifyFarcaster } from '@/controllers/farcaster';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handleSafeDetail, handleTxHistory, handleTxQueued, SAFE_CLIENT_BASE } from '@/services/safe.service';
+import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handleSafeDetail, handleTxHistory, handleTxPropose, handleTxQueued, SAFE_CLIENT_BASE } from '@/services/safe.service';
 
 
 
@@ -79,6 +79,8 @@ const reTxHistoryExact =
 const reTxQueuedExact =
   /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/transactions\/queued\/?$/;
 const reModuleTx = /^\/v1\/chains\/(\d+)\/transactions\/([A-Za-z0-9_]+)$/;
+const reTxProposeExact =
+  /^\/v1\/chains\/(\d+)\/transactions\/(0x[a-fA-F0-9]{40})\/propose\/?$/;
 
 // ======================
 // Dispatcher
@@ -89,15 +91,16 @@ routes.use('/safe', async (req, res, next) => {
 
   try {
     if (reBalancesUsdExact.test(p)) { await handleBalancesUsd(req, res); return; }
-    if (reSafeDetailExact.test(p))   { await handleSafeDetail(req, res); return; }
-    if (reChainsRoot.test(p))        { await handleChains(req, res); return; }
-    if (reMessagesExact.test(p))     { await handleMessages(req, res); return; }
-    if (reTxHistoryExact.test(p))    { await handleTxHistory(req, res); return; }
-    if (reTxQueuedExact.test(p))     { await handleTxQueued(req, res); return; }
-    if (reModuleTx.test(p))         { await handleModuleTx(req, res); return; }
+    if (reSafeDetailExact.test(p)) { await handleSafeDetail(req, res); return; }
+    if (reChainsRoot.test(p)) { await handleChains(req, res); return; }
+    if (reMessagesExact.test(p)) { await handleMessages(req, res); return; }
+    if (reTxHistoryExact.test(p)) { await handleTxHistory(req, res); return; }
+    if (reTxQueuedExact.test(p)) { await handleTxQueued(req, res); return; }
+    if (reModuleTx.test(p)) { await handleModuleTx(req, res); return; }
+    if (reTxProposeExact.test(p)) { await handleTxPropose(req, res); return; }
   } catch (err: any) {
     console.error('[SAFE DISPATCH ERROR]', err?.message);
-    res.status(502).json({ error: 'Upstream error', detail: err?.message }); 
+    res.status(502).json({ error: 'Upstream error', detail: err?.message });
     return;
   }
 
