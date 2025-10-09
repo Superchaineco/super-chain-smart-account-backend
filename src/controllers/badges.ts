@@ -67,7 +67,8 @@ export async function claimBadges(req: Request, res: Response) {
     //const attestationsService = new AttestationsService();
 
     const totalPoints = badgesService.getTotalPoints(badges);
-    const badgeUpdates = badgesService.getBadgeUpdates(badges);
+    const badgeUpdates = badgesService.getBadgeUpdates(badges).filter((b) => !(b.badgeId.toString() == '11' && b.level > 1));
+
 
     const response = await attestQueueService.queueAndWait({
       account,
