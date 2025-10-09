@@ -1,8 +1,61 @@
 import { generateNonce } from "siwe";
 
 import { WC_PROJECT_ID as projectId } from "../config/superChain/constants";
-import { getAddressFromMessage, getChainIdFromMessage, verifySignature as veriftSiweSignature } from "@reown/appkit-siwe";
+
 import { signJwt, verifyJwt } from "@/utils/jwt";
+
+import { SiweMessage } from 'siwe';
+
+export const getAddressFromMessage = (message: string) => new SiweMessage(message).address;
+export const getChainIdFromMessage = (message: string | number) => new SiweMessage(String(message)).chainId;
+
+
+
+type VerifyParams = {
+  address: string;
+  message: string;
+  signature: string;
+  chainId?: number | string;   // acepta "eip155:8453" o 8453
+  projectId?: string;          // ignorado (compatibilidad con @reown/appkit-siwe)
+  nonce?: string;              // opcional: si guardas nonce del /nonce
+  domain?: string;             // opcional: normalmente req.headers.host
+};
+
+function parseChainId(input?: number | string): number | null {
+  if (input === undefined) return null;
+  if (typeof input === "number" && Number.isFinite(input)) return input;
+  const s: string = String(input);
+  const last: string = s.includes(":") ? s.split(":").pop()! : s;
+  const n: number = Number(last);
+  return Number.isFinite(n) ? n : null;
+}
+
+function equalsAddress(a: string, b: string): boolean {
+  return a.toLowerCase() === b.toLowerCase();
+}
+
+/**
+ * Verifica firma SIWE en servidor (drop-in de @reown/appkit-siwe.verifySignature).
+ * Retorna true/false. projectId se ignora en backend.
+ */
+export async function verifySiweSignature(params: VerifyParams): Promise<boolean> {
+  const siwe: SiweMessage = new SiweMessage(params.message);
+
+  // Chequeos locales opcionales coherentes con tu código actual:
+  const providedChainId: number | null = parseChainId(params.chainId);
+  if (params.address && !equalsAddress(siwe.address, params.address)) return false;
+  if (providedChainId !== null && siwe.chainId !== providedChainId) return false;
+
+  const { success } = await siwe.verify({
+    signature: params.signature,
+    nonce: params.nonce,   // pásalo si guardas nonce en sesión/redis
+    domain: params.domain, // típicamente req.headers.host
+  });
+
+  return !!success;
+}
+
+
 export function getNonce(_, res) {
     res.setHeader('Content-Type', 'text/plain');
     res.send(generateNonce());
@@ -20,7 +73,7 @@ async function validateSignature(req, res) {
     let chainId = getChainIdFromMessage(message);
 
 
-    const isValid = await veriftSiweSignature({
+    const isValid = await verifySiweSignature({
         address,
         message,
         signature: req.body.signature,

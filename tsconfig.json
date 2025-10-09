@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
+    "inlineSources": true,
     "moduleDetection": "force",
-		"module": "Preserve",
-		"resolveJsonModule": true,
-		"allowJs": true,
-		"esModuleInterop": true,
-		"isolatedModules": true,
+    "module": "Preserve",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "outDir": "dist",
