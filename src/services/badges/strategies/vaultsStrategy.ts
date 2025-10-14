@@ -14,8 +14,7 @@ export class VaultsStrategy extends BaseBadgeStrategy {
   private pool: Pool;
 
   constructor() {
-    super();
-    console.debug('DATABASE_URL:', DATABASE_URL);
+    super();    
     this.pool = new Pool({
       connectionString: DATABASE_URL,
     });
