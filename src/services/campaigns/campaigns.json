@@ -9,10 +9,11 @@
     "banner": "/images/campaigns/lisk-banner.png",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": "https://www.superchain.eco/programs/lisk-surge",
-    "boosts": [],    
+    "boosts": [],
     "campaign_badges": [
       {
         "type": "campaign_badge",
+        "id": "19",
         "badgeName": "Lisk Surge",
         "description": "Rewards earned during Lisk Surge."
       }
@@ -32,34 +33,42 @@
     "campaign_badges": [
       {
         "type": "campaign_badge",
-        "badgeName": "SuperStacks ",
+        "id": "18",
+        "badgeName": "SuperStacks",
         "description": "XP earned during SuperStacks campaign."
       }
     ]
   },
-    {
+  {
     "id": "claimable_campaign",
     "name": "Test Claimable Campaign",
     "description": "This is a Super Account Claimable Campaign for testing purposes.",
     "start_date": "2025-10-14",
-    "end_date": "2025-10-17",
+    "end_date": "2025-10-16",
     "network": ["base"],
     "banner": "/images/campaigns/superstacksbanner.jpg",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": "https://www.superchain.eco/programs/superstacks",
     "boosts": [],
-    "campaign_reward": { "symbol": "USDC", "amount": "5000" },
+    "campaign_reward": { "symbol": "USDC", "amount": "5" },
+    "end_block": 142500000,
+    "start_block": 142200000,
     "campaign_badges": [
       {
         "type": "campaign_badge",
+        "id": "2",
         "badgeName": "OP Mainnet User",
         "description": "Points earner during the campaign."
-      }, {
+      },
+      {
         "type": "campaign_badge",
+        "id": "24",
         "badgeName": "S8 Super User",
         "description": "XP earned during SuperStacks campaign."
-      }, {
+      },
+      {
         "type": "campaign_badge",
+        "id": "1",
         "badgeName": "Base User",
         "description": "XP earned during SuperStacks campaign."
       }

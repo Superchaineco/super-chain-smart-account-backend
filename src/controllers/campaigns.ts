@@ -1,6 +1,7 @@
 import {
   getCampaignDetailsWithData,
   Campaign,
+  CampaignBadge,
 } from '../services/campaigns/campaigns.service';
 import campaignsData from '../services/campaigns/campaigns.json';
 import { superChainAccountService } from '../services/superChainAccount.service';
@@ -22,7 +23,7 @@ export const getCampaigns = async (req, res) => {
 
     const campaigns: Campaign[] = campaignsData as unknown as Campaign[];
     const details = await Promise.all(
-      campaigns.map((c) =>
+      campaigns.map((c: Campaign) =>
         getCampaignDetailsWithData(c.id, {
           eoas,
           userBadges,
