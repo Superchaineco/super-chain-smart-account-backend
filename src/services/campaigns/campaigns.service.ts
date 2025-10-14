@@ -115,7 +115,7 @@ export async function getCampaignDetailsWithData(
 ) {
 
 
-  const changeImage = (tiersLength: number, currentImage: string) => {
+  const changeImage = (tiersLength: string, currentImage: string) => {
     return currentImage.replace('/Badge.svg', `/T${tiersLength}.svg`);
   }
 
@@ -124,7 +124,7 @@ export async function getCampaignDetailsWithData(
       ...badge,
       metadata: {
         ...badge.metadata,
-        image: changeImage(badge.currentLevel ?? 0, badge.metadata.image),
+        image: changeImage(badge.claimableTier ?? 0, badge.metadata.image),
         'stack-image': null,
       },
     };
@@ -135,43 +135,43 @@ export async function getCampaignDetailsWithData(
 
   let totalBoost = 0;
 
-  const boosts = await Promise.all(
-    campaign.boosts.map(async (boost) => {
-      if (!isCampaignBoost(boost)) {
-        return { applies: false };
-      }
-      if (boost.type === 'badge') {
-        const userBadge = newImageUserBadges.find(
-          (b) => b.metadata?.name === boost.badgeName
-        );
-        const badgeLevel = userBadge ? userBadge.tier : 0;
-        const applies = badgeLevel >= (boost.minLevel || 1);
-        totalBoost += boost.boostPercent;
-        return {
-          ...boost,
-          currentLevel: badgeLevel,
-          maxLevel: userBadge?.badgeTiers.length,
-          image: userBadge?.metadata?.image || undefined,
-          applies,
-        };
-      }
+  // const boosts = await Promise.all(
+  //   campaign.boosts.map(async (boost) => {
+  //     if (!isCampaignBoost(boost)) {
+  //       return { applies: false };
+  //     }
+  //     if (boost.type === 'badge') {
+  //       const userBadge = newImageUserBadges.find(
+  //         (b) => b.metadata?.name === boost.badgeName
+  //       );
+  //       const badgeLevel = userBadge ? userBadge.tier : 0;
+  //       const applies = badgeLevel >= (boost.minLevel || 1);
+  //       totalBoost += boost.boostPercent;
+  //       return {
+  //         ...boost,
+  //         currentLevel: badgeLevel,
+  //         maxLevel: userBadge?.badgeTiers.length,
+  //         image: userBadge?.metadata?.image || undefined,
+  //         applies,
+  //       };
+  //     }
 
-      if (boost.type === 'level') {
-        const userLevel = superAccountLevel;
-        const applies = userLevel >= (boost as any).level;
-        if (applies) totalBoost += boost.boostPercent;
-        return {
-          ...boost,
-          currentLevel: userLevel,
-          maxLevel: 0,
-          image: undefined,
-          applies,
-        };
-      }
+  //     if (boost.type === 'level') {
+  //       const userLevel = superAccountLevel;
+  //       const applies = userLevel >= (boost as any).level;
+  //       if (applies) totalBoost += boost.boostPercent;
+  //       return {
+  //         ...boost,
+  //         currentLevel: userLevel,
+  //         maxLevel: 0,
+  //         image: undefined,
+  //         applies,
+  //       };
+  //     }
 
-      return { applies: false };
-    })
-  );
+  //     return { applies: false };
+  //   })
+  // );
 
   const campaign_badges = campaign.campaign_badges.map((badge) => {
     const userBadge = newImageUserBadges.find(
@@ -201,7 +201,7 @@ export async function getCampaignDetailsWithData(
     participate_description: campaign.participate_description,
     campaign_link: campaign.campaign_link,
     campaign_reward: currentCampaign?.campaign_reward,
-    boosts,
+    //boosts,
     totalBoost,
     campaign_badges,
     distributed_points,
