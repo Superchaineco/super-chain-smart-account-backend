@@ -1,76 +1,38 @@
 [
+
   {
-    "id": "lisk_surge",
-    "name": "Lisk Surge",
-    "description": "Lisk Surge is a 9-week DeFi initiative run by Lisk DAO in collaboration with Jumper, aimed at accelerating DeFi on Lisk and growing TVL on Lisk.",
-    "start_date": "2025-05-13",
-    "end_date": "2025-07-16",
-    "network": ["lisk"],
-    "banner": "/images/campaigns/lisk-banner.png",
+    "id": "superchain-eco-s8",
+    "name": "Superchain Eco S8",
+    "description": "This pilot campaign will test our new campaigns feature and reward the most active Super Users of Season 8 with a share of OP tokens provided by the Superchain Eco team.",
+    "start_date": "2025-10-22",
+    "end_date": "2025-12-17",
+    "network": ["optimism"],
+    "banner": "/images/campaigns/superchain.png",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
-    "campaign_link": "https://www.superchain.eco/programs/lisk-surge",
+    "campaign_link": null,
     "boosts": [],
+    "campaign_reward": { "symbol": "OP", "amount": "10000" },
+    "end_block": 145208650,
+    "start_block": 142746250,
+    "more_info":  "The Superchain Eco Season 8 Campaign is the first campaign to leverage the new campaign feature and will reward the most active Super Users of Season 8.\n\n**How to participate**  \nAll Season 8 badges included in this campaign allow you to earn Superchain Points that count toward this campaign's leaderboard. Follow the guidelines for each badge to earn them.\n\n**How rewards will be calculated**  \nAt the end of the campaign, a snapshot will be taken of the total Superchain Points per account in this campaign. This snapshot will be used to finalize a calculation that distributes the campaign budget to all participants. In this pilot campaign, only users with over 300 campaign-specific points will be eligible to receive rewards.",
     "campaign_badges": [
       {
         "type": "campaign_badge",
-        "id": "19",
-        "badgeName": "Lisk Surge",
-        "description": "Rewards earned during Lisk Surge."
-      }
-    ]
-  },
-  {
-    "id": "super_stacks",
-    "name": "SuperStacks",
-    "description": "SuperStacks is an experimental pilot campaign designed to show how the Superchain can create a more connected onchain experience.        ",
-    "start_date": "2025-04-16",
-    "end_date": "2025-06-30",
-    "network": ["optimism", "base", "ink", "unichain", "soneium", "worldcoin"],
-    "banner": "/images/campaigns/superstacksbanner.jpg",
-    "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
-    "campaign_link": "https://www.superchain.eco/programs/superstacks",
-    "boosts": [],
-    "campaign_badges": [
-      {
-        "type": "campaign_badge",
-        "id": "18",
-        "badgeName": "SuperStacks",
-        "description": "XP earned during SuperStacks campaign."
-      }
-    ]
-  },
-  {
-    "id": "claimable_campaign",
-    "name": "Test Claimable Campaign",
-    "description": "This is a Super Account Claimable Campaign for testing purposes.",
-    "start_date": "2025-10-14",
-    "end_date": "2025-10-16",
-    "network": ["base"],
-    "banner": "/images/campaigns/superstacksbanner.jpg",
-    "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
-    "campaign_link": "https://www.superchain.eco/programs/superstacks",
-    "boosts": [],
-    "campaign_reward": { "symbol": "USDC", "amount": "5" },
-    "end_block": 142500000,
-    "start_block": 142200000,
-    "campaign_badges": [
-      {
-        "type": "campaign_badge",
-        "id": "2",
-        "badgeName": "OP Mainnet User",
-        "description": "Points earner during the campaign."
+        "id": "5",
+        "badgeName": "Citizen",
+        "description": "Earned during the campaign."
       },
       {
         "type": "campaign_badge",
         "id": "24",
         "badgeName": "S8 Super User",
-        "description": "XP earned during SuperStacks campaign."
+        "description": "Transactions made during campaign."
       },
       {
         "type": "campaign_badge",
-        "id": "1",
-        "badgeName": "Base User",
-        "description": "XP earned during SuperStacks campaign."
+        "id": "26",
+        "badgeName": "ETH Vault Deposits",
+        "description": "ETH staked during campaign."
       }
     ]
   }
