@@ -7,13 +7,14 @@ import campaignsData from '../services/campaigns/campaigns.json';
 import { superChainAccountService } from '../services/superChainAccount.service';
 import { BadgesServices } from '../services/badges/badges.service';
 
-const badgesService = new BadgesServices();
+
 
 export const getCampaigns = async (req, res) => {
   const { account } = req.params;
   try {
     // Obtener los datos una sola vez
     const eoas = await superChainAccountService.getEOAS(account);
+    const badgesService = new BadgesServices();
     const userBadges = await badgesService.getBadges(eoas, account);
 
 
