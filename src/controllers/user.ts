@@ -10,7 +10,17 @@ export async function getUser(req: Request, res: Response) {
 
     try {
         const superchainsmartaccount = await superChainAccountService.getSuperChainSmartAccount(account);
-        const badges = await superChainAccountService.getSuperChainSmartAccountBadges(account);
+        const badges = (await superChainAccountService.getSuperChainSmartAccountBadges(account)).map((badge => ({
+            ...badge,
+            badge: {
+                ...badge.badge,
+                metadata: {
+                    ...badge.badge.metadata,
+                    image: badge.badge.metadata?.image?.replace('/Badge.svg', `/T${badge.tier}.svg`),
+                    'stack-image': null,
+                },
+            }
+        })));
         const replacer = (key: string, value: any) => typeof value === "bigint" ? value.toString() : value;
 
         return res.status(200).json(

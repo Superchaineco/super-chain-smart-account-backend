@@ -172,14 +172,20 @@ export class BadgesServices {
       }));
   }
 
+
+
   public async getBadgeMetadata(badge: Badge) {
     const CACHE_KEY = `badge:${badge.badge.uri}`;
     const ttl = -1;
+
+  
+
 
     const fetchFunction = async () => {
       const metadataJson = await IpfsService.getIPFSData(badge.badge.uri);
       try {
         const metadata = JSON.parse(metadataJson);
+
         return metadata;
       } catch (error) {
         console.debug(badge.badge.uri);
