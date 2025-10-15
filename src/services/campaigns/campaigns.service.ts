@@ -246,7 +246,7 @@ export async function getCampaignDetailsWithData(
       ...badge,
       currentLevel: badgeLevel,
       maxLevel: userBadge?.badgeTiers.length || 0,
-      maxPoints, 
+      maxPoints,
       image: userBadge?.metadata?.image || undefined,
       applies,
     };
@@ -266,6 +266,7 @@ export async function getCampaignDetailsWithData(
     campaign_link: campaign.campaign_link,
     campaign_reward: currentCampaign?.campaign_reward,
     // boosts,
+    more_info: campaign.more_info,
     my_points,
     totalBoost,
     campaign_badges,
