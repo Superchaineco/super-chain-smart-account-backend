@@ -113,7 +113,7 @@ async function getPointsForClaims(
         COALESCE(SUM(points), 0) AS points
       FROM public.badge_claims
       WHERE badge_id = ANY($1)
-        AND account = $2
+        AND LOWER(account) = LOWER($2)
         AND block_number BETWEEN $3 AND $4
       GROUP BY badge_id
     `;
