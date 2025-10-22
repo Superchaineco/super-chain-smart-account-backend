@@ -3,25 +3,47 @@ import {
   GetUserBadgesQuery,
   GetUserBadgesQueryVariables,
   execute,
-} from '../../../.graphclient';
-import type { ExecutionResult } from 'graphql';
-import IpfsService from '../ipfs.service';
-import { redisService } from '../redis.service';
-import { BadgeStrategyContext } from '../badges/strategies/context';
-import { superChainAccountService } from '../superChainAccount.service';
-export type Badge = GetUserBadgesQuery['accountBadges'][number];
+} from "../../../.graphclient";
+import type { ExecutionResult } from "graphql";
+import IpfsService from "../ipfs.service";
+import { redisService } from "../redis.service";
+import { BadgeStrategyContext } from "../badges/strategies/context";
+import { superChainAccountService } from "../superChainAccount.service";
+import { DATABASE_URL } from "@/config/superChain/constants";
+import { Pool } from "pg";
+import badgesInfo from "./badges_info.json";
+import { BadgeInfo } from "../dto/badge_data";
+
+export type Badge = GetUserBadgesQuery["accountBadges"][number];
 export type ResponseBadge = {
   points: string;
   tier: string;
   campaigns?: string[];
-  currentCount: number | undefined
-} & Badge['badge'] & {
-  claimableTier: number | null;
-  claimable: boolean;
-};
+  currentCount: number | undefined;
+} & Badge["badge"] & {
+    claimableTier: number | null;
+    claimable: boolean;
+  };
 
 export class BadgesServices {
+  private pool: Pool;
+  private badgesInfo: BadgeInfo[] = badgesInfo as unknown as BadgeInfo[];
+  constructor() {
+    this.pool = new Pool({
+      connectionString: DATABASE_URL,
+    });
+  }
   private badges: ResponseBadge[] = [];
+  private queries = {
+    getBadgeLevelMetadata: `SELECT
+  tier,
+  badge_id,
+  COUNT(*) AS total_claimed,                               
+  SUM(COUNT(*)) OVER (PARTITION BY badge_id) AS total_claims_per_badge
+  FROM badge_claims GROUP BY tier, badge_id`,
+
+    getAccountQuantity: `select count(account)  from super_accounts`,
+  };
 
   public async getCachedBadges(account: string): Promise<any[]> {
     const CACHE_KEY = `cached_badges:${account}`;
@@ -30,33 +52,47 @@ export class BadgesServices {
     const fetchFunction = async (updateCache = true) => {
       const eoas = await superChainAccountService.getEOAS(account);
       const freshData = await this.getBadges(eoas, account);
+      await this.updateStatsForBadges(freshData);
       if (updateCache) {
         await redisService.setCachedData(CACHE_KEY, freshData, null);
       }
       return freshData;
     };
 
-    const optimisticData = await redisService.getCachedData(OPTIMISTIC_UPDATED_CACHE_KEY);
+    const optimisticData = await redisService.getCachedData(
+      OPTIMISTIC_UPDATED_CACHE_KEY
+    );
     const cachedData = await redisService.getCachedData(CACHE_KEY);
     if (optimisticData && cachedData) {
-      console.log('Optimistic data found for badges. Returning optimistic data...');
-      fetchFunction(false).then((freshData) => {
-        if (JSON.stringify(freshData) !== JSON.stringify(optimisticData)) {
-          console.log('Data fetch differs from optimistic data. Updating main cache and clearing optimistic data.');
-          redisService.deleteCachedData(OPTIMISTIC_UPDATED_CACHE_KEY);
-          redisService.setCachedData(CACHE_KEY, freshData, null);
-          return freshData;
-        } else {
-          console.log('Data fetch matches optimistic data. Everything remains the same.');
-        }
-      }).catch((err) => {
-        console.error('Error in badges fetch during comparison with optimistic data:', err);
-      });
+      console.log(
+        "Optimistic data found for badges. Returning optimistic data..."
+      );
+      fetchFunction(false)
+        .then((freshData) => {
+          if (JSON.stringify(freshData) !== JSON.stringify(optimisticData)) {
+            console.log(
+              "Data fetch differs from optimistic data. Updating main cache and clearing optimistic data."
+            );
+            redisService.deleteCachedData(OPTIMISTIC_UPDATED_CACHE_KEY);
+            redisService.setCachedData(CACHE_KEY, freshData, null);
+            return freshData;
+          } else {
+            console.log(
+              "Data fetch matches optimistic data. Everything remains the same."
+            );
+          }
+        })
+        .catch((err) => {
+          console.error(
+            "Error in badges fetch during comparison with optimistic data:",
+            err
+          );
+        });
       return optimisticData;
     }
 
     if (cachedData) {
-      console.log('Badges cache returned!');
+      console.log("Badges cache returned!");
       fetchFunction();
       return cachedData;
     }
@@ -74,9 +110,9 @@ export class BadgesServices {
           user: account,
         } as GetUserBadgesQueryVariables);
       if (errors) {
-        console.error('Error fetching badges:', errors);
+        console.error("Error fetching badges:", errors);
         //return {}
-        throw new Error('Error fetching badges');
+        throw new Error("Error fetching badges");
       }
       return data;
     };
@@ -117,11 +153,11 @@ export class BadgesServices {
     const results = await Promise.all(promises);
 
     for (const badge of activeBadges) {
-      badge.badge['metadata'] = await this.getBadgeMetadata(badge);
+      badge.badge["metadata"] = await this.getBadgeMetadata(badge);
       badge.badge.badgeTiers.forEach((tier) => {
         const result = results.find((res) => res.tier.uri === tier.uri);
         if (result) {
-          tier['metadata'] = result.metadata;
+          tier["metadata"] = result.metadata;
         }
       });
     }
@@ -172,14 +208,9 @@ export class BadgesServices {
       }));
   }
 
-
-
   public async getBadgeMetadata(badge: Badge) {
     const CACHE_KEY = `badge:${badge.badge.uri}`;
     const ttl = -1;
-
-  
-
 
     const fetchFunction = async () => {
       const metadataJson = await IpfsService.getIPFSData(badge.badge.uri);
@@ -205,7 +236,7 @@ export class BadgesServices {
   }
 
   public async getBadgeLevelMetadata(
-    badgeLevel: Badge['badge']['badgeTiers'][0]
+    badgeLevel: Badge["badge"]["badgeTiers"][0]
   ) {
     const CACHE_KEY = `badgeLevel:${badgeLevel.uri}`;
     const ttl = -1;
@@ -219,7 +250,7 @@ export class BadgesServices {
         console.error(
           `Error parsing JSON from IPFS (Badge Tier metadata): ${error}`
         );
-        throw new Error('Error parsing JSON from IPFS');
+        throw new Error("Error parsing JSON from IPFS");
       }
     };
 
@@ -229,6 +260,54 @@ export class BadgesServices {
       ttl,
       false
     );
+  }
+ private async updateStatsForBadges(badges: any[]) {
+    const stats = await this.getStatsForBadges();
+    const accountQuantity = await this.getAccountQuantity();
+    if (stats && stats.length > 0) {
+      badges.forEach((badge) => {
+        const badgeStats = stats.filter(
+          (stat) => stat.badge_id == badge.badgeId
+        );
+        if (badgeStats.length > 0) {
+          const total_claimed_per_badge = badgeStats[0]?.total_claims_per_badge;
+          badge.totalClaimed = Number(total_claimed_per_badge ?? 0);
+          badge.statistics = badgeStats.map((stat) => ({
+            totalClaimed: Number(stat.total_claimed ?? 0),
+            tier: stat.tier,
+            percentage:accountQuantity > 0 ? Math.floor(
+              (Number(stat.total_claimed ?? 0) / Number(accountQuantity ?? 1)) *
+                100
+            ) : 0,
+          }));
+        }
+      });
+    }
+    this.setBadgeRewards(badges);
+  }
+
+  private setBadgeRewards(badges: any[]) {
+   badges.forEach((badge) => {
+
+    const badgeInfo = this.badgesInfo.find(
+      (data) => data.badge_id == badge.badgeId
+    );
+    if (badgeInfo) {
+     badge.countUnit = badgeInfo.count_unit ??"";
+      badge.badgeTiers.forEach((tier) => {
+        const tierInfo = badgeInfo.tiers.find(
+          (data) => data.tier_id == tier.tier
+        );
+        if (tierInfo) {
+          tier.rewards = tierInfo;
+        }
+      });
+
+      if(badgeInfo.token_badge) {
+        badge.tokenBadge = badgeInfo.token_badge_data;
+      }
+    }
+   });
   }
 
   private async updateBadgeDataForAccount(
@@ -248,7 +327,7 @@ export class BadgesServices {
       this.badges.push(badgeResponse);
     } catch (error) {
       console.error(
-        'Error updating badge data:',
+        "Error updating badge data:",
         badgeData.badge.badgeId,
         badgeData.badge.metadata,
         error
@@ -256,6 +335,34 @@ export class BadgesServices {
       this.badges = this.badges.filter(
         (b) => b.badgeId !== badgeData.badge.badgeId
       );
+    }
+  }
+
+  private async getStatsForBadges() {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(this.queries.getBadgeLevelMetadata);
+      return result.rows;
+    } catch (error) {
+      console.error("Error getting stats for badges:", error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  private async getAccountQuantity() {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(this.queries.getAccountQuantity);
+      const accounts = result.rows[0]?.count ?? 0;
+
+      return accounts;
+    } catch (error) {
+      console.error("Error getting account quantity:", error);
+      return 0;
+    } finally {
+      client.release();
     }
   }
 }

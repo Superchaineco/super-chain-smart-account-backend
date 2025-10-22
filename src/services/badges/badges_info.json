@@ -1,0 +1,52 @@
+[
+    {
+     
+        "badge_id": "1",
+        "token_badge": true,
+        "count_unit ": "",
+        "token_badge_data": {
+            "symbol": "USDC",
+            "amount": "15"
+        },
+        "tiers":[
+            {
+                "tier_id": "1",
+                "symbol": "USDC",
+                "amount": "12"
+            },
+            {
+                "tier_id": "2",
+                "symbol": "USDC",
+                "amount": "15"
+            },
+            {
+                "tier_id": "3",
+                "symbol": "USDT",
+                "amount": "18"
+            },
+            {
+                "tier_id": "4",
+                "symbol": "POL",
+                "amount": "11.44916188"
+            },
+            {
+                "tier_id": "5",
+                "symbol": "ETH",
+                "amount": "20"
+            }
+        ]
+    },
+    {
+        "badge_id": "2",
+        "token_badge": false,
+        "count_unit ": "",
+        "token_badge_data": null,
+        "tiers":[
+            {
+                "tier_id": "1",
+                "symbol": "USDC",
+                "amount": "12"
+            }
+        ]
+    }
+]
