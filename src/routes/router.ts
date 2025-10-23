@@ -11,7 +11,7 @@ import {
   validateSponsorship,
 } from '../controllers/sponsor';
 import { paginatedLeaderboard, rankByAccount } from '@/controllers/leaderboard';
-import { getAirdrop } from '@/controllers/airdrop';
+import { getAirdrop, postAirdrop } from '@/controllers/airdrop';
 import { rpcReverseProxy, verifyInternalRequest } from '@/controllers/rpcProxy';
 import { getVaults, refreshVaults } from '@/controllers/vaults';
 import { raffleClaim } from '@/controllers/raffle';
@@ -34,6 +34,8 @@ routes.get('/user/:account/badges', getBadges);
 routes.get('/user/:account/perks', perksByAccount);
 
 routes.get('/airdrop/:account', getAirdrop);
+
+routes.post('/airdrop/:account', postAirdrop);
 
 routes.get('/perks/:level', perksByLevel);
 
