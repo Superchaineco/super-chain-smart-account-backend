@@ -222,7 +222,7 @@ export class BadgesServices {
 
         return metadata;
       } catch (error) {
-        console.debug(badge.badge.uri);
+        console.log(badge.badge.uri);
         console.error(
           `Error parsing JSON from IPFS (Badge metadata): ${error}`
         );
