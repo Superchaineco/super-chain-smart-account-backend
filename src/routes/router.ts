@@ -24,6 +24,7 @@ import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handle
 
 export const routes = Router();
 
+
 routes.get('/user/:account', getUser);
 
 routes.post('/user/:account/refresh-eoas', refreshEOAS);
