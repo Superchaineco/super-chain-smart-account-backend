@@ -18,6 +18,7 @@ import { verifyWorldId } from '@/controllers/worldID';
 import { verifyFarcaster } from '@/controllers/farcaster';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handleSafeDetail, handleTxHistory, handleTxPropose, handleTxQueued, SAFE_CLIENT_BASE } from '@/services/safe.service';
+import { getAirdrop, postAirdrop } from '@/controllers/airdrop';
 
 
 
@@ -32,9 +33,9 @@ routes.get('/user/:account/badges', getBadges);
 
 routes.get('/user/:account/perks', perksByAccount);
 
-// routes.get('/airdrop/:account', getAirdrop);
+routes.get('/airdrop/:account', getAirdrop);
 
-// routes.post('/airdrop/:account', postAirdrop);
+routes.post('/airdrop/:account', postAirdrop);
 
 routes.get('/perks/:level', perksByLevel);
 
