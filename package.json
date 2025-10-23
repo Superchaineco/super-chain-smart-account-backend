@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "sleep 3 && tsx --watch src/index.ts",
-    "start": "sleep 3 && tsx src/index.ts"
+    "start": "sleep 3 && tsx src/index.ts",
+    "dev:debug": "sleep 3 && tsx --watch --inspect=9229 src/index.ts",
+    "start:debug": "sleep 3 && tsx --inspect=9229 src/index.ts"
   },
   "type": "module",
   "keywords": [],
