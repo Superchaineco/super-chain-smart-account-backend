@@ -13,6 +13,8 @@ import { DATABASE_URL } from "@/config/superChain/constants";
 import { Pool } from "pg";
 import badgesInfo from "./badges_info.json";
 import { BadgeInfo } from "../dto/badge_data";
+import campaignsData from '../../services/campaigns/campaigns.json';
+
 
 export type Badge = GetUserBadgesQuery["accountBadges"][number];
 export type ResponseBadge = {
@@ -21,9 +23,9 @@ export type ResponseBadge = {
   campaigns?: string[];
   currentCount: number | undefined;
 } & Badge["badge"] & {
-    claimableTier: number | null;
-    claimable: boolean;
-  };
+  claimableTier: number | null;
+  claimable: boolean;
+};
 
 export class BadgesServices {
   private pool: Pool;
@@ -53,6 +55,7 @@ export class BadgesServices {
       const eoas = await superChainAccountService.getEOAS(account);
       const freshData = await this.getBadges(eoas, account);
       await this.updateStatsForBadges(freshData);
+      await this.updateCampaignInfo(freshData);
       if (updateCache) {
         await redisService.setCachedData(CACHE_KEY, freshData, null);
       }
@@ -261,7 +264,20 @@ export class BadgesServices {
       false
     );
   }
- private async updateStatsForBadges(badges: any[]) {
+
+
+
+  private async updateCampaignInfo(badges: any[]) {
+
+    badges.forEach((badge) => {
+      const campaign = campaignsData.find(x => !!x.campaign_badges.find(x => x.id == badge.badgeId))
+      if (campaign) {
+        badge.moreInfo = campaign.more_info;
+      }
+    })
+  }
+
+  private async updateStatsForBadges(badges: any[]) {
     const stats = await this.getStatsForBadges();
     const accountQuantity = await this.getAccountQuantity();
     if (stats && stats.length > 0) {
@@ -275,9 +291,9 @@ export class BadgesServices {
           badge.statistics = badgeStats.map((stat) => ({
             totalClaimed: Number(stat.total_claimed ?? 0),
             tier: stat.tier,
-            percentage:accountQuantity > 0 ? Math.floor(
+            percentage: accountQuantity > 0 ? Math.floor(
               (Number(stat.total_claimed ?? 0) / Number(accountQuantity ?? 1)) *
-                100
+              100
             ) : 0,
           }));
         }
@@ -287,27 +303,27 @@ export class BadgesServices {
   }
 
   private setBadgeRewards(badges: any[]) {
-   badges.forEach((badge) => {
+    badges.forEach((badge) => {
 
-    const badgeInfo = this.badgesInfo.find(
-      (data) => data.badge_id == badge.badgeId
-    );
-    if (badgeInfo) {
-     badge.countUnit = badgeInfo.count_unit ??"";
-      badge.badgeTiers.forEach((tier) => {
-        const tierInfo = badgeInfo.tiers.find(
-          (data) => data.tier_id == tier.tier
-        );
-        if (tierInfo) {
-          tier.rewards = tierInfo;
+      const badgeInfo = this.badgesInfo.find(
+        (data) => data.badge_id == badge.badgeId
+      );
+      if (badgeInfo) {
+        badge.countUnit = badgeInfo.count_unit ?? "";
+        badge.badgeTiers.forEach((tier) => {
+          const tierInfo = badgeInfo.tiers.find(
+            (data) => data.tier_id == tier.tier
+          );
+          if (tierInfo) {
+            tier.rewards = tierInfo;
+          }
+        });
+
+        if (badgeInfo.token_badge) {
+          badge.tokenBadge = badgeInfo.token_badge_data;
         }
-      });
-
-      if(badgeInfo.token_badge) {
-        badge.tokenBadge = badgeInfo.token_badge_data;
       }
-    }
-   });
+    });
   }
 
   private async updateBadgeDataForAccount(
