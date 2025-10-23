@@ -2464,6 +2464,7 @@ export type BadgeMetadata = {
   "platform": string,
   "chain": string,
   "condition": string
+  "image" : string
 }
 
 export type GetUserBadgesQuery = {

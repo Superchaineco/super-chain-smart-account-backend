@@ -4,7 +4,7 @@
     "id": "superchain-eco-s8",
     "name": "Superchain Eco S8",
     "description": "This pilot campaign will test our new campaigns feature and reward the most active Super Users of Season 8 with a share of OP tokens provided by the Superchain Eco team.",
-    "start_date": "2025-10-22",
+    "start_date": "2025-10-20",
     "end_date": "2025-12-17",
     "network": ["optimism"],
     "banner": "/images/campaigns/superchain.png",
@@ -13,7 +13,7 @@
     "boosts": [],
     "campaign_reward": { "symbol": "OP", "amount": "10000" },
     "end_block": 145208650,
-    "start_block": 142746250,
+    "start_block": 141659900,
     "more_info":  "The Superchain Eco Season 8 Campaign is the first campaign to leverage the new campaign feature and will reward the most active Super Users of Season 8.\n\n**How to participate**  \nAll Season 8 badges included in this campaign allow you to earn Superchain Points that count toward this campaign's leaderboard. Follow the guidelines for each badge to earn them.\n\n**How rewards will be calculated**  \nAt the end of the campaign, a snapshot will be taken of the total Superchain Points per account in this campaign. This snapshot will be used to finalize a calculation that distributes the campaign budget to all participants. In this pilot campaign, only users with over 300 campaign-specific points will be eligible to receive rewards.",
     "campaign_badges": [
       {
