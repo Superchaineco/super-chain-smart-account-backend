@@ -2,7 +2,12 @@ query GetUserBadges($user: String!) {
   badges {
     badgeId
     uri
-    badgeTiers(orderBy: tier, orderDirection: asc)  {
+    perks {
+      id
+      tier
+      isCompleted
+    }
+    badgeTiers(orderBy: tier, orderDirection: asc) {
       points
       tier
       uri
@@ -14,10 +19,25 @@ query GetUserBadges($user: String!) {
     badge {
       badgeId
       uri
+      perks {
+        id
+        tier
+        isCompleted
+      }
       badgeTiers(orderBy: tier, orderDirection: asc) {
         points
         tier
         uri
+        perk {
+          id
+          badgeId
+          tier
+          token
+          amount
+          maxClaims
+          totalClaims
+          isCompleted
+        }
       }
     }
   }

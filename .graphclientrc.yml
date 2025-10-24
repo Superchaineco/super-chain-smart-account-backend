@@ -3,7 +3,7 @@ sources:
   - name: super-accounts
     handler:
       graphql:
-        endpoint: https://gateway.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/A8Hs1ciwnqsdR8owyFZ77GM5PEXpQBqUTEUpNcnUS6xt
+        endpoint: https://api.studio.thegraph.com/query/72352/super-accounts-staging/version/latest
 documents:
   - ./src/graphql/get-user-badges.gql
   - ./src/graphql/get-first-100-users-level-3.gql

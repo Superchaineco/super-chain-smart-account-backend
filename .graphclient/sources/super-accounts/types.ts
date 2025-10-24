@@ -141,6 +141,7 @@ export type Badge = {
   badgeId: Scalars['BigInt']['output'];
   uri: Scalars['String']['output'];
   badgeTiers: Array<BadgeTier>;
+  perks: Array<Perk>;
 };
 
 
@@ -152,12 +153,22 @@ export type BadgebadgeTiersArgs = {
   where?: InputMaybe<BadgeTier_filter>;
 };
 
+
+export type BadgeperksArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Perk_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Perk_filter>;
+};
+
 export type BadgeTier = {
   id: Scalars['String']['output'];
   points: Scalars['BigInt']['output'];
   tier: Scalars['BigInt']['output'];
   badge: Badge;
   uri: Scalars['String']['output'];
+  perk?: Maybe<Perk>;
 };
 
 export type BadgeTier_filter = {
@@ -238,6 +249,27 @@ export type BadgeTier_filter = {
   uri_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
   uri_not_ends_with?: InputMaybe<Scalars['String']['input']>;
   uri_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk?: InputMaybe<Scalars['String']['input']>;
+  perk_not?: InputMaybe<Scalars['String']['input']>;
+  perk_gt?: InputMaybe<Scalars['String']['input']>;
+  perk_lt?: InputMaybe<Scalars['String']['input']>;
+  perk_gte?: InputMaybe<Scalars['String']['input']>;
+  perk_lte?: InputMaybe<Scalars['String']['input']>;
+  perk_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  perk_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  perk_contains?: InputMaybe<Scalars['String']['input']>;
+  perk_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_contains?: InputMaybe<Scalars['String']['input']>;
+  perk_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_starts_with?: InputMaybe<Scalars['String']['input']>;
+  perk_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  perk_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_ends_with?: InputMaybe<Scalars['String']['input']>;
+  perk_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  perk_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_?: InputMaybe<Perk_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<BadgeTier_filter>>>;
@@ -252,7 +284,16 @@ export type BadgeTier_orderBy =
   | 'badge__id'
   | 'badge__badgeId'
   | 'badge__uri'
-  | 'uri';
+  | 'uri'
+  | 'perk'
+  | 'perk__id'
+  | 'perk__badgeId'
+  | 'perk__tier'
+  | 'perk__token'
+  | 'perk__amount'
+  | 'perk__maxClaims'
+  | 'perk__totalClaims'
+  | 'perk__isCompleted';
 
 export type Badge_filter = {
   id?: InputMaybe<Scalars['String']['input']>;
@@ -304,6 +345,7 @@ export type Badge_filter = {
   uri_not_ends_with?: InputMaybe<Scalars['String']['input']>;
   uri_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
   badgeTiers_?: InputMaybe<BadgeTier_filter>;
+  perks_?: InputMaybe<Perk_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Badge_filter>>>;
@@ -314,7 +356,8 @@ export type Badge_orderBy =
   | 'id'
   | 'badgeId'
   | 'uri'
-  | 'badgeTiers';
+  | 'badgeTiers'
+  | 'perks';
 
 export type BlockChangedFilter = {
   number_gte: Scalars['Int']['input'];
@@ -929,6 +972,306 @@ export type OwnerPopulationRemoved_orderBy =
   | 'superChainSmartAccount__level'
   | 'superChainSmartAccount__points';
 
+export type Perk = {
+  id: Scalars['String']['output'];
+  badgeId: Scalars['BigInt']['output'];
+  tier: Scalars['BigInt']['output'];
+  badge: Badge;
+  badgeTier: BadgeTier;
+  token: Scalars['Bytes']['output'];
+  amount: Scalars['BigInt']['output'];
+  maxClaims: Scalars['BigInt']['output'];
+  totalClaims: Scalars['BigInt']['output'];
+  isCompleted: Scalars['Boolean']['output'];
+  redemptions: Array<PerkRedemption>;
+  userClaims: Array<UserPerkClaim>;
+};
+
+
+export type PerkredemptionsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PerkRedemption_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<PerkRedemption_filter>;
+};
+
+
+export type PerkuserClaimsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<UserPerkClaim_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<UserPerkClaim_filter>;
+};
+
+export type PerkRedemption = {
+  id: Scalars['Bytes']['output'];
+  perk: Perk;
+  redeemer: Scalars['Bytes']['output'];
+  token: Scalars['Bytes']['output'];
+  amount: Scalars['BigInt']['output'];
+  blockNumber: Scalars['BigInt']['output'];
+  blockTimestamp: Scalars['BigInt']['output'];
+  transactionHash: Scalars['Bytes']['output'];
+};
+
+export type PerkRedemption_filter = {
+  id?: InputMaybe<Scalars['Bytes']['input']>;
+  id_not?: InputMaybe<Scalars['Bytes']['input']>;
+  id_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  id_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  id_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  id_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  perk?: InputMaybe<Scalars['String']['input']>;
+  perk_not?: InputMaybe<Scalars['String']['input']>;
+  perk_gt?: InputMaybe<Scalars['String']['input']>;
+  perk_lt?: InputMaybe<Scalars['String']['input']>;
+  perk_gte?: InputMaybe<Scalars['String']['input']>;
+  perk_lte?: InputMaybe<Scalars['String']['input']>;
+  perk_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  perk_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  perk_contains?: InputMaybe<Scalars['String']['input']>;
+  perk_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_contains?: InputMaybe<Scalars['String']['input']>;
+  perk_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_starts_with?: InputMaybe<Scalars['String']['input']>;
+  perk_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  perk_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_ends_with?: InputMaybe<Scalars['String']['input']>;
+  perk_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  perk_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_?: InputMaybe<Perk_filter>;
+  redeemer?: InputMaybe<Scalars['Bytes']['input']>;
+  redeemer_not?: InputMaybe<Scalars['Bytes']['input']>;
+  redeemer_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  redeemer_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  redeemer_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  redeemer_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  redeemer_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  redeemer_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  redeemer_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  redeemer_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  token?: InputMaybe<Scalars['Bytes']['input']>;
+  token_not?: InputMaybe<Scalars['Bytes']['input']>;
+  token_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  token_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  token_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  token_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  token_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  token_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  token_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  token_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  amount?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  blockTimestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  blockTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<PerkRedemption_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<PerkRedemption_filter>>>;
+};
+
+export type PerkRedemption_orderBy =
+  | 'id'
+  | 'perk'
+  | 'perk__id'
+  | 'perk__badgeId'
+  | 'perk__tier'
+  | 'perk__token'
+  | 'perk__amount'
+  | 'perk__maxClaims'
+  | 'perk__totalClaims'
+  | 'perk__isCompleted'
+  | 'redeemer'
+  | 'token'
+  | 'amount'
+  | 'blockNumber'
+  | 'blockTimestamp'
+  | 'transactionHash';
+
+export type Perk_filter = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badgeId?: InputMaybe<Scalars['BigInt']['input']>;
+  badgeId_not?: InputMaybe<Scalars['BigInt']['input']>;
+  badgeId_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  badgeId_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  badgeId_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  badgeId_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  badgeId_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  badgeId_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  tier?: InputMaybe<Scalars['BigInt']['input']>;
+  tier_not?: InputMaybe<Scalars['BigInt']['input']>;
+  tier_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  tier_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  tier_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  tier_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  tier_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  tier_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  badge?: InputMaybe<Scalars['String']['input']>;
+  badge_not?: InputMaybe<Scalars['String']['input']>;
+  badge_gt?: InputMaybe<Scalars['String']['input']>;
+  badge_lt?: InputMaybe<Scalars['String']['input']>;
+  badge_gte?: InputMaybe<Scalars['String']['input']>;
+  badge_lte?: InputMaybe<Scalars['String']['input']>;
+  badge_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  badge_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  badge_contains?: InputMaybe<Scalars['String']['input']>;
+  badge_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  badge_not_contains?: InputMaybe<Scalars['String']['input']>;
+  badge_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  badge_starts_with?: InputMaybe<Scalars['String']['input']>;
+  badge_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badge_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  badge_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badge_ends_with?: InputMaybe<Scalars['String']['input']>;
+  badge_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badge_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  badge_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badge_?: InputMaybe<Badge_filter>;
+  badgeTier?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_not?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_gt?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_lt?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_gte?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_lte?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  badgeTier_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  badgeTier_contains?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_not_contains?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_starts_with?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_ends_with?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  badgeTier_?: InputMaybe<BadgeTier_filter>;
+  token?: InputMaybe<Scalars['Bytes']['input']>;
+  token_not?: InputMaybe<Scalars['Bytes']['input']>;
+  token_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  token_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  token_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  token_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  token_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  token_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  token_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  token_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  amount?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  maxClaims?: InputMaybe<Scalars['BigInt']['input']>;
+  maxClaims_not?: InputMaybe<Scalars['BigInt']['input']>;
+  maxClaims_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  maxClaims_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  maxClaims_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  maxClaims_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  maxClaims_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  maxClaims_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  totalClaims?: InputMaybe<Scalars['BigInt']['input']>;
+  totalClaims_not?: InputMaybe<Scalars['BigInt']['input']>;
+  totalClaims_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalClaims_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalClaims_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalClaims_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalClaims_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  totalClaims_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  isCompleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isCompleted_not?: InputMaybe<Scalars['Boolean']['input']>;
+  isCompleted_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  isCompleted_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  redemptions_?: InputMaybe<PerkRedemption_filter>;
+  userClaims_?: InputMaybe<UserPerkClaim_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Perk_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Perk_filter>>>;
+};
+
+export type Perk_orderBy =
+  | 'id'
+  | 'badgeId'
+  | 'tier'
+  | 'badge'
+  | 'badge__id'
+  | 'badge__badgeId'
+  | 'badge__uri'
+  | 'badgeTier'
+  | 'badgeTier__id'
+  | 'badgeTier__points'
+  | 'badgeTier__tier'
+  | 'badgeTier__uri'
+  | 'token'
+  | 'amount'
+  | 'maxClaims'
+  | 'totalClaims'
+  | 'isCompleted'
+  | 'redemptions'
+  | 'userClaims';
+
 export type PointsIncremented = {
   id: Scalars['Bytes']['output'];
   recipient: Scalars['Bytes']['output'];
@@ -1067,12 +1410,18 @@ export type Query = {
   badgeTiers: Array<BadgeTier>;
   badge?: Maybe<Badge>;
   badges: Array<Badge>;
+  perk?: Maybe<Perk>;
+  perks: Array<Perk>;
   accountBadge?: Maybe<AccountBadge>;
   accountBadges: Array<AccountBadge>;
   tierTresholds?: Maybe<TierTresholds>;
   tierTresholds_collection: Array<TierTresholds>;
   levelClaim?: Maybe<LevelClaim>;
   levelClaims: Array<LevelClaim>;
+  perkRedemption?: Maybe<PerkRedemption>;
+  perkRedemptions: Array<PerkRedemption>;
+  userPerkClaim?: Maybe<UserPerkClaim>;
+  userPerkClaims: Array<UserPerkClaim>;
   meta?: Maybe<Meta>;
   metas: Array<Meta>;
   /** Access to subgraph metadata */
@@ -1224,6 +1573,24 @@ export type QuerybadgesArgs = {
 };
 
 
+export type QueryperkArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryperksArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Perk_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Perk_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type QueryaccountBadgeArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
@@ -1278,6 +1645,42 @@ export type QuerylevelClaimsArgs = {
 };
 
 
+export type QueryperkRedemptionArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryperkRedemptionsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PerkRedemption_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<PerkRedemption_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryuserPerkClaimArgs = {
+  id: Scalars['ID']['input'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryuserPerkClaimsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<UserPerkClaim_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<UserPerkClaim_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type QuerymetaArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
@@ -1297,256 +1700,6 @@ export type QuerymetasArgs = {
 
 
 export type Query_metaArgs = {
-  block?: InputMaybe<Block_height>;
-};
-
-export type Subscription = {
-  eip712DomainChanged?: Maybe<EIP712DomainChanged>;
-  eip712DomainChangeds: Array<EIP712DomainChanged>;
-  ownerAdded?: Maybe<OwnerAdded>;
-  ownerAddeds: Array<OwnerAdded>;
-  ownerPopulated?: Maybe<OwnerPopulated>;
-  ownerPopulateds: Array<OwnerPopulated>;
-  ownerPopulationRemoved?: Maybe<OwnerPopulationRemoved>;
-  ownerPopulationRemoveds: Array<OwnerPopulationRemoved>;
-  pointsIncremented?: Maybe<PointsIncremented>;
-  pointsIncrementeds: Array<PointsIncremented>;
-  superChainSmartAccount?: Maybe<SuperChainSmartAccount>;
-  superChainSmartAccounts: Array<SuperChainSmartAccount>;
-  badgeTier?: Maybe<BadgeTier>;
-  badgeTiers: Array<BadgeTier>;
-  badge?: Maybe<Badge>;
-  badges: Array<Badge>;
-  accountBadge?: Maybe<AccountBadge>;
-  accountBadges: Array<AccountBadge>;
-  tierTresholds?: Maybe<TierTresholds>;
-  tierTresholds_collection: Array<TierTresholds>;
-  levelClaim?: Maybe<LevelClaim>;
-  levelClaims: Array<LevelClaim>;
-  meta?: Maybe<Meta>;
-  metas: Array<Meta>;
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-};
-
-
-export type Subscriptioneip712DomainChangedArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type Subscriptioneip712DomainChangedsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<EIP712DomainChanged_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<EIP712DomainChanged_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionownerAddedArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionownerAddedsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<OwnerAdded_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<OwnerAdded_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionownerPopulatedArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionownerPopulatedsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<OwnerPopulated_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<OwnerPopulated_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionownerPopulationRemovedArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionownerPopulationRemovedsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<OwnerPopulationRemoved_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<OwnerPopulationRemoved_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionpointsIncrementedArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionpointsIncrementedsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PointsIncremented_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<PointsIncremented_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionsuperChainSmartAccountArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionsuperChainSmartAccountsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<SuperChainSmartAccount_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<SuperChainSmartAccount_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionbadgeTierArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionbadgeTiersArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<BadgeTier_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<BadgeTier_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionbadgeArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionbadgesArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Badge_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Badge_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionaccountBadgeArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionaccountBadgesArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<AccountBadge_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<AccountBadge_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontierTresholdsArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontierTresholds_collectionArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<TierTresholds_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TierTresholds_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionlevelClaimArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionlevelClaimsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<LevelClaim_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<LevelClaim_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionmetaArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionmetasArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Meta_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Meta_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type Subscription_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
 
@@ -1776,6 +1929,111 @@ export type TierTresholds_orderBy =
   | 'id'
   | 'tresholds';
 
+export type UserPerkClaim = {
+  id: Scalars['String']['output'];
+  user: Scalars['Bytes']['output'];
+  perk: Perk;
+  isClaimed: Scalars['Boolean']['output'];
+  claimedAt?: Maybe<Scalars['BigInt']['output']>;
+  transactionHash?: Maybe<Scalars['Bytes']['output']>;
+};
+
+export type UserPerkClaim_filter = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['Bytes']['input']>;
+  user_not?: InputMaybe<Scalars['Bytes']['input']>;
+  user_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  user_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  user_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  user_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  user_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  user_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  user_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  user_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  perk?: InputMaybe<Scalars['String']['input']>;
+  perk_not?: InputMaybe<Scalars['String']['input']>;
+  perk_gt?: InputMaybe<Scalars['String']['input']>;
+  perk_lt?: InputMaybe<Scalars['String']['input']>;
+  perk_gte?: InputMaybe<Scalars['String']['input']>;
+  perk_lte?: InputMaybe<Scalars['String']['input']>;
+  perk_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  perk_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  perk_contains?: InputMaybe<Scalars['String']['input']>;
+  perk_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_contains?: InputMaybe<Scalars['String']['input']>;
+  perk_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_starts_with?: InputMaybe<Scalars['String']['input']>;
+  perk_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  perk_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_ends_with?: InputMaybe<Scalars['String']['input']>;
+  perk_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  perk_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  perk_?: InputMaybe<Perk_filter>;
+  isClaimed?: InputMaybe<Scalars['Boolean']['input']>;
+  isClaimed_not?: InputMaybe<Scalars['Boolean']['input']>;
+  isClaimed_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  isClaimed_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  claimedAt?: InputMaybe<Scalars['BigInt']['input']>;
+  claimedAt_not?: InputMaybe<Scalars['BigInt']['input']>;
+  claimedAt_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  claimedAt_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  claimedAt_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  claimedAt_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  claimedAt_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  claimedAt_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<UserPerkClaim_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<UserPerkClaim_filter>>>;
+};
+
+export type UserPerkClaim_orderBy =
+  | 'id'
+  | 'user'
+  | 'perk'
+  | 'perk__id'
+  | 'perk__badgeId'
+  | 'perk__tier'
+  | 'perk__token'
+  | 'perk__amount'
+  | 'perk__maxClaims'
+  | 'perk__totalClaims'
+  | 'perk__isCompleted'
+  | 'isClaimed'
+  | 'claimedAt'
+  | 'transactionHash';
+
 export type _Block_ = {
   /** The hash of the block */
   hash?: Maybe<Scalars['Bytes']['output']>;
@@ -1794,7 +2052,6 @@ export type _Meta_ = {
    * will be null if the _meta field has a block constraint that asks for
    * a block number. It will be filled if the _meta field has no block constraint
    * and therefore asks for the latest  block
-   *
    */
   block: _Block_;
   /** The deployment ID */
@@ -1843,6 +2100,10 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   badges: InContextSdkMethod<Query['badges'], QuerybadgesArgs, MeshContext>,
   /** null **/
+  perk: InContextSdkMethod<Query['perk'], QueryperkArgs, MeshContext>,
+  /** null **/
+  perks: InContextSdkMethod<Query['perks'], QueryperksArgs, MeshContext>,
+  /** null **/
   accountBadge: InContextSdkMethod<Query['accountBadge'], QueryaccountBadgeArgs, MeshContext>,
   /** null **/
   accountBadges: InContextSdkMethod<Query['accountBadges'], QueryaccountBadgesArgs, MeshContext>,
@@ -1854,6 +2115,14 @@ export type _SubgraphErrorPolicy_ =
   levelClaim: InContextSdkMethod<Query['levelClaim'], QuerylevelClaimArgs, MeshContext>,
   /** null **/
   levelClaims: InContextSdkMethod<Query['levelClaims'], QuerylevelClaimsArgs, MeshContext>,
+  /** null **/
+  perkRedemption: InContextSdkMethod<Query['perkRedemption'], QueryperkRedemptionArgs, MeshContext>,
+  /** null **/
+  perkRedemptions: InContextSdkMethod<Query['perkRedemptions'], QueryperkRedemptionsArgs, MeshContext>,
+  /** null **/
+  userPerkClaim: InContextSdkMethod<Query['userPerkClaim'], QueryuserPerkClaimArgs, MeshContext>,
+  /** null **/
+  userPerkClaims: InContextSdkMethod<Query['userPerkClaims'], QueryuserPerkClaimsArgs, MeshContext>,
   /** null **/
   meta: InContextSdkMethod<Query['meta'], QuerymetaArgs, MeshContext>,
   /** null **/
@@ -1867,56 +2136,7 @@ export type _SubgraphErrorPolicy_ =
   };
 
   export type SubscriptionSdk = {
-      /** null **/
-  eip712DomainChanged: InContextSdkMethod<Subscription['eip712DomainChanged'], Subscriptioneip712DomainChangedArgs, MeshContext>,
-  /** null **/
-  eip712DomainChangeds: InContextSdkMethod<Subscription['eip712DomainChangeds'], Subscriptioneip712DomainChangedsArgs, MeshContext>,
-  /** null **/
-  ownerAdded: InContextSdkMethod<Subscription['ownerAdded'], SubscriptionownerAddedArgs, MeshContext>,
-  /** null **/
-  ownerAddeds: InContextSdkMethod<Subscription['ownerAddeds'], SubscriptionownerAddedsArgs, MeshContext>,
-  /** null **/
-  ownerPopulated: InContextSdkMethod<Subscription['ownerPopulated'], SubscriptionownerPopulatedArgs, MeshContext>,
-  /** null **/
-  ownerPopulateds: InContextSdkMethod<Subscription['ownerPopulateds'], SubscriptionownerPopulatedsArgs, MeshContext>,
-  /** null **/
-  ownerPopulationRemoved: InContextSdkMethod<Subscription['ownerPopulationRemoved'], SubscriptionownerPopulationRemovedArgs, MeshContext>,
-  /** null **/
-  ownerPopulationRemoveds: InContextSdkMethod<Subscription['ownerPopulationRemoveds'], SubscriptionownerPopulationRemovedsArgs, MeshContext>,
-  /** null **/
-  pointsIncremented: InContextSdkMethod<Subscription['pointsIncremented'], SubscriptionpointsIncrementedArgs, MeshContext>,
-  /** null **/
-  pointsIncrementeds: InContextSdkMethod<Subscription['pointsIncrementeds'], SubscriptionpointsIncrementedsArgs, MeshContext>,
-  /** null **/
-  superChainSmartAccount: InContextSdkMethod<Subscription['superChainSmartAccount'], SubscriptionsuperChainSmartAccountArgs, MeshContext>,
-  /** null **/
-  superChainSmartAccounts: InContextSdkMethod<Subscription['superChainSmartAccounts'], SubscriptionsuperChainSmartAccountsArgs, MeshContext>,
-  /** null **/
-  badgeTier: InContextSdkMethod<Subscription['badgeTier'], SubscriptionbadgeTierArgs, MeshContext>,
-  /** null **/
-  badgeTiers: InContextSdkMethod<Subscription['badgeTiers'], SubscriptionbadgeTiersArgs, MeshContext>,
-  /** null **/
-  badge: InContextSdkMethod<Subscription['badge'], SubscriptionbadgeArgs, MeshContext>,
-  /** null **/
-  badges: InContextSdkMethod<Subscription['badges'], SubscriptionbadgesArgs, MeshContext>,
-  /** null **/
-  accountBadge: InContextSdkMethod<Subscription['accountBadge'], SubscriptionaccountBadgeArgs, MeshContext>,
-  /** null **/
-  accountBadges: InContextSdkMethod<Subscription['accountBadges'], SubscriptionaccountBadgesArgs, MeshContext>,
-  /** null **/
-  tierTresholds: InContextSdkMethod<Subscription['tierTresholds'], SubscriptiontierTresholdsArgs, MeshContext>,
-  /** null **/
-  tierTresholds_collection: InContextSdkMethod<Subscription['tierTresholds_collection'], SubscriptiontierTresholds_collectionArgs, MeshContext>,
-  /** null **/
-  levelClaim: InContextSdkMethod<Subscription['levelClaim'], SubscriptionlevelClaimArgs, MeshContext>,
-  /** null **/
-  levelClaims: InContextSdkMethod<Subscription['levelClaims'], SubscriptionlevelClaimsArgs, MeshContext>,
-  /** null **/
-  meta: InContextSdkMethod<Subscription['meta'], SubscriptionmetaArgs, MeshContext>,
-  /** null **/
-  metas: InContextSdkMethod<Subscription['metas'], SubscriptionmetasArgs, MeshContext>,
-  /** Access to subgraph metadata **/
-  _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
+    
   };
 
   export type Context = {
