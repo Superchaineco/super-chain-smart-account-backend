@@ -3,10 +3,7 @@
     "badge_id": "1",
     "token_badge": true,
     "count_unit": "transactions",
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "15"
-    },
+    "token_badge_data":null,
     "tiers": [
       {
         "tier_id": "1",
@@ -39,7 +36,10 @@
     "badge_id": "2",
     "token_badge": false,
     "count_unit": "transactions",
-    "token_badge_data": null,
+    "token_badge_data":  {
+      "symbol": "USDC",
+      "amount": "0.000010"
+    },
     "tiers": []
   },
   {
