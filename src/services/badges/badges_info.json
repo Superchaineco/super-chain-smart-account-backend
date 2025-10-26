@@ -1,52 +1,171 @@
 [
-    {
-     
-        "badge_id": "1",
-        "token_badge": true,
-        "count_unit ": "",
-        "token_badge_data": {
-            "symbol": "USDC",
-            "amount": "15"
-        },
-        "tiers":[
-            {
-                "tier_id": "1",
-                "symbol": "USDC",
-                "amount": "12"
-            },
-            {
-                "tier_id": "2",
-                "symbol": "USDC",
-                "amount": "15"
-            },
-            {
-                "tier_id": "3",
-                "symbol": "USDT",
-                "amount": "18"
-            },
-            {
-                "tier_id": "4",
-                "symbol": "POL",
-                "amount": "11.44916188"
-            },
-            {
-                "tier_id": "5",
-                "symbol": "ETH",
-                "amount": "20"
-            }
-        ]
+  {
+    "badge_id": "1",
+    "token_badge": true,
+    "count_unit ": "transactions",
+    "token_badge_data": {
+      "symbol": "USDC",
+      "amount": "15"
     },
-    {
-        "badge_id": "2",
-        "token_badge": false,
-        "count_unit ": "",
-        "token_badge_data": null,
-        "tiers":[
-            {
-                "tier_id": "1",
-                "symbol": "USDC",
-                "amount": "12"
-            }
-        ]
-    }
+    "tiers": [
+      {
+        "tier_id": "1",
+        "symbol": "USDC",
+        "amount": "12"
+      },
+      {
+        "tier_id": "2",
+        "symbol": "USDC",
+        "amount": "15"
+      },
+      {
+        "tier_id": "3",
+        "symbol": "USDC",
+        "amount": "18"
+      },
+      {
+        "tier_id": "4",
+        "symbol": "USDC",
+        "amount": "20"
+      },
+      {
+        "tier_id": "5",
+        "symbol": "USDC",
+        "amount": "25"
+      }
+    ]
+  },
+  {
+    "badge_id": "2",
+    "token_badge": false,
+    "count_unit ": "transactions",
+    "token_badge_data": null,
+    "tiers": [
+      {
+        "tier_id": "1",
+        "symbol": "USDC",
+        "amount": "12"
+      }
+    ]
+  },
+  {
+    "badge_id": "3",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "4",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "5",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "6",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "7",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "8",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "9",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "10",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "11",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "12",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "13",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "14",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "15",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "16",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "17",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "18",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "19",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "20",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "21",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "22",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "23",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "24",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "25",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  },
+  {
+    "badge_id": "26",
+    "token_badge": false,
+    "count_unit ": "transactions"
+  }
 ]
