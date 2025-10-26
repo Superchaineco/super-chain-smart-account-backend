@@ -44,6 +44,7 @@ const config = {
 
 import SuperChainModuleABI from './abi/SuperChainModule.json';
 import SunnyAirdropABI from './abi/SunnyAirdrop.json';
+import RedeemPerkABI from './abi/RedeemPerk.json';
 export const SUPER_CHAIN_MODULE_ABI = SuperChainModuleABI;
 export const SUNNY_AIRDROP_ABI = SunnyAirdropABI;
 export const SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS =
@@ -90,3 +91,5 @@ export const WORLD_ID_APP_ID = process.env.WORLD_ID_APP_ID ?? ''
 export const WORLD_ID_ACTION = process.env.WORLD_ID_ACTION ?? ''
 export const WORLD_ID_SIGNAL = process.env.WORLD_ID_SIGNAL ?? ''
 export const DATABASE_URL = process.env.DATABASE_URL ?? ''
+export const ECO_ACCOUNTS_PERKS_ADDRESS = process.env.ECO_ACCOUNTS_PERKS_ADDRESS;
+export const REDEEM_PERK_ABI = RedeemPerkABI;

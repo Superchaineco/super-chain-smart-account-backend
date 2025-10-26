@@ -44,21 +44,21 @@ export async function claimBadges(req: Request, res: Response) {
     const tokenFromFrontend = req.body.captchaToken;
     const ipAddress = req.ip;
     let isHuman = false
-    if (tokenFromFrontend) {
-      const captchaRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          secret: TURNSTILE_SECRET_KEY!,
-          response: tokenFromFrontend,
-          remoteip: ipAddress,
-        }),
-      });
+     if (tokenFromFrontend) {
+       const captchaRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+         method: "POST",
+         headers: { "Content-Type": "application/x-www-form-urlencoded" },
+         body: new URLSearchParams({
+           secret: TURNSTILE_SECRET_KEY!,
+           response: tokenFromFrontend,
+           remoteip: ipAddress,
+         }),
+       });
 
-      const data = await captchaRes.json();
-      console.log("Captcha ", account, ' isHuman: ', data.success)
-      isHuman = data.success
-    }
+       const data = await captchaRes.json();
+       console.log("Captcha ", account, ' isHuman: ', data.success)
+       isHuman = data.success
+     }
 
 
     const badgesService = new BadgesServices();
@@ -68,20 +68,17 @@ export async function claimBadges(req: Request, res: Response) {
 
     const totalPoints = badgesService.getTotalPoints(badges);
     const badgeUpdates = badgesService.getBadgeUpdates(badges).filter((b) => !(b.badgeId.toString() == '11' && b.level > 1));
+    const badgesToPerk = badges.filter((b) => b.claimable == true);
 
-
-    const response = await attestQueueService.queueAndWait({
+    const attestData = {
       account,
       totalPoints,
       badges,
       badgeUpdates,
-    }, isHuman);
-    // const response = await attestationsService.attest(
-    //     account,
-    //     totalPoints,
-    //     badges,
-    //     badgeUpdates,
-    // );
+      badgesToPerk,
+    }
+
+    const response = await attestQueueService.queueAndWait(attestData, isHuman);
     const cacheKey = `user_badges:${account}`;
     await redisService.deleteCachedData(cacheKey);
 

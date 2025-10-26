@@ -143,11 +143,19 @@ export class BadgesServices {
     }));
 
     const activeBadges = [
-      ...(data?.accountBadges ?? []).map((badge) => ({
-        ...badge,
-        tier: parseInt(badge.tier),
-        points: parseInt(badge.points),
-      })),
+      ...(data?.accountBadges ?? []).map((badge) => {
+        
+        //verify if any perk has claimable = true
+        const hasClaimablePerk = badge.badge.perks?.some((perk: any) => perk?.claimable === true) ?? false;
+        
+        return {
+          ...badge,
+          tier: parseInt(badge.tier),
+          points: parseInt(badge.points),
+          //set claimable based on perks if exists
+          claimable: hasClaimablePerk,
+        };
+      }),
       ...unclaimedBadges,
     ] as Badge[];
     const promises = activeBadges.flatMap((badge) =>
@@ -309,7 +317,7 @@ export class BadgesServices {
         (data) => data.badge_id == badge.badgeId
       );
       if (badgeInfo) {
-        badge.countUnit = badgeInfo.count_unit ?? "";
+        badge.countUnit = badgeInfo.count_unit;
         badge.badgeTiers.forEach((tier) => {
           const tierInfo = badgeInfo.tiers.find(
             (data) => data.tier_id == tier.tier
@@ -340,6 +348,11 @@ export class BadgesServices {
         badgeData,
         account
       );
+
+      if(badgeResponse.claimable && !badgeResponse.claimable) {
+        this.setClaimableBadgeByPerks([badgeResponse]);
+      }
+
       this.badges.push(badgeResponse);
     } catch (error) {
       console.error(
