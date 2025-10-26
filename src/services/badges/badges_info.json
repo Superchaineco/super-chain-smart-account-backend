@@ -34,7 +34,7 @@
   },
   {
     "badge_id": "2",
-    "token_badge": false,
+    "token_badge": true,
     "count_unit": "transactions",
     "token_badge_data":  {
       "symbol": "USDC",
