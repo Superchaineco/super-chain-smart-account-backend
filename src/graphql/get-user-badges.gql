@@ -6,6 +6,8 @@ query GetUserBadges($user: String!) {
       id
       tier
       isCompleted
+      maxClaims
+      amount
     }
     badgeTiers(orderBy: tier, orderDirection: asc) {
       points

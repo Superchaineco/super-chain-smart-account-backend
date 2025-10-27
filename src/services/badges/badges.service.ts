@@ -327,8 +327,12 @@ export class BadgesServices {
           }
         });
 
-        if (badgeInfo.token_badge) {
+        if (badgeInfo.token_badge && badgeInfo.token_badge_data) {
+          const tokenBadgeData = badge.perks?.find(x => x.badgeId == badge.badgeId && x.tier == 0);
+
           badge.tokenBadge = badgeInfo.token_badge_data;
+          
+          badge.tokenBadge.maxClaims = tokenBadgeData && tokenBadgeData!=null ? Number(tokenBadgeData?.maxClaims) : 0;
         }
       }
     });

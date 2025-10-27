@@ -2613,7 +2613,7 @@ const superAccountsTransforms = [];
 const additionalTypeDefs = [] as any[];
 const superAccountsHandler = new GraphqlHandler({
               name: "super-accounts",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/72352/super-accounts-staging/v1.2.3"},
+              config: {"endpoint":"https://api.studio.thegraph.com/query/72352/super-accounts-staging/version/latest"},
               baseDir,
               cache,
               pubsub,
@@ -2635,7 +2635,7 @@ const merger = new(BareMerger as any)({
       })
 const documentHashMap = {
         "65143bb646393bbde5847f63fbd865c36d2a3e1e13d9dabc2786c3108710857d": GetFirst100UsersLevel3Document,
-"1cd45e38746493eef15f98883c8ad11905436d2fc2d3f498192c0da1c8718fff": GetUserBadgesDocument
+"7442a5d5aece2a8d4b79b79ad9c9c88e06dcba1b1ce1d4bd1d7b166a57911716": GetUserBadgesDocument
       }
 additionalEnvelopPlugins.push(usePersistedOperations({
         getPersistedOperation(key) {
@@ -2669,7 +2669,7 @@ additionalEnvelopPlugins.push(usePersistedOperations({
           return printWithCache(GetUserBadgesDocument);
         },
         location: 'GetUserBadgesDocument.graphql',
-        sha256Hash: '1cd45e38746493eef15f98883c8ad11905436d2fc2d3f498192c0da1c8718fff'
+        sha256Hash: '7442a5d5aece2a8d4b79b79ad9c9c88e06dcba1b1ce1d4bd1d7b166a57911716'
       }
     ];
     },
@@ -2739,7 +2739,7 @@ export type GetUserBadgesQueryVariables = Exact<{
 
 export type GetUserBadgesQuery = { badges: Array<(
     Pick<Badge, 'badgeId' | 'uri'>
-    & { perks: Array<Pick<Perk, 'id' | 'tier' | 'isCompleted'>>, badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'>> }
+    & { perks: Array<Pick<Perk, 'id' | 'tier' | 'isCompleted' | 'maxClaims' | 'amount'>>, badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'>> }
   )>, accountBadges: Array<(
     Pick<AccountBadge, 'points' | 'tier'>
     & { badge: (
@@ -2777,6 +2777,8 @@ export const GetUserBadgesDocument = gql`
       id
       tier
       isCompleted
+      maxClaims
+      amount
     }
     badgeTiers(orderBy: tier, orderDirection: asc) {
       points

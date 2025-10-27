@@ -14,4 +14,5 @@ export type BadgeTier = CriptoCurrency & {
 export type CriptoCurrency = {
   symbol: string;
   amount: string;
+  maxClaims?: number;
 };
