@@ -54,6 +54,16 @@ export type AccountBadge = {
   badge: Badge;
   tier: Scalars['BigInt']['output'];
   points: Scalars['BigInt']['output'];
+  perkClaims: Array<UserPerkClaim>;
+};
+
+
+export type AccountBadgeperkClaimsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<UserPerkClaim_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<UserPerkClaim_filter>;
 };
 
 export type AccountBadge_filter = {
@@ -125,6 +135,7 @@ export type AccountBadge_filter = {
   points_lte?: InputMaybe<Scalars['BigInt']['input']>;
   points_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   points_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  perkClaims_?: InputMaybe<UserPerkClaim_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<AccountBadge_filter>>>;
@@ -153,7 +164,8 @@ export type AccountBadge_orderBy =
   | 'badge__badgeId'
   | 'badge__uri'
   | 'tier'
-  | 'points';
+  | 'points'
+  | 'perkClaims';
 
 export type Aggregation_interval =
   | 'hour'
@@ -996,11 +1008,11 @@ export type OwnerPopulationRemoved_orderBy =
   | 'superChainSmartAccount__points';
 
 export type Perk = {
-  id: Scalars['String']['output'];
+  id: Scalars['Bytes']['output'];
   badgeId: Scalars['BigInt']['output'];
   tier: Scalars['BigInt']['output'];
   badge: Badge;
-  badgeTier: BadgeTier;
+  badgeTier?: Maybe<BadgeTier>;
   token: Scalars['Bytes']['output'];
   amount: Scalars['BigInt']['output'];
   maxClaims: Scalars['BigInt']['output'];
@@ -1150,26 +1162,16 @@ export type PerkRedemption_orderBy =
   | 'transactionHash';
 
 export type Perk_filter = {
-  id?: InputMaybe<Scalars['String']['input']>;
-  id_not?: InputMaybe<Scalars['String']['input']>;
-  id_gt?: InputMaybe<Scalars['String']['input']>;
-  id_lt?: InputMaybe<Scalars['String']['input']>;
-  id_gte?: InputMaybe<Scalars['String']['input']>;
-  id_lte?: InputMaybe<Scalars['String']['input']>;
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  id_contains?: InputMaybe<Scalars['String']['input']>;
-  id_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_not_contains?: InputMaybe<Scalars['String']['input']>;
-  id_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_starts_with?: InputMaybe<Scalars['String']['input']>;
-  id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  id_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_ends_with?: InputMaybe<Scalars['String']['input']>;
-  id_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  id_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['Bytes']['input']>;
+  id_not?: InputMaybe<Scalars['Bytes']['input']>;
+  id_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  id_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  id_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  id_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
   badgeId?: InputMaybe<Scalars['BigInt']['input']>;
   badgeId_not?: InputMaybe<Scalars['BigInt']['input']>;
   badgeId_gt?: InputMaybe<Scalars['BigInt']['input']>;
@@ -1956,6 +1958,7 @@ export type UserPerkClaim = {
   id: Scalars['String']['output'];
   user: Scalars['Bytes']['output'];
   perk: Perk;
+  accountBadge?: Maybe<AccountBadge>;
   isClaimed: Scalars['Boolean']['output'];
   claimedAt?: Maybe<Scalars['BigInt']['output']>;
   transactionHash?: Maybe<Scalars['Bytes']['output']>;
@@ -2013,6 +2016,27 @@ export type UserPerkClaim_filter = {
   perk_not_ends_with?: InputMaybe<Scalars['String']['input']>;
   perk_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
   perk_?: InputMaybe<Perk_filter>;
+  accountBadge?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_gt?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_lt?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_gte?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_lte?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  accountBadge_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  accountBadge_contains?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_contains?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_starts_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_ends_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_?: InputMaybe<AccountBadge_filter>;
   isClaimed?: InputMaybe<Scalars['Boolean']['input']>;
   isClaimed_not?: InputMaybe<Scalars['Boolean']['input']>;
   isClaimed_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
@@ -2053,6 +2077,10 @@ export type UserPerkClaim_orderBy =
   | 'perk__maxClaims'
   | 'perk__totalClaims'
   | 'perk__isCompleted'
+  | 'accountBadge'
+  | 'accountBadge__id'
+  | 'accountBadge__tier'
+  | 'accountBadge__points'
   | 'isClaimed'
   | 'claimedAt'
   | 'transactionHash';
@@ -2311,6 +2339,7 @@ export type AccountBadgeResolvers<ContextType = MeshContext, ParentType extends 
   badge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType>;
   tier?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   points?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  perkClaims?: Resolver<Array<ResolversTypes['UserPerkClaim']>, ParentType, ContextType, RequireFields<AccountBadgeperkClaimsArgs, 'skip' | 'first'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2408,11 +2437,11 @@ export type OwnerPopulationRemovedResolvers<ContextType = MeshContext, ParentTyp
 }>;
 
 export type PerkResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Perk'] = ResolversParentTypes['Perk']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   badgeId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   tier?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   badge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType>;
-  badgeTier?: Resolver<ResolversTypes['BadgeTier'], ParentType, ContextType>;
+  badgeTier?: Resolver<Maybe<ResolversTypes['BadgeTier']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   maxClaims?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2515,6 +2544,7 @@ export type UserPerkClaimResolvers<ContextType = MeshContext, ParentType extends
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   perk?: Resolver<ResolversTypes['Perk'], ParentType, ContextType>;
+  accountBadge?: Resolver<Maybe<ResolversTypes['AccountBadge']>, ParentType, ContextType>;
   isClaimed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   claimedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   transactionHash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
