@@ -15,7 +15,7 @@ export const getCampaigns = async (req, res) => {
     // Obtener los datos una sola vez
     const eoas = await superChainAccountService.getEOAS(account);
     const badgesService = new BadgesServices();
-    const userBadges = await badgesService.getBadges(eoas, account);
+    const userBadges = await badgesService.getCachedBadges(account);
 
 
     const superAccountLevel = await superChainAccountService.getAccountLevel(
