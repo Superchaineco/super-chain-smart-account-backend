@@ -165,7 +165,7 @@ export class AttestQueueService {
             if (existing && (isDone || isFailed) || !existing) {
                 const perks = d.badgesToPerk.map((d) => ({
                     badgeId: d.badgeId,
-                    tier: d.level,
+                    tier: d.level??0,
                 }));
 
                 if (perks.length === 0) {
