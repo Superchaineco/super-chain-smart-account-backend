@@ -145,15 +145,11 @@ export class BadgesServices {
     const activeBadges = [
       ...(data?.accountBadges ?? []).map((badge) => {
         
-        //verify if any perk has claimable = true
-        const hasClaimablePerk = badge.badge.perks?.some((perk: any) => perk?.claimable === true) ?? false;
-        
+            
         return {
           ...badge,
           tier: parseInt(badge.tier),
           points: parseInt(badge.points),
-          //set claimable based on perks if exists
-          claimable: hasClaimablePerk,
         };
       }),
       ...unclaimedBadges,
@@ -328,7 +324,7 @@ export class BadgesServices {
         });
 
         if (badgeInfo.token_badge && badgeInfo.token_badge_data) {
-          const tokenBadgeData = badge.perks?.find(x => x.badgeId == badge.badgeId && x.tier == 0);
+          const tokenBadgeData = badge.perks?.find(x => x.tier == 0);
 
           badge.tokenBadge = badgeInfo.token_badge_data;
           
@@ -352,10 +348,6 @@ export class BadgesServices {
         badgeData,
         account
       );
-
-      if(badgeResponse.claimable && !badgeResponse.claimable) {
-        this.setClaimableBadgeByPerks([badgeResponse]);
-      }
 
       this.badges.push(badgeResponse);
     } catch (error) {
