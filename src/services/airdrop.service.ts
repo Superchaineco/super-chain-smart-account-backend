@@ -3,8 +3,8 @@ import { Pool, QueryResult } from "pg";
 import { redisService } from "./redis.service";
 import {
   JSON_RPC_PROVIDER,
-  SUNNY_AIRDROP_ABI,
-  SUNNY_AIRDROP_ADDRESS,
+  SUPERCHAIN_ECO_AIRDROP_ADDRESS,
+  SUPERCHAIN_ECO_AIRDROP_ABI,
 } from "@/config/superChain/constants";
 
 // -----------------------------
@@ -81,7 +81,7 @@ export class AirdropService {
       });
 
     const provider = new JsonRpcProvider(JSON_RPC_PROVIDER);
-    this.airdropContract = new Contract(SUNNY_AIRDROP_ADDRESS, SUNNY_AIRDROP_ABI, provider);
+    this.airdropContract = new Contract(SUPERCHAIN_ECO_AIRDROP_ADDRESS, SUPERCHAIN_ECO_AIRDROP_ABI, provider);
   }
 
   // ---------------------------
@@ -95,9 +95,9 @@ export class AirdropService {
   // ---------------------------
   // Public: On-chain check
   // ---------------------------
-  public async isAirdropClaimed(account: string, tokenAddress: string): Promise<boolean> {
+  public async isAirdropClaimed(account: string, tokenAddress: string, conditionId: number): Promise<boolean> {
     // Adjust the third param (conditionId) if needed
-    return await this.airdropContract.isClaimed(account, tokenAddress, 0);
+    return await this.airdropContract.isClaimed(account, tokenAddress, conditionId);
   }
 
   // ---------------------------
@@ -136,7 +136,7 @@ RETURNING ar.hash;
   }
 
   /** Fetch latest airdrop row for an account and shape the API response. */
-  public async fetchAirdropForAccount(input: FetchAirdropForAccountInput): Promise<GetAirdropResponse> {
+  public async fetchAirdropForAccount(input: FetchAirdropForAccountInput, conditionId: number): Promise<GetAirdropResponse> {
     const { account } = input;
     const { addrBuf } = normalizeAccountToBytea(account);
 
@@ -183,7 +183,7 @@ RETURNING ar.hash;
     const amount: string = String(row.amount ?? "0");
     const tokenForClaimCheck = row.token_address_hex;
     // On-chain claimed check (keep exact behavior)
-    const isClaimed: boolean = await this.isAirdropClaimed(account, tokenForClaimCheck);
+    const isClaimed: boolean = await this.isAirdropClaimed(account, tokenForClaimCheck, conditionId);
 
     const eligible: boolean = !!amount && amount !== "0";
 

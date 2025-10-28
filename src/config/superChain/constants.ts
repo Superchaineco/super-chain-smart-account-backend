@@ -37,6 +37,7 @@ const config = {
   DOMAIN: process.env.DOMAIN, // "https://account.superchain.eco",
   REDIS: process.env.REDIS_URL,
   SUNNY_AIRDROP_ADDRESS: '0x89622D291439Bf4deD4264169AD4530363a023Cb',
+
   SUNNY_TOKEN_ADDRESS: '0x2ee45205567ae257e9a21755d4db02afacb555e4',
   SAFE_ADDRESS: process.env.SAFE_ADDRESS, //"0x54efe9c4d7D91E2690f257A7855AAD4b21e20745"
 }; //,
@@ -45,6 +46,7 @@ const config = {
 import SuperChainModuleABI from './abi/SuperChainModule.json';
 import SunnyAirdropABI from './abi/SunnyAirdrop.json';
 import RedeemPerkABI from './abi/RedeemPerk.json';
+import SA_AirdropABI from './abi/SA_Airdrop.json';
 export const SUPER_CHAIN_MODULE_ABI = SuperChainModuleABI;
 export const SUNNY_AIRDROP_ABI = SunnyAirdropABI;
 export const SUPER_CHAIN_ACCOUNT_MODULE_ADDRESS =
@@ -93,3 +95,5 @@ export const WORLD_ID_SIGNAL = process.env.WORLD_ID_SIGNAL ?? ''
 export const DATABASE_URL = process.env.DATABASE_URL ?? ''
 export const ECO_ACCOUNTS_PERKS_ADDRESS = process.env.ECO_ACCOUNTS_PERKS_ADDRESS;
 export const REDEEM_PERK_ABI = RedeemPerkABI;
+export const SUPERCHAIN_ECO_AIRDROP_ADDRESS =  process.env.SUPERCHAIN_ECO_AIRDROP_ADDRESS;
+export const SUPERCHAIN_ECO_AIRDROP_ABI = SA_AirdropABI;

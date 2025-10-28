@@ -194,8 +194,8 @@ export async function getCampaignDetailsWithData(
 
   const airDropService = new AirdropService()
   const airDropReward = await airDropService.fetchAirdropForAccount({
-    account: account || ''
-  })
+    account: account || '',
+  }, campaign.airdrop_condition_id)
 
 
   let totalBoost = 0;
@@ -231,6 +231,7 @@ export async function getCampaignDetailsWithData(
     description: campaign.description,
     banner: campaign.banner,
     network: campaign.network,
+    claimed: airDropReward.claimed,
     start_date: campaign.start_date,
     end_date: campaign.end_date,
     participate_description: campaign.participate_description,

@@ -48,7 +48,7 @@ export async function getAirdrop(req: Request, res: Response) {
   try {
     const response = await service.fetchAirdropForAccount({
       account
-    });
+    }, 1);
 
     return res.status(200).json(response);
   } catch (error) {
