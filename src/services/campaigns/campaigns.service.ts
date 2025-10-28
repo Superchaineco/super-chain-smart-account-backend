@@ -55,6 +55,7 @@ export type Campaign = {
   claimable_reward: { symbol: string; amount: string, token: string, decimals: number }
   start_block: number;
   end_block: number
+  airdrop_condition_id: number
 };
 
 const campaigns: Campaign[] = campaignsData as unknown as Campaign[];
@@ -193,8 +194,7 @@ export async function getCampaignDetailsWithData(
 
   const airDropService = new AirdropService()
   const airDropReward = await airDropService.fetchAirdropForAccount({
-    account: account || '',
-    tokenForClaimCheck: campaign.campaign_reward.token,
+    account: account || ''
   })
 
 

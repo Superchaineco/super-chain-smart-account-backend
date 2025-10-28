@@ -24,7 +24,6 @@ export type UpdateRecipientHashResult = {
 
 export type FetchAirdropForAccountInput = {
   account: string;
-  tokenForClaimCheck: string; // which token is used in on-chain isClaimed(...)
 };
 
 export type GetAirdropResponse = {
@@ -113,11 +112,14 @@ export class AirdropService {
     const { addrBuf } = normalizeAccountToBytea(account);
 
     const sql: string = `
-      UPDATE airdrop_recipients
-      SET hash = $1
-      WHERE address = $2
-        AND LOWER(airdrop_id::text) = LOWER($3::text)
-      RETURNING hash;
+UPDATE airdrop_recipients AS ar
+SET hash = $1
+FROM airdrops
+WHERE airdrops.id = ar.airdrop_id
+  AND ar.address = $2
+  AND LOWER(airdrops.label) = LOWER($3)
+RETURNING ar.hash;
+
     `;
     const params: [string, Buffer, string] = [txHash, addrBuf, airdropId];
 
@@ -135,7 +137,7 @@ export class AirdropService {
 
   /** Fetch latest airdrop row for an account and shape the API response. */
   public async fetchAirdropForAccount(input: FetchAirdropForAccountInput): Promise<GetAirdropResponse> {
-    const { account, tokenForClaimCheck } = input;
+    const { account } = input;
     const { addrBuf } = normalizeAccountToBytea(account);
 
     const q: string = `
@@ -148,6 +150,7 @@ export class AirdropService {
         '0x' || encode(ar.address,'hex') AS address_hex,
         '0x' || encode(ar.leaf,'hex')    AS leaf_hex,
         '0x' || encode(a.root,'hex')     AS root_hex,
+        '0x' || encode(a.token_address,'hex')     AS token_address_hex,
         a.expiration_date                AS expiration_date
       FROM airdrops a
       JOIN airdrop_recipients ar ON ar.airdrop_id = a.id
@@ -178,7 +181,7 @@ export class AirdropService {
     const proofs: string[] = mapProofs(row.proof);
     const reasons: string[] = Array.isArray(row.reasons) ? row.reasons.map((r: unknown) => String(r)) : [];
     const amount: string = String(row.amount ?? "0");
-
+    const tokenForClaimCheck = row.token_address_hex;
     // On-chain claimed check (keep exact behavior)
     const isClaimed: boolean = await this.isAirdropClaimed(account, tokenForClaimCheck);
 

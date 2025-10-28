@@ -1,15 +1,12 @@
 import { Request, Response } from "express";
 import { AirdropService } from "@/services/airdrop.service";
 
-// If you prefer, move this address to your constants module.
-const DEFAULT_TOKEN_FOR_CLAIM_CHECK: string =
-  "0x471EcE3750Da237f93B8E339c536989b8978a438"; // <- same as your current hardcoded address
 
 export async function postAirdrop(req: Request, res: Response) {
   // explicit types
   const account: string = req.params.account as string;
   const airdropId: string = req.body.airdropId as string;
-  const txHash: string = req.body.hash as string;
+  const txHash: string = req.body.txHash as string;
 
   // Basic validations (keep controller thin: input validation + mapping service result to HTTP)
   if (!txHash) return res.status(400).json({ error: "Transaction hash is required" });
@@ -50,8 +47,7 @@ export async function getAirdrop(req: Request, res: Response) {
 
   try {
     const response = await service.fetchAirdropForAccount({
-      account,
-      tokenForClaimCheck: DEFAULT_TOKEN_FOR_CLAIM_CHECK,
+      account
     });
 
     return res.status(200).json(response);
