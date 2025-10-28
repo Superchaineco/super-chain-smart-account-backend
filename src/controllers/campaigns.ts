@@ -1,7 +1,6 @@
 import {
   getCampaignDetailsWithData,
-  Campaign,
-  CampaignBadge,
+  Campaign
 } from '../services/campaigns/campaigns.service';
 import campaignsData from '../services/campaigns/campaigns.json';
 import { superChainAccountService } from '../services/superChainAccount.service';
@@ -32,7 +31,12 @@ export const getCampaigns = async (req, res) => {
         }, c, account)
       )
     );
+
+
     res.json(details);
+
+
+    
   } catch (error) {
     res
       .status(500)

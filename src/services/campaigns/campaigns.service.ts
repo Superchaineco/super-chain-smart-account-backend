@@ -51,6 +51,7 @@ export type Campaign = {
   distributed_points: number
   can_claim: boolean
   max_claim_date: Date
+  claimed: boolean
   campaign_reward: { symbol: string; amount: string, token: string, decimals: number }
   claimable_reward: { symbol: string; amount: string, token: string, decimals: number }
   start_block: number;
@@ -195,7 +196,7 @@ export async function getCampaignDetailsWithData(
   const airDropService = new AirdropService()
   const airDropReward = await airDropService.fetchAirdropForAccount({
     account: account || '',
-  }, campaign.airdrop_condition_id)
+  }, campaign.airdrop_condition_id, campaign.id)
 
 
   let totalBoost = 0;
@@ -256,16 +257,16 @@ export async function getCampaignDetailsWithData(
 }
 
 // Mantener la función original para compatibilidad
-export async function getCampaignDetails(account: string, campaignId: string) {
-  const eoas = await superChainAccountService.getEOAS(account);
-  const userBadges = await badgesService.getBadges(eoas, account);
-  const superAccountLevel = await superChainAccountService.getAccountLevel(
-    account
-  );
+// export async function getCampaignDetails(account: string, campaignId: string) {
+//   const eoas = await superChainAccountService.getEOAS(account);
+//   const userBadges = await badgesService.getBadges(eoas, account);
+//   const superAccountLevel = await superChainAccountService.getAccountLevel(
+//     account
+//   );
 
-  return getCampaignDetailsWithData(campaignId, {
-    eoas,
-    userBadges,
-    superAccountLevel,
-  });
-}
+//   return getCampaignDetailsWithData(campaignId, {
+//     eoas,
+//     userBadges,
+//     superAccountLevel,
+//   });
+// }

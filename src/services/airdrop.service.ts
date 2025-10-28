@@ -136,7 +136,7 @@ RETURNING ar.hash;
   }
 
   /** Fetch latest airdrop row for an account and shape the API response. */
-  public async fetchAirdropForAccount(input: FetchAirdropForAccountInput, conditionId: number): Promise<GetAirdropResponse> {
+  public async fetchAirdropForAccount(input: FetchAirdropForAccountInput, conditionId: number, airdropLabel:string): Promise<GetAirdropResponse> {
     const { account } = input;
     const { addrBuf } = normalizeAccountToBytea(account);
 
@@ -154,12 +154,12 @@ RETURNING ar.hash;
         a.expiration_date                AS expiration_date
       FROM airdrops a
       JOIN airdrop_recipients ar ON ar.airdrop_id = a.id
-      WHERE ar.address = $1
+      WHERE ar.address = $1 AND a.label = $2
       ORDER BY a.created_at DESC
       LIMIT 1;
     `;
 
-    const { rows } = await this.pool.query(q, [addrBuf]);
+    const { rows } = await this.pool.query(q, [addrBuf,airdropLabel]);
 
     // Not found: mirror your previous fallback payload
     if (!rows || rows.length === 0) {
