@@ -182,6 +182,7 @@ export async function getCampaignDetailsWithData(
   const newImageUserBadges = userBadges.map((badge) => {
     return {
       ...badge,
+      tokenBadge: badge.tokenBadge ?? false,
       metadata: {
         ...badge.metadata,
         image: changeImage(badge.claimableTier ?? 0, badge.metadata.image),
@@ -216,6 +217,7 @@ export async function getCampaignDetailsWithData(
     ) ?? 0;
     return {
       ...badge,
+      tokenBadge: userBadge?.tokenBadge || false,
       currentLevel: badgeLevel,
       maxLevel: userBadge?.badgeTiers.length || 0,
       maxPoints,

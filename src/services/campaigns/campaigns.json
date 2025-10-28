@@ -34,6 +34,12 @@
         "id": "26",
         "badgeName": "ETH Vault Deposits",
         "description": "ETH staked during campaign."
+      },
+      {
+        "type": "campaign_badge",
+        "id": "2",
+        "badgeName": "OP Mainnet User",
+        "description": "ETH staked during campaign."
       }
     ]
   },
