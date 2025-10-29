@@ -1,5 +1,11 @@
 // @ts-nocheck
-import { GraphQLResolveInfo, SelectionSetNode, FieldNode, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import {
+  GraphQLResolveInfo,
+  SelectionSetNode,
+  FieldNode,
+  GraphQLScalarType,
+  GraphQLScalarTypeConfig,
+} from 'graphql';
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { gql } from '@graphql-mesh/utils';
 
@@ -7,45 +13,65 @@ import type { GetMeshOptions } from '@graphql-mesh/runtime';
 import type { YamlConfig } from '@graphql-mesh/types';
 import { PubSub } from '@graphql-mesh/utils';
 import { DefaultLogger } from '@graphql-mesh/utils';
-import MeshCache from "@graphql-mesh/cache-localforage";
+import MeshCache from '@graphql-mesh/cache-localforage';
 import { fetch as fetchFn } from '@whatwg-node/fetch';
 
 import { MeshResolvedSource } from '@graphql-mesh/runtime';
 import { MeshTransform, MeshPlugin } from '@graphql-mesh/types';
-import GraphqlHandler from "@graphql-mesh/graphql"
-import BareMerger from "@graphql-mesh/merger-bare";
+import GraphqlHandler from '@graphql-mesh/graphql';
+import BareMerger from '@graphql-mesh/merger-bare';
 import { printWithCache } from '@graphql-mesh/utils';
 import { usePersistedOperations } from '@graphql-yoga/plugin-persisted-operations';
 import { createMeshHTTPHandler, MeshHTTPHandler } from '@graphql-mesh/http';
-import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext, MeshInstance } from '@graphql-mesh/runtime';
+import {
+  getMesh,
+  ExecuteMeshFn,
+  SubscribeMeshFn,
+  MeshContext as BaseMeshContext,
+  MeshInstance,
+} from '@graphql-mesh/runtime';
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { SuperAccountsTypes } from './sources/super-accounts/types';
-import * as importedModule$0 from "./sources/super-accounts/introspectionSchema";
+import * as importedModule$0 from './sources/super-accounts/introspectionSchema';
+import { SUBGRAPH_URI } from '@/config/superChain/constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
-
-
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]-?: NonNullable<T[P]>;
+};
 
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  BigDecimal: { input: any; output: any; }
-  BigInt: { input: any; output: any; }
-  Bytes: { input: any; output: any; }
-  Int8: { input: any; output: any; }
-  Timestamp: { input: any; output: any; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  BigDecimal: { input: any; output: any };
+  BigInt: { input: any; output: any };
+  Bytes: { input: any; output: any };
+  Int8: { input: any; output: any };
+  Timestamp: { input: any; output: any };
 };
 
 export type AccountBadge = {
@@ -56,7 +82,6 @@ export type AccountBadge = {
   points: Scalars['BigInt']['output'];
   perkClaims: Array<UserPerkClaim>;
 };
-
 
 export type AccountBadgeperkClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -167,9 +192,7 @@ export type AccountBadge_orderBy =
   | 'points'
   | 'perkClaims';
 
-export type Aggregation_interval =
-  | 'hour'
-  | 'day';
+export type Aggregation_interval = 'hour' | 'day';
 
 export type Badge = {
   id: Scalars['String']['output'];
@@ -179,7 +202,6 @@ export type Badge = {
   perks: Array<Perk>;
 };
 
-
 export type BadgebadgeTiersArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -187,7 +209,6 @@ export type BadgebadgeTiersArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<BadgeTier_filter>;
 };
-
 
 export type BadgeperksArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -387,12 +408,7 @@ export type Badge_filter = {
   or?: InputMaybe<Array<InputMaybe<Badge_filter>>>;
 };
 
-export type Badge_orderBy =
-  | 'id'
-  | 'badgeId'
-  | 'uri'
-  | 'badgeTiers'
-  | 'perks';
+export type Badge_orderBy = 'id' | 'badgeId' | 'uri' | 'badgeTiers' | 'perks';
 
 export type BlockChangedFilter = {
   number_gte: Scalars['Int']['input'];
@@ -581,14 +597,10 @@ export type Meta_filter = {
   or?: InputMaybe<Array<InputMaybe<Meta_filter>>>;
 };
 
-export type Meta_orderBy =
-  | 'id'
-  | 'count';
+export type Meta_orderBy = 'id' | 'count';
 
 /** Defines the order direction, either ascending or descending */
-export type OrderDirection =
-  | 'asc'
-  | 'desc';
+export type OrderDirection = 'asc' | 'desc';
 
 export type OwnerAdded = {
   id: Scalars['Bytes']['output'];
@@ -687,17 +699,31 @@ export type OwnerAdded_filter = {
   superChainSmartAccount_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_?: InputMaybe<SuperChainSmartAccount_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
@@ -826,17 +852,31 @@ export type OwnerPopulated_filter = {
   superChainSmartAccount_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_?: InputMaybe<SuperChainSmartAccount_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
@@ -965,17 +1005,31 @@ export type OwnerPopulationRemoved_filter = {
   superChainSmartAccount_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_?: InputMaybe<SuperChainSmartAccount_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
@@ -1022,7 +1076,6 @@ export type Perk = {
   userClaims: Array<UserPerkClaim>;
 };
 
-
 export type PerkredemptionsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -1030,7 +1083,6 @@ export type PerkredemptionsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<PerkRedemption_filter>;
 };
-
 
 export type PerkuserClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1376,17 +1428,31 @@ export type PointsIncremented_filter = {
   superChainSmartAccount_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   superChainSmartAccount_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_contains?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_contains_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with?: InputMaybe<
+    Scalars['String']['input']
+  >;
+  superChainSmartAccount_not_starts_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  superChainSmartAccount_not_ends_with_nocase?: InputMaybe<
+    Scalars['String']['input']
+  >;
   superChainSmartAccount_?: InputMaybe<SuperChainSmartAccount_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
@@ -1453,13 +1519,11 @@ export type Query = {
   _meta?: Maybe<_Meta_>;
 };
 
-
 export type Queryeip712DomainChangedArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type Queryeip712DomainChangedsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1471,13 +1535,11 @@ export type Queryeip712DomainChangedsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryownerAddedArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryownerAddedsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1489,13 +1551,11 @@ export type QueryownerAddedsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryownerPopulatedArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryownerPopulatedsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1507,13 +1567,11 @@ export type QueryownerPopulatedsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryownerPopulationRemovedArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryownerPopulationRemovedsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1525,13 +1583,11 @@ export type QueryownerPopulationRemovedsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerypointsIncrementedArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerypointsIncrementedsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1543,13 +1599,11 @@ export type QuerypointsIncrementedsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerysuperChainSmartAccountArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerysuperChainSmartAccountsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1561,13 +1615,11 @@ export type QuerysuperChainSmartAccountsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerybadgeTierArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerybadgeTiersArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1579,13 +1631,11 @@ export type QuerybadgeTiersArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerybadgeArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerybadgesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1597,13 +1647,11 @@ export type QuerybadgesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryperkArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryperksArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1615,13 +1663,11 @@ export type QueryperksArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryaccountBadgeArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryaccountBadgesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1633,13 +1679,11 @@ export type QueryaccountBadgesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerytierTresholdsArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerytierTresholds_collectionArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1651,13 +1695,11 @@ export type QuerytierTresholds_collectionArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerylevelClaimArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerylevelClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1669,13 +1711,11 @@ export type QuerylevelClaimsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryperkRedemptionArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryperkRedemptionsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1687,13 +1727,11 @@ export type QueryperkRedemptionsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryuserPerkClaimArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryuserPerkClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1705,13 +1743,11 @@ export type QueryuserPerkClaimsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerymetaArgs = {
   id: Scalars['ID']['input'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerymetasArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1722,7 +1758,6 @@ export type QuerymetasArgs = {
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
@@ -1747,7 +1782,6 @@ export type SuperChainSmartAccount = {
   levels: Array<LevelClaim>;
 };
 
-
 export type SuperChainSmartAccountbadgesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -1755,7 +1789,6 @@ export type SuperChainSmartAccountbadgesArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<AccountBadge_filter>;
 };
-
 
 export type SuperChainSmartAccountlevelsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -1950,9 +1983,7 @@ export type TierTresholds_filter = {
   or?: InputMaybe<Array<InputMaybe<TierTresholds_filter>>>;
 };
 
-export type TierTresholds_orderBy =
-  | 'id'
-  | 'tresholds';
+export type TierTresholds_orderBy = 'id' | 'tresholds';
 
 export type UserPerkClaim = {
   id: Scalars['String']['output'];
@@ -2122,7 +2153,6 @@ export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
-
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
@@ -2136,7 +2166,9 @@ export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
   selectionSet: string | ((fieldNode: FieldNode) => SelectionSetNode);
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type StitchingResolver<TResult, TParent, TContext, TArgs> = LegacyStitchingResolver<TResult, TParent, TContext, TArgs> | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
+export type StitchingResolver<TResult, TParent, TContext, TArgs> =
+  | LegacyStitchingResolver<TResult, TParent, TContext, TArgs>
+  | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
 export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
   | ResolverFn<TResult, TParent, TContext, TArgs>
   | ResolverWithResolve<TResult, TParent, TContext, TArgs>
@@ -2163,9 +2195,25 @@ export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
-export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
-  subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
-  resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
+export interface SubscriptionSubscriberObject<
+  TResult,
+  TKey extends string,
+  TParent,
+  TContext,
+  TArgs
+> {
+  subscribe: SubscriptionSubscribeFn<
+    { [key in TKey]: TResult },
+    TParent,
+    TContext,
+    TArgs
+  >;
+  resolve?: SubscriptionResolveFn<
+    TResult,
+    { [key in TKey]: TResult },
+    TContext,
+    TArgs
+  >;
 }
 
 export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
@@ -2173,12 +2221,26 @@ export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
   resolve: SubscriptionResolveFn<TResult, any, TContext, TArgs>;
 }
 
-export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
+export type SubscriptionObject<
+  TResult,
+  TKey extends string,
+  TParent,
+  TContext,
+  TArgs
+> =
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
-  | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
+export type SubscriptionResolver<
+  TResult,
+  TKey extends string,
+  TParent = {},
+  TContext = {},
+  TArgs = {}
+> =
+  | ((
+      ...args: any[]
+    ) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
 export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
@@ -2187,19 +2249,26 @@ export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
+  obj: T,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
-export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+export type DirectiveResolverFn<
+  TResult = {},
+  TParent = {},
+  TContext = {},
+  TArgs = {}
+> = (
   next: NextResolverFn<TResult>,
   parent: TParent,
   args: TArgs,
   context: TContext,
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
-
-
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
@@ -2317,42 +2386,85 @@ export type ResolversParentTypes = ResolversObject<{
   _Meta_: _Meta_;
 }>;
 
-export type entityDirectiveArgs = { };
+export type entityDirectiveArgs = {};
 
-export type entityDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = entityDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type entityDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MeshContext,
+  Args = entityDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type subgraphIdDirectiveArgs = {
   id: Scalars['String']['input'];
 };
 
-export type subgraphIdDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = subgraphIdDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type subgraphIdDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MeshContext,
+  Args = subgraphIdDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type derivedFromDirectiveArgs = {
   field: Scalars['String']['input'];
 };
 
-export type derivedFromDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = derivedFromDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type derivedFromDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MeshContext,
+  Args = derivedFromDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type AccountBadgeResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['AccountBadge'] = ResolversParentTypes['AccountBadge']> = ResolversObject<{
+export type AccountBadgeResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['AccountBadge'] = ResolversParentTypes['AccountBadge']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['SuperChainSmartAccount'], ParentType, ContextType>;
+  user?: Resolver<
+    ResolversTypes['SuperChainSmartAccount'],
+    ParentType,
+    ContextType
+  >;
   badge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType>;
   tier?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   points?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  perkClaims?: Resolver<Array<ResolversTypes['UserPerkClaim']>, ParentType, ContextType, RequireFields<AccountBadgeperkClaimsArgs, 'skip' | 'first'>>;
+  perkClaims?: Resolver<
+    Array<ResolversTypes['UserPerkClaim']>,
+    ParentType,
+    ContextType,
+    RequireFields<AccountBadgeperkClaimsArgs, 'skip' | 'first'>
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type BadgeResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Badge'] = ResolversParentTypes['Badge']> = ResolversObject<{
+export type BadgeResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Badge'] = ResolversParentTypes['Badge']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   badgeId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   uri?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  badgeTiers?: Resolver<Array<ResolversTypes['BadgeTier']>, ParentType, ContextType, RequireFields<BadgebadgeTiersArgs, 'skip' | 'first'>>;
-  perks?: Resolver<Array<ResolversTypes['Perk']>, ParentType, ContextType, RequireFields<BadgeperksArgs, 'skip' | 'first'>>;
+  badgeTiers?: Resolver<
+    Array<ResolversTypes['BadgeTier']>,
+    ParentType,
+    ContextType,
+    RequireFields<BadgebadgeTiersArgs, 'skip' | 'first'>
+  >;
+  perks?: Resolver<
+    Array<ResolversTypes['Perk']>,
+    ParentType,
+    ContextType,
+    RequireFields<BadgeperksArgs, 'skip' | 'first'>
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type BadgeTierResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['BadgeTier'] = ResolversParentTypes['BadgeTier']> = ResolversObject<{
+export type BadgeTierResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['BadgeTier'] = ResolversParentTypes['BadgeTier']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   points?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   tier?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2362,19 +2474,25 @@ export type BadgeTierResolvers<ContextType = MeshContext, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export interface BigDecimalScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigDecimal'], any> {
+export interface BigDecimalScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['BigDecimal'], any> {
   name: 'BigDecimal';
 }
 
-export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
+export interface BigIntScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
   name: 'BigInt';
 }
 
-export interface BytesScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Bytes'], any> {
+export interface BytesScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['Bytes'], any> {
   name: 'Bytes';
 }
 
-export type EIP712DomainChangedResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['EIP712DomainChanged'] = ResolversParentTypes['EIP712DomainChanged']> = ResolversObject<{
+export type EIP712DomainChangedResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['EIP712DomainChanged'] = ResolversParentTypes['EIP712DomainChanged']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   blockTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2382,25 +2500,39 @@ export type EIP712DomainChangedResolvers<ContextType = MeshContext, ParentType e
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export interface Int8ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Int8'], any> {
+export interface Int8ScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['Int8'], any> {
   name: 'Int8';
 }
 
-export type LevelClaimResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['LevelClaim'] = ResolversParentTypes['LevelClaim']> = ResolversObject<{
+export type LevelClaimResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['LevelClaim'] = ResolversParentTypes['LevelClaim']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  account?: Resolver<ResolversTypes['SuperChainSmartAccount'], ParentType, ContextType>;
+  account?: Resolver<
+    ResolversTypes['SuperChainSmartAccount'],
+    ParentType,
+    ContextType
+  >;
   level?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type MetaResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Meta'] = ResolversParentTypes['Meta']> = ResolversObject<{
+export type MetaResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Meta'] = ResolversParentTypes['Meta']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   count?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OwnerAddedResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['OwnerAdded'] = ResolversParentTypes['OwnerAdded']> = ResolversObject<{
+export type OwnerAddedResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['OwnerAdded'] = ResolversParentTypes['OwnerAdded']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   safe?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   newOwner?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2408,11 +2540,18 @@ export type OwnerAddedResolvers<ContextType = MeshContext, ParentType extends Re
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   blockTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  superChainSmartAccount?: Resolver<ResolversTypes['SuperChainSmartAccount'], ParentType, ContextType>;
+  superChainSmartAccount?: Resolver<
+    ResolversTypes['SuperChainSmartAccount'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OwnerPopulatedResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['OwnerPopulated'] = ResolversParentTypes['OwnerPopulated']> = ResolversObject<{
+export type OwnerPopulatedResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['OwnerPopulated'] = ResolversParentTypes['OwnerPopulated']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   safe?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   newOwner?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2420,11 +2559,18 @@ export type OwnerPopulatedResolvers<ContextType = MeshContext, ParentType extend
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   blockTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  superChainSmartAccount?: Resolver<ResolversTypes['SuperChainSmartAccount'], ParentType, ContextType>;
+  superChainSmartAccount?: Resolver<
+    ResolversTypes['SuperChainSmartAccount'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OwnerPopulationRemovedResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['OwnerPopulationRemoved'] = ResolversParentTypes['OwnerPopulationRemoved']> = ResolversObject<{
+export type OwnerPopulationRemovedResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['OwnerPopulationRemoved'] = ResolversParentTypes['OwnerPopulationRemoved']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   safe?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2432,27 +2578,51 @@ export type OwnerPopulationRemovedResolvers<ContextType = MeshContext, ParentTyp
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   blockTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  superChainSmartAccount?: Resolver<ResolversTypes['SuperChainSmartAccount'], ParentType, ContextType>;
+  superChainSmartAccount?: Resolver<
+    ResolversTypes['SuperChainSmartAccount'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PerkResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Perk'] = ResolversParentTypes['Perk']> = ResolversObject<{
+export type PerkResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Perk'] = ResolversParentTypes['Perk']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   badgeId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   tier?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   badge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType>;
-  badgeTier?: Resolver<Maybe<ResolversTypes['BadgeTier']>, ParentType, ContextType>;
+  badgeTier?: Resolver<
+    Maybe<ResolversTypes['BadgeTier']>,
+    ParentType,
+    ContextType
+  >;
   token?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   maxClaims?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   totalClaims?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   isCompleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  redemptions?: Resolver<Array<ResolversTypes['PerkRedemption']>, ParentType, ContextType, RequireFields<PerkredemptionsArgs, 'skip' | 'first'>>;
-  userClaims?: Resolver<Array<ResolversTypes['UserPerkClaim']>, ParentType, ContextType, RequireFields<PerkuserClaimsArgs, 'skip' | 'first'>>;
+  redemptions?: Resolver<
+    Array<ResolversTypes['PerkRedemption']>,
+    ParentType,
+    ContextType,
+    RequireFields<PerkredemptionsArgs, 'skip' | 'first'>
+  >;
+  userClaims?: Resolver<
+    Array<ResolversTypes['UserPerkClaim']>,
+    ParentType,
+    ContextType,
+    RequireFields<PerkuserClaimsArgs, 'skip' | 'first'>
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PerkRedemptionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['PerkRedemption'] = ResolversParentTypes['PerkRedemption']> = ResolversObject<{
+export type PerkRedemptionResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['PerkRedemption'] = ResolversParentTypes['PerkRedemption']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   perk?: Resolver<ResolversTypes['Perk'], ParentType, ContextType>;
   redeemer?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2464,7 +2634,10 @@ export type PerkRedemptionResolvers<ContextType = MeshContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PointsIncrementedResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['PointsIncremented'] = ResolversParentTypes['PointsIncremented']> = ResolversObject<{
+export type PointsIncrementedResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['PointsIncremented'] = ResolversParentTypes['PointsIncremented']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   recipient?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   points?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2472,45 +2645,225 @@ export type PointsIncrementedResolvers<ContextType = MeshContext, ParentType ext
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   blockTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  superChainSmartAccount?: Resolver<ResolversTypes['SuperChainSmartAccount'], ParentType, ContextType>;
+  superChainSmartAccount?: Resolver<
+    ResolversTypes['SuperChainSmartAccount'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  eip712DomainChanged?: Resolver<Maybe<ResolversTypes['EIP712DomainChanged']>, ParentType, ContextType, RequireFields<Queryeip712DomainChangedArgs, 'id' | 'subgraphError'>>;
-  eip712DomainChangeds?: Resolver<Array<ResolversTypes['EIP712DomainChanged']>, ParentType, ContextType, RequireFields<Queryeip712DomainChangedsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  ownerAdded?: Resolver<Maybe<ResolversTypes['OwnerAdded']>, ParentType, ContextType, RequireFields<QueryownerAddedArgs, 'id' | 'subgraphError'>>;
-  ownerAddeds?: Resolver<Array<ResolversTypes['OwnerAdded']>, ParentType, ContextType, RequireFields<QueryownerAddedsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  ownerPopulated?: Resolver<Maybe<ResolversTypes['OwnerPopulated']>, ParentType, ContextType, RequireFields<QueryownerPopulatedArgs, 'id' | 'subgraphError'>>;
-  ownerPopulateds?: Resolver<Array<ResolversTypes['OwnerPopulated']>, ParentType, ContextType, RequireFields<QueryownerPopulatedsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  ownerPopulationRemoved?: Resolver<Maybe<ResolversTypes['OwnerPopulationRemoved']>, ParentType, ContextType, RequireFields<QueryownerPopulationRemovedArgs, 'id' | 'subgraphError'>>;
-  ownerPopulationRemoveds?: Resolver<Array<ResolversTypes['OwnerPopulationRemoved']>, ParentType, ContextType, RequireFields<QueryownerPopulationRemovedsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  pointsIncremented?: Resolver<Maybe<ResolversTypes['PointsIncremented']>, ParentType, ContextType, RequireFields<QuerypointsIncrementedArgs, 'id' | 'subgraphError'>>;
-  pointsIncrementeds?: Resolver<Array<ResolversTypes['PointsIncremented']>, ParentType, ContextType, RequireFields<QuerypointsIncrementedsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  superChainSmartAccount?: Resolver<Maybe<ResolversTypes['SuperChainSmartAccount']>, ParentType, ContextType, RequireFields<QuerysuperChainSmartAccountArgs, 'id' | 'subgraphError'>>;
-  superChainSmartAccounts?: Resolver<Array<ResolversTypes['SuperChainSmartAccount']>, ParentType, ContextType, RequireFields<QuerysuperChainSmartAccountsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  badgeTier?: Resolver<Maybe<ResolversTypes['BadgeTier']>, ParentType, ContextType, RequireFields<QuerybadgeTierArgs, 'id' | 'subgraphError'>>;
-  badgeTiers?: Resolver<Array<ResolversTypes['BadgeTier']>, ParentType, ContextType, RequireFields<QuerybadgeTiersArgs, 'skip' | 'first' | 'subgraphError'>>;
-  badge?: Resolver<Maybe<ResolversTypes['Badge']>, ParentType, ContextType, RequireFields<QuerybadgeArgs, 'id' | 'subgraphError'>>;
-  badges?: Resolver<Array<ResolversTypes['Badge']>, ParentType, ContextType, RequireFields<QuerybadgesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  perk?: Resolver<Maybe<ResolversTypes['Perk']>, ParentType, ContextType, RequireFields<QueryperkArgs, 'id' | 'subgraphError'>>;
-  perks?: Resolver<Array<ResolversTypes['Perk']>, ParentType, ContextType, RequireFields<QueryperksArgs, 'skip' | 'first' | 'subgraphError'>>;
-  accountBadge?: Resolver<Maybe<ResolversTypes['AccountBadge']>, ParentType, ContextType, RequireFields<QueryaccountBadgeArgs, 'id' | 'subgraphError'>>;
-  accountBadges?: Resolver<Array<ResolversTypes['AccountBadge']>, ParentType, ContextType, RequireFields<QueryaccountBadgesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tierTresholds?: Resolver<Maybe<ResolversTypes['TierTresholds']>, ParentType, ContextType, RequireFields<QuerytierTresholdsArgs, 'id' | 'subgraphError'>>;
-  tierTresholds_collection?: Resolver<Array<ResolversTypes['TierTresholds']>, ParentType, ContextType, RequireFields<QuerytierTresholds_collectionArgs, 'skip' | 'first' | 'subgraphError'>>;
-  levelClaim?: Resolver<Maybe<ResolversTypes['LevelClaim']>, ParentType, ContextType, RequireFields<QuerylevelClaimArgs, 'id' | 'subgraphError'>>;
-  levelClaims?: Resolver<Array<ResolversTypes['LevelClaim']>, ParentType, ContextType, RequireFields<QuerylevelClaimsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  perkRedemption?: Resolver<Maybe<ResolversTypes['PerkRedemption']>, ParentType, ContextType, RequireFields<QueryperkRedemptionArgs, 'id' | 'subgraphError'>>;
-  perkRedemptions?: Resolver<Array<ResolversTypes['PerkRedemption']>, ParentType, ContextType, RequireFields<QueryperkRedemptionsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  userPerkClaim?: Resolver<Maybe<ResolversTypes['UserPerkClaim']>, ParentType, ContextType, RequireFields<QueryuserPerkClaimArgs, 'id' | 'subgraphError'>>;
-  userPerkClaims?: Resolver<Array<ResolversTypes['UserPerkClaim']>, ParentType, ContextType, RequireFields<QueryuserPerkClaimsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  meta?: Resolver<Maybe<ResolversTypes['Meta']>, ParentType, ContextType, RequireFields<QuerymetaArgs, 'id' | 'subgraphError'>>;
-  metas?: Resolver<Array<ResolversTypes['Meta']>, ParentType, ContextType, RequireFields<QuerymetasArgs, 'skip' | 'first' | 'subgraphError'>>;
-  _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
+export type QueryResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
+> = ResolversObject<{
+  eip712DomainChanged?: Resolver<
+    Maybe<ResolversTypes['EIP712DomainChanged']>,
+    ParentType,
+    ContextType,
+    RequireFields<Queryeip712DomainChangedArgs, 'id' | 'subgraphError'>
+  >;
+  eip712DomainChangeds?: Resolver<
+    Array<ResolversTypes['EIP712DomainChanged']>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      Queryeip712DomainChangedsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  ownerAdded?: Resolver<
+    Maybe<ResolversTypes['OwnerAdded']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryownerAddedArgs, 'id' | 'subgraphError'>
+  >;
+  ownerAddeds?: Resolver<
+    Array<ResolversTypes['OwnerAdded']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryownerAddedsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  ownerPopulated?: Resolver<
+    Maybe<ResolversTypes['OwnerPopulated']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryownerPopulatedArgs, 'id' | 'subgraphError'>
+  >;
+  ownerPopulateds?: Resolver<
+    Array<ResolversTypes['OwnerPopulated']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryownerPopulatedsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  ownerPopulationRemoved?: Resolver<
+    Maybe<ResolversTypes['OwnerPopulationRemoved']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryownerPopulationRemovedArgs, 'id' | 'subgraphError'>
+  >;
+  ownerPopulationRemoveds?: Resolver<
+    Array<ResolversTypes['OwnerPopulationRemoved']>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      QueryownerPopulationRemovedsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  pointsIncremented?: Resolver<
+    Maybe<ResolversTypes['PointsIncremented']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerypointsIncrementedArgs, 'id' | 'subgraphError'>
+  >;
+  pointsIncrementeds?: Resolver<
+    Array<ResolversTypes['PointsIncremented']>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      QuerypointsIncrementedsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  superChainSmartAccount?: Resolver<
+    Maybe<ResolversTypes['SuperChainSmartAccount']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerysuperChainSmartAccountArgs, 'id' | 'subgraphError'>
+  >;
+  superChainSmartAccounts?: Resolver<
+    Array<ResolversTypes['SuperChainSmartAccount']>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      QuerysuperChainSmartAccountsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  badgeTier?: Resolver<
+    Maybe<ResolversTypes['BadgeTier']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerybadgeTierArgs, 'id' | 'subgraphError'>
+  >;
+  badgeTiers?: Resolver<
+    Array<ResolversTypes['BadgeTier']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerybadgeTiersArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  badge?: Resolver<
+    Maybe<ResolversTypes['Badge']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerybadgeArgs, 'id' | 'subgraphError'>
+  >;
+  badges?: Resolver<
+    Array<ResolversTypes['Badge']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerybadgesArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  perk?: Resolver<
+    Maybe<ResolversTypes['Perk']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryperkArgs, 'id' | 'subgraphError'>
+  >;
+  perks?: Resolver<
+    Array<ResolversTypes['Perk']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryperksArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  accountBadge?: Resolver<
+    Maybe<ResolversTypes['AccountBadge']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryaccountBadgeArgs, 'id' | 'subgraphError'>
+  >;
+  accountBadges?: Resolver<
+    Array<ResolversTypes['AccountBadge']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryaccountBadgesArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  tierTresholds?: Resolver<
+    Maybe<ResolversTypes['TierTresholds']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytierTresholdsArgs, 'id' | 'subgraphError'>
+  >;
+  tierTresholds_collection?: Resolver<
+    Array<ResolversTypes['TierTresholds']>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      QuerytierTresholds_collectionArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  levelClaim?: Resolver<
+    Maybe<ResolversTypes['LevelClaim']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerylevelClaimArgs, 'id' | 'subgraphError'>
+  >;
+  levelClaims?: Resolver<
+    Array<ResolversTypes['LevelClaim']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerylevelClaimsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  perkRedemption?: Resolver<
+    Maybe<ResolversTypes['PerkRedemption']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryperkRedemptionArgs, 'id' | 'subgraphError'>
+  >;
+  perkRedemptions?: Resolver<
+    Array<ResolversTypes['PerkRedemption']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryperkRedemptionsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  userPerkClaim?: Resolver<
+    Maybe<ResolversTypes['UserPerkClaim']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryuserPerkClaimArgs, 'id' | 'subgraphError'>
+  >;
+  userPerkClaims?: Resolver<
+    Array<ResolversTypes['UserPerkClaim']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryuserPerkClaimsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  meta?: Resolver<
+    Maybe<ResolversTypes['Meta']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerymetaArgs, 'id' | 'subgraphError'>
+  >;
+  metas?: Resolver<
+    Array<ResolversTypes['Meta']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerymetasArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  _meta?: Resolver<
+    Maybe<ResolversTypes['_Meta_']>,
+    ParentType,
+    ContextType,
+    Partial<Query_metaArgs>
+  >;
 }>;
 
-export type SuperChainSmartAccountResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['SuperChainSmartAccount'] = ResolversParentTypes['SuperChainSmartAccount']> = ResolversObject<{
+export type SuperChainSmartAccountResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['SuperChainSmartAccount'] = ResolversParentTypes['SuperChainSmartAccount']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   safe?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   initialOwner?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2525,44 +2878,91 @@ export type SuperChainSmartAccountResolvers<ContextType = MeshContext, ParentTyp
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   level?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   points?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  badges?: Resolver<Array<ResolversTypes['AccountBadge']>, ParentType, ContextType, RequireFields<SuperChainSmartAccountbadgesArgs, 'skip' | 'first'>>;
-  levels?: Resolver<Array<ResolversTypes['LevelClaim']>, ParentType, ContextType, RequireFields<SuperChainSmartAccountlevelsArgs, 'skip' | 'first'>>;
+  badges?: Resolver<
+    Array<ResolversTypes['AccountBadge']>,
+    ParentType,
+    ContextType,
+    RequireFields<SuperChainSmartAccountbadgesArgs, 'skip' | 'first'>
+  >;
+  levels?: Resolver<
+    Array<ResolversTypes['LevelClaim']>,
+    ParentType,
+    ContextType,
+    RequireFields<SuperChainSmartAccountlevelsArgs, 'skip' | 'first'>
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type TierTresholdsResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TierTresholds'] = ResolversParentTypes['TierTresholds']> = ResolversObject<{
+export type TierTresholdsResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['TierTresholds'] = ResolversParentTypes['TierTresholds']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  tresholds?: Resolver<Array<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  tresholds?: Resolver<
+    Array<ResolversTypes['BigInt']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
+export interface TimestampScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
   name: 'Timestamp';
 }
 
-export type UserPerkClaimResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['UserPerkClaim'] = ResolversParentTypes['UserPerkClaim']> = ResolversObject<{
+export type UserPerkClaimResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['UserPerkClaim'] = ResolversParentTypes['UserPerkClaim']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   perk?: Resolver<ResolversTypes['Perk'], ParentType, ContextType>;
-  accountBadge?: Resolver<Maybe<ResolversTypes['AccountBadge']>, ParentType, ContextType>;
+  accountBadge?: Resolver<
+    Maybe<ResolversTypes['AccountBadge']>,
+    ParentType,
+    ContextType
+  >;
   isClaimed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  claimedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
-  transactionHash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
+  claimedAt?: Resolver<
+    Maybe<ResolversTypes['BigInt']>,
+    ParentType,
+    ContextType
+  >;
+  transactionHash?: Resolver<
+    Maybe<ResolversTypes['Bytes']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type _Block_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Block_'] = ResolversParentTypes['_Block_']> = ResolversObject<{
+export type _Block_Resolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['_Block_'] = ResolversParentTypes['_Block_']
+> = ResolversObject<{
   hash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   timestamp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  parentHash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
+  parentHash?: Resolver<
+    Maybe<ResolversTypes['Bytes']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type _Meta_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Meta_'] = ResolversParentTypes['_Meta_']> = ResolversObject<{
+export type _Meta_Resolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['_Meta_'] = ResolversParentTypes['_Meta_']
+> = ResolversObject<{
   block?: Resolver<ResolversTypes['_Block_'], ParentType, ContextType>;
   deployment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  hasIndexingErrors?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasIndexingErrors?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2600,79 +3000,98 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
 
 export type MeshContext = SuperAccountsTypes.Context & BaseMeshContext;
 
-
-const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
+const baseDir = pathModule.join(
+  typeof __dirname === 'string' ? __dirname : '/',
+  '..'
+);
 
 const importFn: ImportFn = <T>(moduleId: string) => {
-  const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
-  switch(relativeModuleId) {
-    case ".graphclient/sources/super-accounts/introspectionSchema":
+  const relativeModuleId = (
+    pathModule.isAbsolute(moduleId)
+      ? pathModule.relative(baseDir, moduleId)
+      : moduleId
+  )
+    .split('\\')
+    .join('/')
+    .replace(baseDir + '/', '');
+  switch (relativeModuleId) {
+    case '.graphclient/sources/super-accounts/introspectionSchema':
       return Promise.resolve(importedModule$0) as T;
-    
+
     default:
-      return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
+      return Promise.reject(
+        new Error(`Cannot find module '${relativeModuleId}'.`)
+      );
   }
 };
 
-const rootStore = new MeshStore('.graphclient', new FsStoreStorageAdapter({
-  cwd: baseDir,
-  importFn,
-  fileType: "ts",
-}), {
-  readonly: true,
-  validate: false
-});
+const rootStore = new MeshStore(
+  '.graphclient',
+  new FsStoreStorageAdapter({
+    cwd: baseDir,
+    importFn,
+    fileType: 'ts',
+  }),
+  {
+    readonly: true,
+    validate: false,
+  }
+);
 
-export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any
+export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any;
 export async function getMeshOptions(): Promise<GetMeshOptions> {
-const pubsub = new PubSub();
-const sourcesStore = rootStore.child('sources');
-const logger = new DefaultLogger("GraphClient");
-const cache = new (MeshCache as any)({
-      ...({} as any),
-      importFn,
-      store: rootStore.child('cache'),
-      pubsub,
-      logger,
-    } as any)
+  const pubsub = new PubSub();
+  const sourcesStore = rootStore.child('sources');
+  const logger = new DefaultLogger('GraphClient');
+  const cache = new (MeshCache as any)({
+    ...({} as any),
+    importFn,
+    store: rootStore.child('cache'),
+    pubsub,
+    logger,
+  } as any);
 
-const sources: MeshResolvedSource[] = [];
-const transforms: MeshTransform[] = [];
-const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
-const superAccountsTransforms = [];
-const additionalTypeDefs = [] as any[];
-const superAccountsHandler = new GraphqlHandler({
-              name: "super-accounts",
-              config: {"endpoint":"https://gateway.thegraph.com/api/subgraphs/id/AQcWbD2DFtVnSFBqGyMJfBKaGoHpx8r5fyTSixgstkQF"},
-              baseDir,
-              cache,
-              pubsub,
-              store: sourcesStore.child("super-accounts"),
-              logger: logger.child("super-accounts"),
-              importFn,
-            });
-sources[0] = {
-          name: 'super-accounts',
-          handler: superAccountsHandler,
-          transforms: superAccountsTransforms
-        }
-const additionalResolvers = [] as any[]
-const merger = new(BareMerger as any)({
-        cache,
-        pubsub,
-        logger: logger.child('bareMerger'),
-        store: rootStore.child('bareMerger')
-      })
-const documentHashMap = {
-        "65143bb646393bbde5847f63fbd865c36d2a3e1e13d9dabc2786c3108710857d": GetFirst100UsersLevel3Document,
-"7442a5d5aece2a8d4b79b79ad9c9c88e06dcba1b1ce1d4bd1d7b166a57911716": GetUserBadgesDocument
-      }
-additionalEnvelopPlugins.push(usePersistedOperations({
-        getPersistedOperation(key) {
-          return documentHashMap[key];
-        },
-        ...{}
-      }))
+  const sources: MeshResolvedSource[] = [];
+  const transforms: MeshTransform[] = [];
+  const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
+  const superAccountsTransforms = [];
+  const additionalTypeDefs = [] as any[];
+  const superAccountsHandler = new GraphqlHandler({
+    name: 'super-accounts',
+    config: { endpoint: SUBGRAPH_URI },
+    baseDir,
+    cache,
+    pubsub,
+    store: sourcesStore.child('super-accounts'),
+    logger: logger.child('super-accounts'),
+    importFn,
+  });
+  sources[0] = {
+    name: 'super-accounts',
+    handler: superAccountsHandler,
+    transforms: superAccountsTransforms,
+  };
+  const additionalResolvers = [] as any[];
+  const merger = new (BareMerger as any)({
+    cache,
+    pubsub,
+    logger: logger.child('bareMerger'),
+    store: rootStore.child('bareMerger'),
+  });
+  const documentHashMap = {
+    '65143bb646393bbde5847f63fbd865c36d2a3e1e13d9dabc2786c3108710857d':
+      GetFirst100UsersLevel3Document,
+    '7442a5d5aece2a8d4b79b79ad9c9c88e06dcba1b1ce1d4bd1d7b166a57911716':
+      GetUserBadgesDocument,
+  };
+  additionalEnvelopPlugins.push(
+    usePersistedOperations({
+      getPersistedOperation(key) {
+        return documentHashMap[key];
+      },
+      ...{},
+    })
+  );
 
   return {
     sources,
@@ -2686,35 +3105,39 @@ additionalEnvelopPlugins.push(usePersistedOperations({
     additionalEnvelopPlugins,
     get documents() {
       return [
-      {
-        document: GetFirst100UsersLevel3Document,
-        get rawSDL() {
-          return printWithCache(GetFirst100UsersLevel3Document);
+        {
+          document: GetFirst100UsersLevel3Document,
+          get rawSDL() {
+            return printWithCache(GetFirst100UsersLevel3Document);
+          },
+          location: 'GetFirst100UsersLevel3Document.graphql',
+          sha256Hash:
+            '65143bb646393bbde5847f63fbd865c36d2a3e1e13d9dabc2786c3108710857d',
         },
-        location: 'GetFirst100UsersLevel3Document.graphql',
-        sha256Hash: '65143bb646393bbde5847f63fbd865c36d2a3e1e13d9dabc2786c3108710857d'
-      },{
-        document: GetUserBadgesDocument,
-        get rawSDL() {
-          return printWithCache(GetUserBadgesDocument);
+        {
+          document: GetUserBadgesDocument,
+          get rawSDL() {
+            return printWithCache(GetUserBadgesDocument);
+          },
+          location: 'GetUserBadgesDocument.graphql',
+          sha256Hash:
+            '7442a5d5aece2a8d4b79b79ad9c9c88e06dcba1b1ce1d4bd1d7b166a57911716',
         },
-        location: 'GetUserBadgesDocument.graphql',
-        sha256Hash: '7442a5d5aece2a8d4b79b79ad9c9c88e06dcba1b1ce1d4bd1d7b166a57911716'
-      }
-    ];
+      ];
     },
     fetchFn,
   };
 }
 
-export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandler<TServerContext> {
+export function createBuiltMeshHTTPHandler<
+  TServerContext = {}
+>(): MeshHTTPHandler<TServerContext> {
   return createMeshHTTPHandler<TServerContext>({
     baseDir,
     getBuiltMesh: getBuiltGraphClient,
     rawServeConfig: undefined,
-  })
+  });
 }
-
 
 let meshInstance$: Promise<MeshInstance> | undefined;
 
@@ -2725,139 +3148,198 @@ export function getBuiltGraphClient(): Promise<MeshInstance> {
     if (pollingInterval) {
       setInterval(() => {
         getMeshOptions()
-        .then(meshOptions => getMesh(meshOptions))
-        .then(newMesh =>
-          meshInstance$.then(oldMesh => {
-            oldMesh.destroy()
-            meshInstance$ = Promise.resolve(newMesh)
-          })
-        ).catch(err => {
-          console.error("Mesh polling failed so the existing version will be used:", err);
-        });
-      }, pollingInterval)
+          .then((meshOptions) => getMesh(meshOptions))
+          .then((newMesh) =>
+            meshInstance$.then((oldMesh) => {
+              oldMesh.destroy();
+              meshInstance$ = Promise.resolve(newMesh);
+            })
+          )
+          .catch((err) => {
+            console.error(
+              'Mesh polling failed so the existing version will be used:',
+              err
+            );
+          });
+      }, pollingInterval);
     }
-    meshInstance$ = getMeshOptions().then(meshOptions => getMesh(meshOptions)).then(mesh => {
-      const id = mesh.pubsub.subscribe('destroy', () => {
-        meshInstance$ = undefined;
-        mesh.pubsub.unsubscribe(id);
+    meshInstance$ = getMeshOptions()
+      .then((meshOptions) => getMesh(meshOptions))
+      .then((mesh) => {
+        const id = mesh.pubsub.subscribe('destroy', () => {
+          meshInstance$ = undefined;
+          mesh.pubsub.unsubscribe(id);
+        });
+        return mesh;
       });
-      return mesh;
-    });
   }
   return meshInstance$;
 }
 
-export const execute: ExecuteMeshFn = (...args) => getBuiltGraphClient().then(({ execute }) => execute(...args));
+export const execute: ExecuteMeshFn = (...args) =>
+  getBuiltGraphClient().then(({ execute }) => execute(...args));
 
-export const subscribe: SubscribeMeshFn = (...args) => getBuiltGraphClient().then(({ subscribe }) => subscribe(...args));
-export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(globalContext?: TGlobalContext) {
-  const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
-  return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
+export const subscribe: SubscribeMeshFn = (...args) =>
+  getBuiltGraphClient().then(({ subscribe }) => subscribe(...args));
+export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
+  globalContext?: TGlobalContext
+) {
+  const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) =>
+    sdkRequesterFactory(globalContext)
+  );
+  return getSdk<TOperationContext, TGlobalContext>((...args) =>
+    sdkRequester$.then((sdkRequester) => sdkRequester(...args))
+  );
 }
-export type GetFirst100UsersLevel3QueryVariables = Exact<{ [key: string]: never; }>;
+export type GetFirst100UsersLevel3QueryVariables = Exact<{
+  [key: string]: never;
+}>;
 
-
-export type GetFirst100UsersLevel3Query = { levelClaims: Array<(
-    Pick<LevelClaim, 'level' | 'timestamp'>
-    & { account: Pick<SuperChainSmartAccount, 'id'> }
-  )> };
+export type GetFirst100UsersLevel3Query = {
+  levelClaims: Array<
+    Pick<LevelClaim, 'level' | 'timestamp'> & {
+      account: Pick<SuperChainSmartAccount, 'id'>;
+    }
+  >;
+};
 
 export type GetUserBadgesQueryVariables = Exact<{
   user: Scalars['String']['input'];
 }>;
 
-
-export type GetUserBadgesQuery = { badges: Array<(
-    Pick<Badge, 'badgeId' | 'uri'>
-    & { perks: Array<Pick<Perk, 'id' | 'tier' | 'isCompleted' | 'maxClaims' | 'amount'>>, badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'>> }
-  )>, accountBadges: Array<(
-    Pick<AccountBadge, 'points' | 'tier'>
-    & { badge: (
-      Pick<Badge, 'badgeId' | 'uri'>
-      & { perks: Array<Pick<Perk, 'id' | 'tier' | 'isCompleted'>>, badgeTiers: Array<(
-        Pick<BadgeTier, 'points' | 'tier' | 'uri'>
-        & { perk?: Maybe<Pick<Perk, 'id' | 'badgeId' | 'tier' | 'token' | 'amount' | 'maxClaims' | 'totalClaims' | 'isCompleted'>> }
-      )> }
-    ) }
-  )> };
-
+export type GetUserBadgesQuery = {
+  badges: Array<
+    Pick<Badge, 'badgeId' | 'uri'> & {
+      perks: Array<
+        Pick<Perk, 'id' | 'tier' | 'isCompleted' | 'maxClaims' | 'amount'>
+      >;
+      badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'>>;
+    }
+  >;
+  accountBadges: Array<
+    Pick<AccountBadge, 'points' | 'tier'> & {
+      badge: Pick<Badge, 'badgeId' | 'uri'> & {
+        perks: Array<Pick<Perk, 'id' | 'tier' | 'isCompleted'>>;
+        badgeTiers: Array<
+          Pick<BadgeTier, 'points' | 'tier' | 'uri'> & {
+            perk?: Maybe<
+              Pick<
+                Perk,
+                | 'id'
+                | 'badgeId'
+                | 'tier'
+                | 'token'
+                | 'amount'
+                | 'maxClaims'
+                | 'totalClaims'
+                | 'isCompleted'
+              >
+            >;
+          }
+        >;
+      };
+    }
+  >;
+};
 
 export const GetFirst100UsersLevel3Document = gql`
-    query GetFirst100UsersLevel3 {
-  levelClaims(
-    where: {level: 3}
-    orderBy: timestamp
-    orderDirection: asc
-    first: 100
-  ) {
-    account {
-      id
+  query GetFirst100UsersLevel3 {
+    levelClaims(
+      where: { level: 3 }
+      orderBy: timestamp
+      orderDirection: asc
+      first: 100
+    ) {
+      account {
+        id
+      }
+      level
+      timestamp
     }
-    level
-    timestamp
   }
-}
-    ` as unknown as DocumentNode<GetFirst100UsersLevel3Query, GetFirst100UsersLevel3QueryVariables>;
+` as unknown as DocumentNode<
+  GetFirst100UsersLevel3Query,
+  GetFirst100UsersLevel3QueryVariables
+>;
 export const GetUserBadgesDocument = gql`
-    query GetUserBadges($user: String!) {
-  badges {
-    badgeId
-    uri
-    perks {
-      id
-      tier
-      isCompleted
-      maxClaims
-      amount
-    }
-    badgeTiers(orderBy: tier, orderDirection: asc) {
-      points
-      tier
-      uri
-    }
-  }
-  accountBadges(where: {user: $user}) {
-    points
-    tier
-    badge {
+  query GetUserBadges($user: String!) {
+    badges {
       badgeId
       uri
       perks {
         id
         tier
         isCompleted
+        maxClaims
+        amount
       }
       badgeTiers(orderBy: tier, orderDirection: asc) {
         points
         tier
         uri
-        perk {
+      }
+    }
+    accountBadges(where: { user: $user }) {
+      points
+      tier
+      badge {
+        badgeId
+        uri
+        perks {
           id
-          badgeId
           tier
-          token
-          amount
-          maxClaims
-          totalClaims
           isCompleted
+        }
+        badgeTiers(orderBy: tier, orderDirection: asc) {
+          points
+          tier
+          uri
+          perk {
+            id
+            badgeId
+            tier
+            token
+            amount
+            maxClaims
+            totalClaims
+            isCompleted
+          }
         }
       }
     }
   }
-}
-    ` as unknown as DocumentNode<GetUserBadgesQuery, GetUserBadgesQueryVariables>;
+` as unknown as DocumentNode<GetUserBadgesQuery, GetUserBadgesQueryVariables>;
 
-
-
-export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
+export type Requester<C = {}, E = unknown> = <R, V>(
+  doc: DocumentNode,
+  vars?: V,
+  options?: C
+) => Promise<R> | AsyncIterable<R>;
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
-    GetFirst100UsersLevel3(variables?: GetFirst100UsersLevel3QueryVariables, options?: C): Promise<GetFirst100UsersLevel3Query> {
-      return requester<GetFirst100UsersLevel3Query, GetFirst100UsersLevel3QueryVariables>(GetFirst100UsersLevel3Document, variables, options) as Promise<GetFirst100UsersLevel3Query>;
+    GetFirst100UsersLevel3(
+      variables?: GetFirst100UsersLevel3QueryVariables,
+      options?: C
+    ): Promise<GetFirst100UsersLevel3Query> {
+      return requester<
+        GetFirst100UsersLevel3Query,
+        GetFirst100UsersLevel3QueryVariables
+      >(
+        GetFirst100UsersLevel3Document,
+        variables,
+        options
+      ) as Promise<GetFirst100UsersLevel3Query>;
     },
-    GetUserBadges(variables: GetUserBadgesQueryVariables, options?: C): Promise<GetUserBadgesQuery> {
-      return requester<GetUserBadgesQuery, GetUserBadgesQueryVariables>(GetUserBadgesDocument, variables, options) as Promise<GetUserBadgesQuery>;
-    }
+    GetUserBadges(
+      variables: GetUserBadgesQueryVariables,
+      options?: C
+    ): Promise<GetUserBadgesQuery> {
+      return requester<GetUserBadgesQuery, GetUserBadgesQueryVariables>(
+        GetUserBadgesDocument,
+        variables,
+        options
+      ) as Promise<GetUserBadgesQuery>;
+    },
   };
 }
 export type Sdk = ReturnType<typeof getSdk>;
