@@ -54,8 +54,7 @@ export class BadgesServices {
     const fetchFunction = async (updateCache = true) => {
       const eoas = await superChainAccountService.getEOAS(account);
       const freshData = await this.getBadges(eoas, account);
-      await this.updateStatsForBadges(freshData);
-      await this.updateCampaignInfo(freshData);
+   
       if (updateCache) {
         await redisService.setCachedData(CACHE_KEY, freshData, null);
       }
@@ -145,15 +144,11 @@ export class BadgesServices {
     const activeBadges = [
       ...(data?.accountBadges ?? []).map((badge) => {
         
-        //verify if any perk has claimable = true
-        const hasClaimablePerk = badge.badge.perks?.some((perk: any) => perk?.claimable === true) ?? false;
-        
+            
         return {
           ...badge,
           tier: parseInt(badge.tier),
           points: parseInt(badge.points),
-          //set claimable based on perks if exists
-          claimable: hasClaimablePerk,
         };
       }),
       ...unclaimedBadges,
@@ -176,7 +171,8 @@ export class BadgesServices {
     for (const badge of activeBadges) {
       await this.updateBadgeDataForAccount(eoas, badge, account);
     }
-
+    await this.updateStatsForBadges(this.badges);
+    await this.updateCampaignInfo(this.badges);
     return this.badges;
   }
 
@@ -318,18 +314,15 @@ export class BadgesServices {
       );
       if (badgeInfo) {
         badge.countUnit = badgeInfo.count_unit;
-        badge.badgeTiers.forEach((tier) => {
-          const tierInfo = badgeInfo.tiers.find(
-            (data) => data.tier_id == tier.tier
-          );
-          if (tierInfo) {
-            tier.rewards = tierInfo;
-          }
-        });
-
         if (badgeInfo.token_badge && badgeInfo.token_badge_data) {
-          const tokenBadgeData = badge.perks?.find(x => x.badgeId == badge.badgeId && x.tier == 0);
-
+          const tokenBadgeData = badge.perks?.find(x => x.tier == 0);
+          const countTiersOfBadge= badge.badgeTiers.length;
+          const countTiersClaimed = badge.tier;
+          const claimablePerk = countTiersClaimed == countTiersOfBadge;
+      
+          badge.claimable = claimablePerk && (tokenBadgeData && tokenBadgeData!=null && tokenBadgeData.isCompleted);
+      //TODO: remove this after testing
+          badge.claimable = badge.badgeId==7?true:false;
           badge.tokenBadge = badgeInfo.token_badge_data;
           
           badge.tokenBadge.maxClaims = tokenBadgeData && tokenBadgeData!=null ? Number(tokenBadgeData?.maxClaims) : 0;
@@ -352,10 +345,6 @@ export class BadgesServices {
         badgeData,
         account
       );
-
-      if(badgeResponse.claimable && !badgeResponse.claimable) {
-        this.setClaimableBadgeByPerks([badgeResponse]);
-      }
 
       this.badges.push(badgeResponse);
     } catch (error) {
