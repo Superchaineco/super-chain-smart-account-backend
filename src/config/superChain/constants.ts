@@ -97,12 +97,6 @@ export const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY;
 export const TURNSTILE_RAFFLE_SECRET_KEY =
   process.env.TURNSTILE_RAFFLE_SECRET_KEY;
 export const TURNSTILE_RAFFLE_SITE_KEY = process.env.TURNSTILE_RAFFLE_SITE_KEY;
-
-export const WORLD_ID_APP_ID = process.env.WORLD_ID_APP_ID ?? '';
-export const WORLD_ID_ACTION = process.env.WORLD_ID_ACTION ?? '';
-export const WORLD_ID_SIGNAL = process.env.WORLD_ID_SIGNAL ?? '';
-export const DATABASE_URL = process.env.DATABASE_URL ?? '';
-
 export const WORLD_ID_APP_ID = process.env.WORLD_ID_APP_ID ?? ''
 export const WORLD_ID_ACTION = process.env.WORLD_ID_ACTION ?? ''
 export const WORLD_ID_SIGNAL = process.env.WORLD_ID_SIGNAL ?? ''
