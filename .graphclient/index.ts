@@ -2643,7 +2643,7 @@ const superAccountsTransforms = [];
 const additionalTypeDefs = [] as any[];
 const superAccountsHandler = new GraphqlHandler({
               name: "super-accounts",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/72352/super-accounts-staging/v1.2.15"},
+              config: {"endpoint":"https://gateway.thegraph.com/api/subgraphs/id/AQcWbD2DFtVnSFBqGyMJfBKaGoHpx8r5fyTSixgstkQF"},
               baseDir,
               cache,
               pubsub,
