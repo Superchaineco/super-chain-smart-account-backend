@@ -7,6 +7,13 @@ export enum ENVIRONMENTS {
   staging = 'staging',
 }
 
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // requerido en Railway
+  },
+});
+
 export const ENV = Object.values(ENVIRONMENTS).includes(
   process.env.NODE_ENV as ENVIRONMENTS
 )
@@ -45,6 +52,7 @@ const config = {
 
 import SuperChainModuleABI from './abi/SuperChainModule.json';
 import SunnyAirdropABI from './abi/SunnyAirdrop.json';
+import { Pool } from 'pg';
 import RedeemPerkABI from './abi/RedeemPerk.json';
 import SA_AirdropABI from './abi/SA_Airdrop.json';
 export const SUPER_CHAIN_MODULE_ABI = SuperChainModuleABI;
@@ -86,8 +94,14 @@ export const RPC_PROVIDER = process.env.RPC_PROVIDER!;
 export const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
 export const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY;
 
-export const TURNSTILE_RAFFLE_SECRET_KEY = process.env.TURNSTILE_RAFFLE_SECRET_KEY;
+export const TURNSTILE_RAFFLE_SECRET_KEY =
+  process.env.TURNSTILE_RAFFLE_SECRET_KEY;
 export const TURNSTILE_RAFFLE_SITE_KEY = process.env.TURNSTILE_RAFFLE_SITE_KEY;
+
+export const WORLD_ID_APP_ID = process.env.WORLD_ID_APP_ID ?? '';
+export const WORLD_ID_ACTION = process.env.WORLD_ID_ACTION ?? '';
+export const WORLD_ID_SIGNAL = process.env.WORLD_ID_SIGNAL ?? '';
+export const DATABASE_URL = process.env.DATABASE_URL ?? '';
 
 export const WORLD_ID_APP_ID = process.env.WORLD_ID_APP_ID ?? ''
 export const WORLD_ID_ACTION = process.env.WORLD_ID_ACTION ?? ''

@@ -15,6 +15,7 @@ import { LiskTransactionsStrategy } from './liskTransactions';
 import { ModeTransactionsStrategy } from './modeTransactions';
 import { NounsCheckStrategy } from './nounsCheck';
 import { OpTransactionsStrategy } from './opTransactions';
+import { SelfVerificationStrategy } from './selfVerificationStrategy';
 import { SoneiumTransactionsStrategy } from './soneiumTransactions';
 import { SuperChainTransactionsStrategy } from './superchainTransactions';
 import { SuperCohort0Strategy } from './superCohort0Strategy';
@@ -86,6 +87,8 @@ export class BadgeStrategyContext {
                 return new TalentCreatorScoreStrategy()
             case "ETH Vault Deposits":
                 return new VaultsStrategy()
+            case "Self verification":
+                return new SelfVerificationStrategy()
             //NOT RELEVANT FOR NOW
             // case "Mint User":
             //     return new MintTransactionsStrategy()
