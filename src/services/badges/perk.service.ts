@@ -13,6 +13,7 @@ import { OperationType } from "@safe-global/types-kit";
 import { MetaTransactionData } from "@safe-global/types-kit";
 import { Contract, Interface, JsonRpcProvider, Wallet } from "ethers";
 import { execute, ExecutionResult } from "graphql";
+import { AttestJobData, PerkJobData } from "./queue/attestQueue.service";
 
 export interface Perk {
   badgeId: number;
@@ -29,6 +30,7 @@ export class PerkService {
     this.wallet
   );
 
+
   public async redeemPerk(
     badgesTiers: Perk[],
     user: string
@@ -37,8 +39,6 @@ export class PerkService {
       project: "SuperAccounts",
       platform: "Web",
     };
-    console.log("🔑 Signing from address:", this.wallet.address);    
-
     const safe4337Pack = await Safe4337Pack.init({
       provider: BADGES_RPC_URL,
       signer: ATTESTATOR_SIGNER_PRIVATE_KEY,
@@ -66,7 +66,7 @@ export class PerkService {
       to: ECO_ACCOUNTS_PERKS_ADDRESS,
       value: "0",
       data,
-      operation: OperationType.Call, // 0
+      operation: OperationType.Call,
     };
 
 

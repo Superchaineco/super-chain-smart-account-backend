@@ -146,6 +146,7 @@ export class BadgesServices {
           ...badge,
           tier: parseInt(badge.tier),
           points: parseInt(badge.points),
+          perkClaims: badge.perkClaims
         };
       }),
       ...unclaimedBadges,
@@ -168,8 +169,10 @@ export class BadgesServices {
     for (const badge of activeBadges) {
       await this.updateBadgeDataForAccount(eoas, badge, account);
     }
+
     await this.updateStatsForBadges(this.badges);
     await this.updateCampaignInfo(this.badges);
+
     return this.badges;
   }
 
@@ -317,14 +320,13 @@ export class BadgesServices {
           const tokenBadgeData = badge.perks?.find((x) => x.tier == 0);
           const countTiersOfBadge = badge.badgeTiers.length;
           const countTiersClaimed = badge.tier;
-          const claimablePerk = countTiersClaimed == countTiersOfBadge;
+          const isClaimedPerkFromSc = badge.perkClaims.length > 0;
+          const claimablePerk = countTiersClaimed == countTiersOfBadge && !isClaimedPerkFromSc;
 
           badge.claimable =
             badge.claimable ||
             (claimablePerk && tokenBadgeData && !tokenBadgeData.isCompleted);
-
           badge.tokenBadge = badgeInfo.token_badge_data;
-
           badge.tokenBadge.maxClaims =
             tokenBadgeData && tokenBadgeData != null
               ? Number(tokenBadgeData?.maxClaims)
@@ -348,8 +350,11 @@ export class BadgesServices {
         badgeData,
         account
       );
-
-      this.badges.push(badgeResponse);
+      const response = {
+        ...badgeResponse,
+        perkClaims: badgeData.perkClaims
+      }
+      this.badges.push(response);
     } catch (error) {
       console.error(
         'Error updating badge data:',

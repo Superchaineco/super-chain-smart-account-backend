@@ -82,6 +82,7 @@
     "token_badge": false,
     "count_unit": null,
     "tiers": []
+
   },
   {
     "badge_id": "9",
@@ -185,9 +186,13 @@
   },
   {
     "badge_id": "25",
-    "token_badge": false,
+    "token_badge": true,
     "count_unit": "points",
-    "tiers": []
+    "tiers": [],
+    "token_badge_data":  {
+      "symbol": "USDC",
+      "amount": "0.0001"
+    }
   },
   {
     "badge_id": "26",

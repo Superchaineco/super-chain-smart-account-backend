@@ -4,8 +4,9 @@ import { redisWorker } from '@/utils/cache';
 import { ENV, ENVIRONMENTS } from '@/config/superChain/constants';
 import { AttestationsService } from '@/services/attestations.service';
 import { ResponseBadge } from '../badges.service';
+import { PerkService } from '../perk.service';
 
-interface AttestJobData {
+export interface AttestJobData {
     account: string;
     totalPoints: number;
     badges: ResponseBadge[];
@@ -13,12 +14,12 @@ interface AttestJobData {
     badgesToPerk: { badgeId: number; level: number; points: number }[];
 }
 
-interface PerkData {
+export interface PerkData {
     badgeId: number;
     tier: number;
 }
 
-interface PerkJobData {
+export interface PerkJobData {
     account: string;
     perks: PerkData[];
 }
@@ -73,16 +74,16 @@ export class AttestQueueService {
                 badgeUpdates: job.data.badgeUpdates,
                 badgesToPerk: job.data.badgesToPerk,
             }))
-            await this.enqueuePerks(data);
-            await this.processPerkQueue();
+
             const results = await service.batchAttest(data);
             console.log(`[Polling] Executed! ${jobs.length} attestations`);
 
             for (const r of results) {
                 this.resultMap.set(r.account.toLowerCase(), r);
             }
-
-
+            
+        
+            
             this.isRunning = false;
         } catch (error) {
             console.error('[Polling Batch Error]', error);
@@ -141,120 +142,6 @@ export class AttestQueueService {
 
 
 
-    private async enqueuePerks(data: AttestJobData[]) {
-
-        if (data.length === 0) {
-            console.log('[Perk Queue] No data to enqueue');
-            return;
-        }
-
-        console.log(`[Perk Queue] Enqueuing perks for ${data.length} accounts`);
-
-
-        for (const d of data) {
-            if (!d.badgesToPerk || d.badgesToPerk.length === 0) {
-                console.log(`[Perk Queue] No badge updates for ${d.account}, skipping perks`);
-                continue;
-            }
-            const jobId = `perk-${d.account}`;
-
-            const existing = await this.perkQueue.getJob(jobId);
-            const isDone = await existing?.isCompleted() ?? false;
-            const isFailed = await existing?.isFailed() ?? false;
-
-            if (existing && (isDone || isFailed) || !existing) {
-                const perks = d.badgesToPerk.map((d) => ({
-                    badgeId: d.badgeId,
-                    tier: d.level ?? 0,
-                }));
-
-                if (perks.length === 0) {
-                    console.log(`[Perk Queue] No valid perks for ${d.account}, skipping`);
-                    continue;
-                }
-
-                const jobData: PerkJobData = {
-                    account: d.account,
-                    perks: perks,
-                };
-                try {
-                    await existing?.remove();
-                    await this.perkQueue.add(this.perkQueueName, jobData, {
-                        jobId,
-                        attempts: 1,
-                        priority: 1,
-                        backoff: {
-                            type: 'exponential',
-                            delay: 1000,
-                        },
-                        removeOnComplete: {
-                            age: 86400,
-                        },
-                        removeOnFail: {
-                            age: 86400,
-                        },
-                    });
-                    console.log(`[Perk Queue] Enqueued ${perks.length} perks for ${d.account}`);
-                } catch (error) {
-                    console.error(`[Perk Queue] Error enqueuing perks for ${d.account}:`, error);
-                }
-            }
-            else {
-                console.log(`🎁 Perk job already exists and is active for ${d.account}`);
-            }
-        }
-
-
-    }
-
-    private async processPerkQueue() {
-        const jobs = await this.perkQueue.getJobs(['prioritized', 'waiting'], 0, this.BATCH_SIZE - 1);
-        if (jobs.length === 0) {
-            console.log(`[Perk Polling] Nothing to process.....`);
-            return;
-        }
-        console.log(`[Perk Polling] Processing ${jobs.length} perk redemptions`);
-
-        try {
-            const { PerkService } = await import('@/services/badges/perk.service');
-            const perkService = new PerkService();
-
-            const results = await Promise.all(
-                jobs.map(async (job) => {
-                    try {
-                        const result = await perkService.redeemPerk(
-                            job.data.perks,
-                            job.data.account
-                        );
-                        return {
-                            account: job.data.account,
-                            perkHash: result,
-                            perkSuccess: typeof result === 'string',
-                            perks: job.data.perks
-                        };
-                    } catch (error) {
-                        console.error(`Error processing perk for ${job.data.account}:`, error);
-                        return {
-                            account: job.data.account,
-                            perkHash: null,
-                            perkSuccess: false,
-                            error: error.message,
-                            perks: job.data.perks
-                        };
-                    }
-                })
-            );
-            console.log(`[Perk Polling] Executed! ${jobs.length} perk redemptions`);
-            for (const r of results) {
-                this.perkResultMap.set(r.account.toLowerCase(), r);
-            }
-
-        } catch (error) {
-            console.error('[Perk Polling Batch Error]', error);
-        } finally {
-            await Promise.all(jobs.map(async (job) => await job.remove()));
-        }
-    }
 }
 
 export const attestQueueService = new AttestQueueService();

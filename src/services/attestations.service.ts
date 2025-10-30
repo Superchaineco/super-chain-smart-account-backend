@@ -2,6 +2,7 @@ import { EAS__factory } from '@ethereum-attestation-service/eas-contracts/dist/t
 
 import {
   ethers,
+  Interface,
   JsonRpcProvider,
   Wallet,
   ZeroAddress,
@@ -12,7 +13,9 @@ import {
   ATTESTATOR_SIGNER_PRIVATE_KEY,
   BADGES_RPC_URL,
   EAS_CONTRACT_ADDRESS,
+  ECO_ACCOUNTS_PERKS_ADDRESS,
   PIMLICO_API_KEY,
+  REDEEM_PERK_ABI,
   SAFE_ADDRESS,
   SUPER_CHAIN_ATTESTATION_SCHEMA,
 } from '../config/superChain/constants';
@@ -146,6 +149,7 @@ export class AttestationsService {
       totalPoints: number;
       badges: ResponseBadge[];
       badgeUpdates: { badgeId: number; level: number; points: number }[];
+      badgesToPerk: { badgeId: number; level: number; points: number }[];
     }[]
   ) {
     const onchainAnalytics: OnchainAnalyticsProps = {
@@ -185,12 +189,32 @@ export class AttestationsService {
       });
     }
 
-    const safeTransactions = await this.createSafeTransactions(txDatas);
+    const iface = new Interface(REDEEM_PERK_ABI);
+    const perkTxs: MetaTransactionData[] = [];
+    for (const data of batchData) {
+      if (!Array.isArray(data.badgesToPerk) || data.badgesToPerk.length === 0) continue;
+    
+      const perks = data.badgesToPerk.map((p) => ({
+        badgeId: p.badgeId,
+        tier: p.level ?? 0,
+      }));
+    
+      const dataCalldata = iface.encodeFunctionData('redeemPerks', [perks, data.account]) as `${string}`;
+    
+      perkTxs.push({
+        to: ECO_ACCOUNTS_PERKS_ADDRESS,
+        value: '0',
+        data: dataCalldata,
+      });
+    }
+   
 
+    const safeTransactions = await this.createSafeTransactions(txDatas);
+    const allTransactions = [...safeTransactions, ...perkTxs];
     const safeTransaction = await safeSdk.createTransaction({
-      transactions: safeTransactions,
+      transactions: allTransactions,
     });
-    const multiSendData = encodeMultiSendData(safeTransactions);
+    const multiSendData = encodeMultiSendData(allTransactions);
     console.log(
       '🧾🧾🧾🧾🧾 Calldata sent to Safe (batch multiSend):',
       multiSendData
