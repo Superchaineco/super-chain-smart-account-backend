@@ -254,7 +254,8 @@ export async function getCampaignDetailsWithData(
     totalBoost,
     campaign_badges,
     distributed_points,
-    myPoints
+    myPoints,
+    airdrop_condition_id: campaign.airdrop_condition_id
   };
 }
 

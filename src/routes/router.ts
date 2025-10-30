@@ -35,7 +35,7 @@ routes.get('/user/:account/badges', getBadges);
 
 routes.get('/user/:account/perks', perksByAccount);
 
-routes.get('/airdrop/:account', getAirdrop);
+routes.get('/airdrop/:account/:label', getAirdrop);
 
 routes.post('/airdrop/:account', postAirdrop);
 

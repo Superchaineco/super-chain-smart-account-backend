@@ -40,6 +40,7 @@ export async function postAirdrop(req: Request, res: Response) {
 
 export async function getAirdrop(req: Request, res: Response) {
   const account: string = req.params.account as string;
+  const label: string = req.params.label as string;
 
   if (!account) return res.status(400).json({ error: "Invalid request" });
 
@@ -48,7 +49,7 @@ export async function getAirdrop(req: Request, res: Response) {
   try {
     const response = await service.fetchAirdropForAccount({
       account
-    }, 1);
+    }, 1, label);
 
     return res.status(200).json(response);
   } catch (error) {
