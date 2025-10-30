@@ -8,8 +8,7 @@ import { MerklApi } from '@merkl/api';
 import { formatEther, parseEther } from 'ethers';
 
 export class LiskSurgeStrategy extends BaseBadgeStrategy {
-  campaigns: string[] = ['Lisk Surge'];
-
+  
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `liskSurge-${eoas.join(',')}`;
     const ttl = 3600;

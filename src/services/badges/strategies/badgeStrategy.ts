@@ -4,6 +4,7 @@ import { Season } from '@/types/index.types';
 import { BASE_BLOCKSCOUT_API_KEY, INK_BLOCKSCOUT_API_KEY, OP_BLOCKSCOUT_API_KEY, ROUTESCAN_API_KEY, SONEIUM_BLOCKSCOUT_API_KEY, UNICHAIN_BLOCKSCOUT_API_URL } from '@/config/superChain/constants';
 import { getBadgesQueue } from '../queue';
 import { Network } from 'alchemy-sdk';
+import { getCampaignsForBadgeId } from '@/services/campaigns/campaigns.service';
 
 
 export type ExternalApiCall = {
@@ -114,7 +115,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
     account?: string
   ): Promise<number | boolean>;
 
-  public campaigns: string[] = []
+
 
   async getCachedValue(apicall: ExternalApiCall): Promise<number> {
     let totalValue = 0;
@@ -178,7 +179,7 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
         tier: badgeData.tier,
         claimableTier,
         claimable,
-        campaigns: this.campaigns,
+        campaigns: getCampaignsForBadgeId(Number(badgeData.badge.badgeId)),
         currentCount: typeof value == 'number' ? value : undefined
       };
     } catch (error) {

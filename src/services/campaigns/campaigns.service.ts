@@ -60,7 +60,7 @@ export type Campaign = {
 };
 
 const campaigns: Campaign[] = campaignsData as unknown as Campaign[];
-const badgesService = new BadgesServices();
+
 
 // Type guard for CampaignBoost
 function isCampaignBoost(obj: any): obj is CampaignBoost {
@@ -167,6 +167,21 @@ async function getCampaignPrizesInfo(account: string, campaign: Campaign) {
   }
 
 }
+
+
+
+export  function getCampaignsForBadgeId(badgeId: number): string[] {
+  const result: string[] = campaigns
+    .filter((campaign: Campaign) =>
+      campaign.campaign_badges.some(
+        (badge: CampaignBadge) => Number(badge.id) === badgeId
+      )
+    )
+    .map((campaign: Campaign) => campaign.name);
+
+  return result;
+}
+
 
 export async function getCampaignDetailsWithData(
   campaignId: string,

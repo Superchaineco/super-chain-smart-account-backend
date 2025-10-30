@@ -38,7 +38,7 @@
     "count_unit": "transactions",
     "token_badge_data":  {
       "symbol": "USDC",
-      "amount": "0.000010"
+      "amount": "0.0001"
     },
     "tiers": []
   },
@@ -73,7 +73,7 @@
     "tiers": [],
     "token_badge_data":  {
       "symbol": "USDC",
-      "amount": "0.000010"
+      "amount": "0.0001"
     }
    
   },

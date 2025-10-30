@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export class SuperStacksStrategy extends BaseBadgeStrategy {
 
-  campaigns: string[] = ["SuperStacks"]
+  
 
   async getValue(eoas: string[]): Promise<number> {
     const cacheKey = `superStacks-${eoas.join(',')}`;
