@@ -321,10 +321,7 @@ export class BadgesServices {
 
           badge.claimable =
             badge.claimable ||
-            (claimablePerk &&
-              tokenBadgeData &&
-              tokenBadgeData != null &&
-              tokenBadgeData.isCompleted);
+            (claimablePerk && tokenBadgeData && !tokenBadgeData.isCompleted);
 
           badge.tokenBadge = badgeInfo.token_badge_data;
 
