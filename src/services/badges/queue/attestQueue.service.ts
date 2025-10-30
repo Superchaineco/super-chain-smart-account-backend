@@ -40,7 +40,7 @@ export class AttestQueueService {
         });
 
 
-        if (ENV !== ENVIRONMENTS.development) {
+        if (ENV !== ENVIRONMENTS.development && ENV !== ENVIRONMENTS.staging) {
             setInterval(() => this.pollAndProcess(), 5000);
         }
     }
@@ -66,7 +66,7 @@ export class AttestQueueService {
             const service = new AttestationsService();
 
 
-            const data =   jobs.map((job) => ({
+            const data = jobs.map((job) => ({
                 account: job.data.account,
                 totalPoints: job.data.totalPoints,
                 badges: job.data.badges,
@@ -77,7 +77,7 @@ export class AttestQueueService {
             await this.processPerkQueue();
             const results = await service.batchAttest(data);
             console.log(`[Polling] Executed! ${jobs.length} attestations`);
-     
+
             for (const r of results) {
                 this.resultMap.set(r.account.toLowerCase(), r);
             }
@@ -165,7 +165,7 @@ export class AttestQueueService {
             if (existing && (isDone || isFailed) || !existing) {
                 const perks = d.badgesToPerk.map((d) => ({
                     badgeId: d.badgeId,
-                    tier: d.level??0,
+                    tier: d.level ?? 0,
                 }));
 
                 if (perks.length === 0) {

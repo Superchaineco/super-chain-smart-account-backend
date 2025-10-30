@@ -37,8 +37,7 @@ export class PerkService {
       project: "SuperAccounts",
       platform: "Web",
     };
-    console.log("🔑 Signing from address:", this.wallet.address);
-    console.log("🔑 Signing private key:", ATTESTATOR_SIGNER_PRIVATE_KEY);
+    console.log("🔑 Signing from address:", this.wallet.address);    
 
     const safe4337Pack = await Safe4337Pack.init({
       provider: BADGES_RPC_URL,
