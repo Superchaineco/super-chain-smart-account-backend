@@ -19,6 +19,7 @@ import { verifyFarcaster } from '@/controllers/farcaster';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handleSafeDetail, handleTxHistory, handleTxPropose, handleTxQueued, SAFE_CLIENT_BASE } from '@/services/safe.service';
 import { getAirdrop, postAirdrop } from '@/controllers/airdrop';
+import selfVerify, { selfCheck } from '@/controllers/self';
 
 
 
@@ -55,6 +56,11 @@ routes.get('/vaults/:account', getVaults);
 routes.post('/vaults/:account/refresh', refreshVaults);
 
 routes.post('/relay', relay);
+
+routes.post('/self/verify', selfVerify);
+
+routes.get('/self/check', selfCheck);
+
 
 routes.post('/user-op-reverse-proxy', verifyReverseProxy, reverseProxy);
 

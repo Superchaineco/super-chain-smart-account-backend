@@ -3,29 +3,28 @@ import {
   GetUserBadgesQuery,
   GetUserBadgesQueryVariables,
   execute,
-} from "../../../.graphclient";
-import type { ExecutionResult } from "graphql";
-import IpfsService from "../ipfs.service";
-import { redisService } from "../redis.service";
-import { BadgeStrategyContext } from "../badges/strategies/context";
-import { superChainAccountService } from "../superChainAccount.service";
-import { DATABASE_URL } from "@/config/superChain/constants";
-import { Pool } from "pg";
-import badgesInfo from "./badges_info.json";
-import { BadgeInfo } from "../dto/badge_data";
+} from '../../../.graphclient';
+import type { ExecutionResult } from 'graphql';
+import IpfsService from '../ipfs.service';
+import { redisService } from '../redis.service';
+import { BadgeStrategyContext } from '../badges/strategies/context';
+import { superChainAccountService } from '../superChainAccount.service';
+import { DATABASE_URL } from '@/config/superChain/constants';
+import { Pool } from 'pg';
+import badgesInfo from './badges_info.json';
+import { BadgeInfo } from '../dto/badge_data';
 import campaignsData from '../../services/campaigns/campaigns.json';
 
-
-export type Badge = GetUserBadgesQuery["accountBadges"][number];
+export type Badge = GetUserBadgesQuery['accountBadges'][number];
 export type ResponseBadge = {
   points: string;
   tier: string;
   campaigns?: string[];
   currentCount: number | undefined;
-} & Badge["badge"] & {
-  claimableTier: number | null;
-  claimable: boolean;
-};
+} & Badge['badge'] & {
+    claimableTier: number | null;
+    claimable: boolean;
+  };
 
 export class BadgesServices {
   private pool: Pool;
@@ -67,26 +66,26 @@ export class BadgesServices {
     const cachedData = await redisService.getCachedData(CACHE_KEY);
     if (optimisticData && cachedData) {
       console.log(
-        "Optimistic data found for badges. Returning optimistic data..."
+        'Optimistic data found for badges. Returning optimistic data...'
       );
       fetchFunction(false)
         .then((freshData) => {
           if (JSON.stringify(freshData) !== JSON.stringify(optimisticData)) {
             console.log(
-              "Data fetch differs from optimistic data. Updating main cache and clearing optimistic data."
+              'Data fetch differs from optimistic data. Updating main cache and clearing optimistic data.'
             );
             redisService.deleteCachedData(OPTIMISTIC_UPDATED_CACHE_KEY);
             redisService.setCachedData(CACHE_KEY, freshData, null);
             return freshData;
           } else {
             console.log(
-              "Data fetch matches optimistic data. Everything remains the same."
+              'Data fetch matches optimistic data. Everything remains the same.'
             );
           }
         })
         .catch((err) => {
           console.error(
-            "Error in badges fetch during comparison with optimistic data:",
+            'Error in badges fetch during comparison with optimistic data:',
             err
           );
         });
@@ -94,7 +93,7 @@ export class BadgesServices {
     }
 
     if (cachedData) {
-      console.log("Badges cache returned!");
+      console.log('Badges cache returned!');
       fetchFunction();
       return cachedData;
     }
@@ -112,9 +111,9 @@ export class BadgesServices {
           user: account,
         } as GetUserBadgesQueryVariables);
       if (errors) {
-        console.error("Error fetching badges:", errors);
+        console.error('Error fetching badges:', errors);
         //return {}
-        throw new Error("Error fetching badges");
+        throw new Error('Error fetching badges');
       }
       return data;
     };
@@ -143,8 +142,6 @@ export class BadgesServices {
 
     const activeBadges = [
       ...(data?.accountBadges ?? []).map((badge) => {
-
-
         return {
           ...badge,
           tier: parseInt(badge.tier),
@@ -159,11 +156,11 @@ export class BadgesServices {
     const results = await Promise.all(promises);
 
     for (const badge of activeBadges) {
-      badge.badge["metadata"] = await this.getBadgeMetadata(badge);
+      badge.badge['metadata'] = await this.getBadgeMetadata(badge);
       badge.badge.badgeTiers.forEach((tier) => {
         const result = results.find((res) => res.tier.uri === tier.uri);
         if (result) {
-          tier["metadata"] = result.metadata;
+          tier['metadata'] = result.metadata;
         }
       });
     }
@@ -243,7 +240,7 @@ export class BadgesServices {
   }
 
   public async getBadgeLevelMetadata(
-    badgeLevel: Badge["badge"]["badgeTiers"][0]
+    badgeLevel: Badge['badge']['badgeTiers'][0]
   ) {
     const CACHE_KEY = `badgeLevel:${badgeLevel.uri}`;
     const ttl = -1;
@@ -257,7 +254,7 @@ export class BadgesServices {
         console.error(
           `Error parsing JSON from IPFS (Badge Tier metadata): ${error}`
         );
-        throw new Error("Error parsing JSON from IPFS");
+        throw new Error('Error parsing JSON from IPFS');
       }
     };
 
@@ -269,16 +266,15 @@ export class BadgesServices {
     );
   }
 
-
-
   private async updateCampaignInfo(badges: any[]) {
-
     badges.forEach((badge) => {
-      const campaign = campaignsData.find(x => !!x.campaign_badges.find(x => x.id == badge.badgeId))
+      const campaign = campaignsData.find(
+        (x) => !!x.campaign_badges.find((x) => x.id == badge.badgeId)
+      );
       if (campaign) {
         badge.moreInfo = campaign.more_info;
       }
-    })
+    });
   }
 
   private async updateStatsForBadges(badges: any[]) {
@@ -295,10 +291,14 @@ export class BadgesServices {
           badge.statistics = badgeStats.map((stat) => ({
             totalClaimed: Number(stat.total_claimed ?? 0),
             tier: stat.tier,
-            percentage: accountQuantity > 0 ? Math.floor(
-              (Number(stat.total_claimed ?? 0) / Number(accountQuantity ?? 1)) *
-              100
-            ) : 0,
+            percentage:
+              accountQuantity > 0
+                ? Math.floor(
+                    (Number(stat.total_claimed ?? 0) /
+                      Number(accountQuantity ?? 1)) *
+                      100
+                  )
+                : 0,
           }));
         }
       });
@@ -308,23 +308,30 @@ export class BadgesServices {
 
   private setBadgeRewards(badges: any[]) {
     badges.forEach((badge) => {
-
       const badgeInfo = this.badgesInfo.find(
         (data) => data.badge_id == badge.badgeId
       );
       if (badgeInfo) {
         badge.countUnit = badgeInfo.count_unit;
         if (badgeInfo.token_badge && badgeInfo.token_badge_data) {
-          const tokenBadgeData = badge.perks?.find(x => x.tier == 0);
+          const tokenBadgeData = badge.perks?.find((x) => x.tier == 0);
           const countTiersOfBadge = badge.badgeTiers.length;
           const countTiersClaimed = badge.tier;
           const claimablePerk = countTiersClaimed == countTiersOfBadge;
 
-          badge.claimable = claimablePerk && (tokenBadgeData && tokenBadgeData != null && tokenBadgeData.isCompleted);
+          badge.claimable =
+            badge.claimable ||
+            (claimablePerk &&
+              tokenBadgeData &&
+              tokenBadgeData != null &&
+              tokenBadgeData.isCompleted);
 
           badge.tokenBadge = badgeInfo.token_badge_data;
 
-          badge.tokenBadge.maxClaims = tokenBadgeData && tokenBadgeData != null ? Number(tokenBadgeData?.maxClaims) : 0;
+          badge.tokenBadge.maxClaims =
+            tokenBadgeData && tokenBadgeData != null
+              ? Number(tokenBadgeData?.maxClaims)
+              : 0;
         }
       }
     });
@@ -348,7 +355,7 @@ export class BadgesServices {
       this.badges.push(badgeResponse);
     } catch (error) {
       console.error(
-        "Error updating badge data:",
+        'Error updating badge data:',
         badgeData.badge.badgeId,
         badgeData.badge.metadata,
         error
@@ -365,7 +372,7 @@ export class BadgesServices {
       const result = await client.query(this.queries.getBadgeLevelMetadata);
       return result.rows;
     } catch (error) {
-      console.error("Error getting stats for badges:", error);
+      console.error('Error getting stats for badges:', error);
       return null;
     } finally {
       client.release();
@@ -380,7 +387,7 @@ export class BadgesServices {
 
       return accounts;
     } catch (error) {
-      console.error("Error getting account quantity:", error);
+      console.error('Error getting account quantity:', error);
       return 0;
     } finally {
       client.release();
