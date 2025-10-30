@@ -40,7 +40,7 @@ export class AttestQueueService {
         });
 
 
-        if (ENV !== ENVIRONMENTS.development && ENV !== ENVIRONMENTS.staging) {
+        if (ENV !== ENVIRONMENTS.development) {
             setInterval(() => this.pollAndProcess(), 5000);
         }
     }

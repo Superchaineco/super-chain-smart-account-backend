@@ -33,7 +33,7 @@ export class BadgesQueueService {
       }
     });
 
-    if (ENV !== ENVIRONMENTS.development && ENV !== ENVIRONMENTS.staging) {
+    if (ENV !== ENVIRONMENTS.development) {
       this.worker = this.initializeWorker();
       this.attachLifecycleHandlers();
     }
