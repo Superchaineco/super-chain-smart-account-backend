@@ -320,7 +320,7 @@ export class BadgesServices {
           const tokenBadgeData = badge.perks?.find((x) => x.tier == 0);
           const countTiersOfBadge = badge.badgeTiers.length;
           const countTiersClaimed = badge.tier;
-          const isClaimedPerkFromSc = badge.perkClaims.length > 0;
+          const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
           const claimablePerk = countTiersClaimed == countTiersOfBadge && !isClaimedPerkFromSc;
 
           badge.claimable =
