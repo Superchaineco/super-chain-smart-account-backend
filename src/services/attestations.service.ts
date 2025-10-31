@@ -168,6 +168,11 @@ export class AttestationsService {
     const txDatas = [];
     for (const data of batchData) {
       console.log('Attesting:', data.account);
+      data.badgeUpdates = data.badgeUpdates.filter(x => x.level != x.previousLevel)
+      if (data.badgeUpdates.length === 0) {
+        console.log('No badge updates for:', data.account);
+        continue;
+      }
       const encodedData = this.schemaEncoder.encodeData([
         {
           name: 'badges',
@@ -193,21 +198,21 @@ export class AttestationsService {
     const perkTxs: MetaTransactionData[] = [];
     for (const data of batchData) {
       if (!Array.isArray(data.badgesToPerk) || data.badgesToPerk.length === 0) continue;
-    
+
       const perks = data.badgesToPerk.map((p) => ({
         badgeId: p.badgeId,
         tier: p.level ?? 0,
       }));
-    
+
       const dataCalldata = iface.encodeFunctionData('redeemPerks', [perks, data.account]) as `${string}`;
-    
+
       perkTxs.push({
         to: ECO_ACCOUNTS_PERKS_ADDRESS,
         value: '0',
         data: dataCalldata,
       });
     }
-   
+
 
     const safeTransactions = await this.createSafeTransactions(txDatas);
     const allTransactions = [...safeTransactions, ...perkTxs];
