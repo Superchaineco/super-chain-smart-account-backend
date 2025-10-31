@@ -321,9 +321,9 @@ export class BadgesServices {
           const countTiersOfBadge = badge.badgeTiers.length;
           const countTiersClaimed = badge.tier;
           const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
-          const claimablePerk = countTiersClaimed == countTiersOfBadge && !isClaimedPerkFromSc;
+          const claimablePerk = countTiersClaimed == countTiersOfBadge && isClaimedPerkFromSc==false;
 
-          badge.claimable =
+          badge.claimableByPerk =
             badge.claimable ||
             (claimablePerk && tokenBadgeData && !tokenBadgeData.isCompleted);
           badge.tokenBadge = badgeInfo.token_badge_data;

@@ -68,7 +68,7 @@ export async function claimBadges(req: Request, res: Response) {
 
     const totalPoints = badgesService.getTotalPoints(badges);
     const badgeUpdates = badgesService.getBadgeUpdates(badges).filter((b) => !(b.badgeId.toString() == '11' && b.level > 1));
-    const badgesToPerk = badges.filter((b) => b.claimable == true);
+    const badgesToPerk = badges.filter((b) => b.claimableByPerk == true);
 
     const attestData = {
       account,
