@@ -216,10 +216,6 @@ export class AttestationsService {
 
     const safeTransactions = await this.createSafeTransactions(txDatas);
     const allTransactions = [...safeTransactions, ...perkTxs];
-    if(allTransactions.length === 0) {
-      console.log('No transactions to process in batch');
-      return [];
-    }
     const safeTransaction = await safeSdk.createTransaction({
       transactions: allTransactions,
     });
