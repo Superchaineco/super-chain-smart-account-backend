@@ -276,7 +276,7 @@ const schemaAST = {
                 "kind": "NamedType",
                 "name": {
                   "kind": "Name",
-                  "value": "UserPerkClaim_orderBy"
+                  "value": "PerkRedemption_orderBy"
                 }
               },
               "directives": []
@@ -306,7 +306,7 @@ const schemaAST = {
                 "kind": "NamedType",
                 "name": {
                   "kind": "Name",
-                  "value": "UserPerkClaim_filter"
+                  "value": "PerkRedemption_filter"
                 }
               },
               "directives": []
@@ -322,7 +322,7 @@ const schemaAST = {
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "UserPerkClaim"
+                    "value": "PerkRedemption"
                   }
                 }
               }
@@ -1431,7 +1431,7 @@ const schemaAST = {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "UserPerkClaim_filter"
+              "value": "PerkRedemption_filter"
             }
           },
           "directives": []
@@ -13454,7 +13454,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "redemptions"
+            "value": "perkClaims"
           },
           "arguments": [
             {
@@ -13558,115 +13558,6 @@ const schemaAST = {
             }
           },
           "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "userClaims"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserPerkClaim_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserPerkClaim_filter"
-                }
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "UserPerkClaim"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
         }
       ],
       "interfaces": [],
@@ -13732,6 +13623,22 @@ const schemaAST = {
                 "kind": "Name",
                 "value": "Bytes"
               }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "AccountBadge"
             }
           },
           "directives": []
@@ -14489,6 +14396,333 @@ const schemaAST = {
             "name": {
               "kind": "Name",
               "value": "Bytes"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_gt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_lt"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_gte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_lte"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_in"
+          },
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "String"
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not_in"
+          },
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "String"
+                }
+              }
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_contains"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_contains_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not_contains"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not_contains_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_starts_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_starts_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not_starts_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not_starts_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_ends_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_ends_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not_ends_with"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_not_ends_with_nocase"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge_"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "AccountBadge_filter"
             }
           },
           "directives": []
@@ -15364,6 +15598,38 @@ const schemaAST = {
           "name": {
             "kind": "Name",
             "value": "redeemer"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge__id"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge__tier"
+          },
+          "directives": []
+        },
+        {
+          "kind": "EnumValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "accountBadge__points"
           },
           "directives": []
         },
@@ -17131,28 +17397,13 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "redemptions_"
+            "value": "perkClaims_"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
               "value": "PerkRedemption_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "userClaims_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "UserPerkClaim_filter"
             }
           },
           "directives": []
@@ -17363,15 +17614,7 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "redemptions"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "userClaims"
+            "value": "perkClaims"
           },
           "directives": []
         }
@@ -22179,244 +22422,6 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "userPerkClaim"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "id"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "ID"
-                  }
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "UserPerkClaim"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "userPerkClaims"
-          },
-          "arguments": [
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "skip"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "0"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "first"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Int"
-                }
-              },
-              "defaultValue": {
-                "kind": "IntValue",
-                "value": "100"
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderBy"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserPerkClaim_orderBy"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "orderDirection"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "OrderDirection"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "name": {
-                "kind": "Name",
-                "value": "where"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "UserPerkClaim_filter"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "block"
-              },
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Block_height"
-                }
-              },
-              "directives": []
-            },
-            {
-              "kind": "InputValueDefinition",
-              "description": {
-                "kind": "StringValue",
-                "value": "Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.",
-                "block": true
-              },
-              "name": {
-                "kind": "Name",
-                "value": "subgraphError"
-              },
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "_SubgraphErrorPolicy_"
-                  }
-                }
-              },
-              "defaultValue": {
-                "kind": "EnumValue",
-                "value": "deny"
-              },
-              "directives": []
-            }
-          ],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NonNullType",
-                "type": {
-                  "kind": "NamedType",
-                  "name": {
-                    "kind": "Name",
-                    "value": "UserPerkClaim"
-                  }
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
             "value": "meta"
           },
           "arguments": [
@@ -25985,1855 +25990,6 @@ const schemaAST = {
         "kind": "Name",
         "value": "Timestamp"
       },
-      "directives": []
-    },
-    {
-      "kind": "ObjectTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "UserPerkClaim"
-      },
-      "fields": [
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "String"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "Bytes"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "Perk"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "AccountBadge"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "isClaimed"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "Boolean"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "FieldDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash"
-          },
-          "arguments": [],
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        }
-      ],
-      "interfaces": [],
-      "directives": []
-    },
-    {
-      "kind": "InputObjectTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "UserPerkClaim_filter"
-      },
-      "fields": [
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Bytes"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Bytes"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Perk_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not_contains_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not_starts_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not_starts_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not_ends_with"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_not_ends_with_nocase"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "String"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge_"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "AccountBadge_filter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "isClaimed"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Boolean"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "isClaimed_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Boolean"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "isClaimed_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Boolean"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "isClaimed_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Boolean"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BigInt"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "BigInt"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_not"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_gt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_lt"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_gte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_lte"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Bytes"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_not_in"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Bytes"
-                }
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash_not_contains"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "Bytes"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "description": {
-            "kind": "StringValue",
-            "value": "Filter for the block changed event.",
-            "block": true
-          },
-          "name": {
-            "kind": "Name",
-            "value": "_change_block"
-          },
-          "type": {
-            "kind": "NamedType",
-            "name": {
-              "kind": "Name",
-              "value": "BlockChangedFilter"
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "and"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "UserPerkClaim_filter"
-              }
-            }
-          },
-          "directives": []
-        },
-        {
-          "kind": "InputValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "or"
-          },
-          "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "UserPerkClaim_filter"
-              }
-            }
-          },
-          "directives": []
-        }
-      ],
-      "directives": []
-    },
-    {
-      "kind": "EnumTypeDefinition",
-      "name": {
-        "kind": "Name",
-        "value": "UserPerkClaim_orderBy"
-      },
-      "values": [
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "id"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "user"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__id"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__badgeId"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__tier"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__token"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__amount"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__maxClaims"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__totalClaims"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "perk__isCompleted"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge__id"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge__tier"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "accountBadge__points"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "isClaimed"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "claimedAt"
-          },
-          "directives": []
-        },
-        {
-          "kind": "EnumValueDefinition",
-          "name": {
-            "kind": "Name",
-            "value": "transactionHash"
-          },
-          "directives": []
-        }
-      ],
       "directives": []
     },
     {

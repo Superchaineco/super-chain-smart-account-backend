@@ -31,16 +31,16 @@ export type AccountBadge = {
   badge: Badge;
   tier: Scalars['BigInt']['output'];
   points: Scalars['BigInt']['output'];
-  perkClaims: Array<UserPerkClaim>;
+  perkClaims: Array<PerkRedemption>;
 };
 
 
 export type AccountBadgeperkClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<UserPerkClaim_orderBy>;
+  orderBy?: InputMaybe<PerkRedemption_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserPerkClaim_filter>;
+  where?: InputMaybe<PerkRedemption_filter>;
 };
 
 export type AccountBadge_filter = {
@@ -112,7 +112,7 @@ export type AccountBadge_filter = {
   points_lte?: InputMaybe<Scalars['BigInt']['input']>;
   points_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   points_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  perkClaims_?: InputMaybe<UserPerkClaim_filter>;
+  perkClaims_?: InputMaybe<PerkRedemption_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<AccountBadge_filter>>>;
@@ -995,12 +995,11 @@ export type Perk = {
   maxClaims: Scalars['BigInt']['output'];
   totalClaims: Scalars['BigInt']['output'];
   isCompleted: Scalars['Boolean']['output'];
-  redemptions: Array<PerkRedemption>;
-  userClaims: Array<UserPerkClaim>;
+  perkClaims: Array<PerkRedemption>;
 };
 
 
-export type PerkredemptionsArgs = {
+export type PerkperkClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PerkRedemption_orderBy>;
@@ -1008,19 +1007,11 @@ export type PerkredemptionsArgs = {
   where?: InputMaybe<PerkRedemption_filter>;
 };
 
-
-export type PerkuserClaimsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<UserPerkClaim_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserPerkClaim_filter>;
-};
-
 export type PerkRedemption = {
   id: Scalars['Bytes']['output'];
   perk: Perk;
   redeemer: Scalars['Bytes']['output'];
+  accountBadge?: Maybe<AccountBadge>;
   token: Scalars['Bytes']['output'];
   amount: Scalars['BigInt']['output'];
   blockNumber: Scalars['BigInt']['output'];
@@ -1070,6 +1061,27 @@ export type PerkRedemption_filter = {
   redeemer_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
   redeemer_contains?: InputMaybe<Scalars['Bytes']['input']>;
   redeemer_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  accountBadge?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_gt?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_lt?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_gte?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_lte?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  accountBadge_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  accountBadge_contains?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_contains?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_starts_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_ends_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  accountBadge_?: InputMaybe<AccountBadge_filter>;
   token?: InputMaybe<Scalars['Bytes']['input']>;
   token_not?: InputMaybe<Scalars['Bytes']['input']>;
   token_gt?: InputMaybe<Scalars['Bytes']['input']>;
@@ -1132,6 +1144,10 @@ export type PerkRedemption_orderBy =
   | 'perk__totalClaims'
   | 'perk__isCompleted'
   | 'redeemer'
+  | 'accountBadge'
+  | 'accountBadge__id'
+  | 'accountBadge__tier'
+  | 'accountBadge__points'
   | 'token'
   | 'amount'
   | 'blockNumber'
@@ -1245,8 +1261,7 @@ export type Perk_filter = {
   isCompleted_not?: InputMaybe<Scalars['Boolean']['input']>;
   isCompleted_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
   isCompleted_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
-  redemptions_?: InputMaybe<PerkRedemption_filter>;
-  userClaims_?: InputMaybe<UserPerkClaim_filter>;
+  perkClaims_?: InputMaybe<PerkRedemption_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Perk_filter>>>;
@@ -1271,8 +1286,7 @@ export type Perk_orderBy =
   | 'maxClaims'
   | 'totalClaims'
   | 'isCompleted'
-  | 'redemptions'
-  | 'userClaims';
+  | 'perkClaims';
 
 export type PointsIncremented = {
   id: Scalars['Bytes']['output'];
@@ -1422,8 +1436,6 @@ export type Query = {
   levelClaims: Array<LevelClaim>;
   perkRedemption?: Maybe<PerkRedemption>;
   perkRedemptions: Array<PerkRedemption>;
-  userPerkClaim?: Maybe<UserPerkClaim>;
-  userPerkClaims: Array<UserPerkClaim>;
   meta?: Maybe<Meta>;
   metas: Array<Meta>;
   /** Access to subgraph metadata */
@@ -1660,24 +1672,6 @@ export type QueryperkRedemptionsArgs = {
   orderBy?: InputMaybe<PerkRedemption_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<PerkRedemption_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryuserPerkClaimArgs = {
-  id: Scalars['ID']['input'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryuserPerkClaimsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<UserPerkClaim_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserPerkClaim_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -1931,137 +1925,6 @@ export type TierTresholds_orderBy =
   | 'id'
   | 'tresholds';
 
-export type UserPerkClaim = {
-  id: Scalars['String']['output'];
-  user: Scalars['Bytes']['output'];
-  perk: Perk;
-  accountBadge?: Maybe<AccountBadge>;
-  isClaimed: Scalars['Boolean']['output'];
-  claimedAt?: Maybe<Scalars['BigInt']['output']>;
-  transactionHash?: Maybe<Scalars['Bytes']['output']>;
-};
-
-export type UserPerkClaim_filter = {
-  id?: InputMaybe<Scalars['String']['input']>;
-  id_not?: InputMaybe<Scalars['String']['input']>;
-  id_gt?: InputMaybe<Scalars['String']['input']>;
-  id_lt?: InputMaybe<Scalars['String']['input']>;
-  id_gte?: InputMaybe<Scalars['String']['input']>;
-  id_lte?: InputMaybe<Scalars['String']['input']>;
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  id_contains?: InputMaybe<Scalars['String']['input']>;
-  id_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_not_contains?: InputMaybe<Scalars['String']['input']>;
-  id_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_starts_with?: InputMaybe<Scalars['String']['input']>;
-  id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  id_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_ends_with?: InputMaybe<Scalars['String']['input']>;
-  id_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  id_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  user?: InputMaybe<Scalars['Bytes']['input']>;
-  user_not?: InputMaybe<Scalars['Bytes']['input']>;
-  user_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  user_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  user_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  user_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  user_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  user_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  user_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  user_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  perk?: InputMaybe<Scalars['String']['input']>;
-  perk_not?: InputMaybe<Scalars['String']['input']>;
-  perk_gt?: InputMaybe<Scalars['String']['input']>;
-  perk_lt?: InputMaybe<Scalars['String']['input']>;
-  perk_gte?: InputMaybe<Scalars['String']['input']>;
-  perk_lte?: InputMaybe<Scalars['String']['input']>;
-  perk_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  perk_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  perk_contains?: InputMaybe<Scalars['String']['input']>;
-  perk_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  perk_not_contains?: InputMaybe<Scalars['String']['input']>;
-  perk_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  perk_starts_with?: InputMaybe<Scalars['String']['input']>;
-  perk_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  perk_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  perk_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  perk_ends_with?: InputMaybe<Scalars['String']['input']>;
-  perk_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  perk_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  perk_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  perk_?: InputMaybe<Perk_filter>;
-  accountBadge?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_not?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_gt?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_lt?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_gte?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_lte?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  accountBadge_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  accountBadge_contains?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_not_contains?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_starts_with?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_ends_with?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  accountBadge_?: InputMaybe<AccountBadge_filter>;
-  isClaimed?: InputMaybe<Scalars['Boolean']['input']>;
-  isClaimed_not?: InputMaybe<Scalars['Boolean']['input']>;
-  isClaimed_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
-  isClaimed_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
-  claimedAt?: InputMaybe<Scalars['BigInt']['input']>;
-  claimedAt_not?: InputMaybe<Scalars['BigInt']['input']>;
-  claimedAt_gt?: InputMaybe<Scalars['BigInt']['input']>;
-  claimedAt_lt?: InputMaybe<Scalars['BigInt']['input']>;
-  claimedAt_gte?: InputMaybe<Scalars['BigInt']['input']>;
-  claimedAt_lte?: InputMaybe<Scalars['BigInt']['input']>;
-  claimedAt_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  claimedAt_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  transactionHash?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_not?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  transactionHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<UserPerkClaim_filter>>>;
-  or?: InputMaybe<Array<InputMaybe<UserPerkClaim_filter>>>;
-};
-
-export type UserPerkClaim_orderBy =
-  | 'id'
-  | 'user'
-  | 'perk'
-  | 'perk__id'
-  | 'perk__badgeId'
-  | 'perk__tier'
-  | 'perk__token'
-  | 'perk__amount'
-  | 'perk__maxClaims'
-  | 'perk__totalClaims'
-  | 'perk__isCompleted'
-  | 'accountBadge'
-  | 'accountBadge__id'
-  | 'accountBadge__tier'
-  | 'accountBadge__points'
-  | 'isClaimed'
-  | 'claimedAt'
-  | 'transactionHash';
-
 export type _Block_ = {
   /** The hash of the block */
   hash?: Maybe<Scalars['Bytes']['output']>;
@@ -2147,10 +2010,6 @@ export type _SubgraphErrorPolicy_ =
   perkRedemption: InContextSdkMethod<Query['perkRedemption'], QueryperkRedemptionArgs, MeshContext>,
   /** null **/
   perkRedemptions: InContextSdkMethod<Query['perkRedemptions'], QueryperkRedemptionsArgs, MeshContext>,
-  /** null **/
-  userPerkClaim: InContextSdkMethod<Query['userPerkClaim'], QueryuserPerkClaimArgs, MeshContext>,
-  /** null **/
-  userPerkClaims: InContextSdkMethod<Query['userPerkClaims'], QueryuserPerkClaimsArgs, MeshContext>,
   /** null **/
   meta: InContextSdkMethod<Query['meta'], QuerymetaArgs, MeshContext>,
   /** null **/
