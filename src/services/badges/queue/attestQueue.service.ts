@@ -1,10 +1,10 @@
 // Este nuevo enfoque elimina el Worker de BullMQ y procesa los jobs manualmente cada 10 segundos
-import { Job, Queue, QueueEvents } from 'bullmq';
+import { Queue } from 'bullmq';
 import { redisWorker } from '@/utils/cache';
 import { ENV, ENVIRONMENTS } from '@/config/superChain/constants';
 import { AttestationsService } from '@/services/attestations.service';
 import { ResponseBadge } from '../badges.service';
-import { PerkService } from '../perk.service';
+
 
 export interface AttestJobData {
     account: string;
@@ -30,7 +30,6 @@ export class AttestQueueService {
     public readonly perkQueue: Queue<PerkJobData>;
     private readonly BATCH_SIZE = 50;
     private resultMap = new Map<string, any>();
-    private perkResultMap = new Map<string, any>();
     private isRunning: boolean = false;
     constructor() {
         this.queue = new Queue(this.queueName, {
@@ -41,7 +40,7 @@ export class AttestQueueService {
         });
 
 
-        if (ENV !== ENVIRONMENTS.development) {
+        if (process.env.ATTEST_KEY == 'REMOTE') {
             setInterval(() => this.pollAndProcess(), 5000);
         }
     }
@@ -81,9 +80,9 @@ export class AttestQueueService {
             for (const r of results) {
                 this.resultMap.set(r.account.toLowerCase(), r);
             }
-            
-        
-            
+
+
+
             this.isRunning = false;
         } catch (error) {
             console.error('[Polling Batch Error]', error);
