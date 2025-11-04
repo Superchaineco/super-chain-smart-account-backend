@@ -158,7 +158,11 @@
   },
   {
     "badge_id": "24",
-    "token_badge": false,
+    "token_badge": true,
+    "token_badge_data": {
+      "symbol": "USDC",
+      "amount": "0.0001"
+    },
     "count_unit": "transactions",
     "tiers": []
   },
