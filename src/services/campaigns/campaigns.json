@@ -258,7 +258,7 @@
     },
     "start_block": 133669144,
     "end_block": 142805324,
-    "airdrop_condition_id": 4,
+    "airdrop_condition_id": 2,
     "max_claim_date": "2025-11-23",
     "more_info": "The Superchain Eco Season 8 Campaign is the first campaign to leverage the new campaign feature and will reward the most active Super Users of Season 8.\n\n**How to participate**  \nAll Season 8 badges included in this campaign allow you to earn Superchain Points that count toward this campaign's leaderboard. Follow the guidelines for each badge to earn them.\n\n**How rewards will be calculated**  \nAt the end of the campaign, a snapshot will be taken of the total Superchain Points per account in this campaign. This snapshot will be used to finalize a calculation that distributes the campaign budget to all participants. In this pilot campaign, only users with over 300 campaign-specific points will be eligible to receive rewards.",
     "campaign_badges": [

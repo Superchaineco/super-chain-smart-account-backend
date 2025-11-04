@@ -162,7 +162,7 @@ export class AttestationsService {
       account: string;
       totalPoints: number;
       badges: ResponseBadge[];
-      badgeUpdates: { badgeId: number; level: number; previousLevel: number; points: number }[];
+      badgeUpdates: { badgeId: number; level: number; points: number; previousLevel?: number }[]; 
       badgesToPerk: { badgeId: number; level: number; points: number }[];
     }[]
   ) {
