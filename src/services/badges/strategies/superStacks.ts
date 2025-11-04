@@ -7,7 +7,7 @@ export class SuperStacksStrategy extends BaseBadgeStrategy {
   
 
   async getValue(eoas: string[]): Promise<number> {
-    return 25000000;
+    
     const cacheKey = `superStacks-${eoas.join(',')}`;
 
     const fetchFunction = async () => {

@@ -22,9 +22,9 @@ export type ResponseBadge = {
   campaigns?: string[];
   currentCount: number | undefined;
 } & Badge['badge'] & {
-    claimableTier: number | null;
-    claimable: boolean;
-  };
+  claimableTier: number | null;
+  claimable: boolean;
+};
 
 export class BadgesServices {
   private pool: Pool;
@@ -46,13 +46,21 @@ export class BadgesServices {
     getAccountQuantity: `select count(account)  from super_accounts`,
   };
 
-  public async getCachedBadges(account: string): Promise<any[]> {
+  public async getCachedBadges(
+    account: string,
+    extraData?: any | undefined
+  ): Promise<any[]> {
+
+    
     const CACHE_KEY = `cached_badges:${account}`;
     const OPTIMISTIC_UPDATED_CACHE_KEY = `optimistic_updated_cached_badges:${account}`;
 
     const fetchFunction = async (updateCache = true) => {
       const eoas = await superChainAccountService.getEOAS(account);
-      const freshData = await this.getBadges(eoas, account);
+      const freshData = await this.getBadges(eoas, account, {
+        ...(extraData ?? {}),
+        account,
+      });
 
       if (updateCache) {
         await redisService.setCachedData(CACHE_KEY, freshData, null);
@@ -122,7 +130,11 @@ export class BadgesServices {
     return fetchFunction();
   }
 
-  public async getBadges(eoas: string[], account: string): Promise<any[]> {
+  public async getBadges(
+    eoas: string[],
+    account: string,
+    extraData: any | undefined
+  ): Promise<any[]> {
     const data = await this.fetchBadges(account);
     const accountBadgesIds =
       data?.accountBadges.map((accountBadge) => accountBadge.badge.badgeId) ??
@@ -167,7 +179,7 @@ export class BadgesServices {
     }
 
     for (const badge of activeBadges) {
-      await this.updateBadgeDataForAccount(eoas, badge, account);
+      await this.updateBadgeDataForAccount(eoas, badge, extraData, account);
     }
 
     await this.updateStatsForBadges(this.badges);
@@ -297,10 +309,10 @@ export class BadgesServices {
             percentage:
               accountQuantity > 0
                 ? Math.floor(
-                    (Number(stat.total_claimed ?? 0) /
-                      Number(accountQuantity ?? 1)) *
-                      100
-                  )
+                  (Number(stat.total_claimed ?? 0) /
+                    Number(accountQuantity ?? 1)) *
+                  100
+                )
                 : 0,
           }));
         }
@@ -321,7 +333,7 @@ export class BadgesServices {
           const countTiersOfBadge = badge.badgeTiers.length;
           const countTiersClaimed = badge.tier;
           const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
-          const claimablePerk = countTiersClaimed == countTiersOfBadge && isClaimedPerkFromSc==false;
+          const claimablePerk = countTiersClaimed == countTiersOfBadge && isClaimedPerkFromSc == false;
 
           badge.claimableByPerk =
             badge.claimable ||
@@ -339,6 +351,7 @@ export class BadgesServices {
   private async updateBadgeDataForAccount(
     eoas: string[],
     badgeData: Badge,
+    extraData: any | undefined,
     account: string
   ) {
     try {
@@ -348,6 +361,7 @@ export class BadgesServices {
       const badgeResponse = await strategy.calculateTier(
         eoas,
         badgeData,
+        extraData,
         account
       );
       const response = {
