@@ -7,7 +7,9 @@ import { execute, GetFirst100UsersLevel3Document, GetFirst100UsersLevel3Query } 
 export class EarlyAdoptersStrategy extends BaseBadgeStrategy {
 
 
-    async getValue(eoas: string[], account?: string): Promise<boolean> {
+    async getValue(eoas: string[], extraData: any | undefined): Promise<boolean> {
+        const account = extraData.account
+
         const cacheKey = `earlyAdoptersStrategy-${eoas.join(",")}`;
         const ttl = 3600
 

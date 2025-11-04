@@ -8,6 +8,7 @@ import {
 } from '@selfxyz/core';
 import { redisService } from './redis.service';
 import { getAccountByAddress } from './account.service';
+import { ENV, ENVIRONMENTS } from '@/config/superChain/constants';
 
 export class SelfService {
   public async selfVerify(
@@ -24,7 +25,9 @@ export class SelfService {
     const selfBackendVerifier = new SelfBackendVerifier(
       'super-accounts',
       //   'https://8e40ac4d6618.ngrok-free.app/api/self/verify',
-      'https://scsa-backend-staging.up.railway.app/api/self/verify',
+      ((ENV === ENVIRONMENTS.production) ?
+        'https://scsa-backend-production.up.railway.app//api/self/verify' :
+        'https://scsa-backend-staging.up.railway.app/api/self/verify'),
       false,
       AllIds,
       configStore,

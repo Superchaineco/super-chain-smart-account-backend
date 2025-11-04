@@ -21,6 +21,7 @@ export interface BadgeStrategy {
   calculateTier(
     eoas: string[],
     badgeData: Badge,
+    extraData: any | undefined,
     account?: string
   ): Promise<ResponseBadge>;
 }
@@ -112,7 +113,8 @@ export const DEFAULT_TTL = 60 * 60; // 1 hour
 export abstract class BaseBadgeStrategy implements BadgeStrategy {
   abstract getValue(
     eoas: string[],
-    account?: string
+    extraData: any | undefined,
+    badgeData: Badge
   ): Promise<number | boolean>;
 
 
@@ -153,10 +155,11 @@ export abstract class BaseBadgeStrategy implements BadgeStrategy {
   async calculateTier(
     eoas: string[],
     badgeData: Badge,
-    account?: string
+    extraData: any | undefined,
+    account: string
   ): Promise<ResponseBadge> {
     try {
-      const value = await this.getValue(eoas, account);
+      const value = await this.getValue(eoas, extraData, badgeData);
 
       let claimableTier: number | null = null;
       let claimable = false;

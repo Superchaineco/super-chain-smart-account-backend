@@ -14,13 +14,16 @@ export class VaultsStrategy extends BaseBadgeStrategy {
   private pool: Pool;
 
   constructor() {
-    super();    
+    super();
     this.pool = new Pool({
       connectionString: DATABASE_URL,
     });
   }
 
-  async getValue(eoas: string[], account: string,  enableLogs: boolean = false): Promise<number> {
+  async getValue(eoas: string[], extraData: any | undefined): Promise<number> {
+    const account = extraData.account
+    const enableLogs = false;
+
     const activeThresholds: Threshold[] = [
       { amount: parseEther("0.01"), duration: 7 * 24 * 3600 * 1000 }, // 0.01 ETH por 7 días
       { amount: parseEther("0.05"), duration: 7 * 24 * 3600 * 1000 }, // 0.05 ETH por 7 días
@@ -39,7 +42,7 @@ export class VaultsStrategy extends BaseBadgeStrategy {
         const result = await client.query(query, [account]);
         const transactions = result.rows;
 
-        const log = enableLogs ? console.log : () => {};
+        const log = enableLogs ? console.log : () => { };
 
         log(`Processing ${transactions.length} transactions for account ${account}`);
         if (transactions.length > 0) {
@@ -95,7 +98,7 @@ export class VaultsStrategy extends BaseBadgeStrategy {
                   periods.push({ start: periodStart, end: candidateEnd });
                   log(`✅ Period satisfied: ${periodStart.toISOString()} - ${candidateEnd.toISOString()} (closed by tx)`);
                 } else {
-                  log(`⚠️ Observed period too short: ${periodStart.toISOString()} - ${candidateEnd.toISOString()} => ${(durationMs/(24*3600*1000)).toFixed(2)} days (required ${days} days)`);
+                  log(`⚠️ Observed period too short: ${periodStart.toISOString()} - ${candidateEnd.toISOString()} => ${(durationMs / (24 * 3600 * 1000)).toFixed(2)} days (required ${days} days)`);
                 }
               }
               periodStart = null;
@@ -109,7 +112,7 @@ export class VaultsStrategy extends BaseBadgeStrategy {
               periods.push({ start: periodStart, end: now });
               log(`🎉 Period satisfied (open until now): ${periodStart.toISOString()} - ${now.toISOString()}`);
             } else {
-              log(`⏳ Open period not long enough: ${periodStart.toISOString()} - ${now.toISOString()} => ${(durationMs/(24*3600*1000)).toFixed(2)} days (required ${days} days)`);
+              log(`⏳ Open period not long enough: ${periodStart.toISOString()} - ${now.toISOString()} => ${(durationMs / (24 * 3600 * 1000)).toFixed(2)} days (required ${days} days)`);
             }
           }
 
