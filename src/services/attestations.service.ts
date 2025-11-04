@@ -219,8 +219,8 @@ export class AttestationsService {
       const perks = data.badgesToPerk.map((p) => {
         rewards.push({
           account: data.account,
-          symbol: badgesInfo[p.badgeId]?.token_badge_data.symbol || 'UNKNOWN',
-          amount: Number(badgesInfo[p.badgeId]?.token_badge_data.amount) || 0,
+          symbol: badgesInfo[p.badgeId]?.token_badge_data?.symbol || 'UNKNOWN',
+          amount: Number(badgesInfo[p.badgeId]?.token_badge_data?.amount) || 0,
         });
         return {
           badgeId: p.badgeId,
