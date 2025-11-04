@@ -1,7 +1,6 @@
-// Este nuevo enfoque elimina el Worker de BullMQ y procesa los jobs manualmente cada 10 segundos
+
 import { Queue } from 'bullmq';
 import { redisWorker } from '@/utils/cache';
-import { ENV, ENVIRONMENTS } from '@/config/superChain/constants';
 import { AttestationsService } from '@/services/attestations.service';
 import { ResponseBadge } from '../badges.service';
 
