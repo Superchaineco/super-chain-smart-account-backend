@@ -3,40 +3,16 @@
     "badge_id": "1",
     "token_badge": true,
     "count_unit": "transactions",
-    "token_badge_data":null,
-    "tiers": [
-      {
-        "tier_id": "1",
-        "symbol": "USDC",
-        "amount": "0.000010"
-      },
-      {
-        "tier_id": "2",
-        "symbol": "USDC",
-        "amount": "0.000010"
-      },
-      {
-        "tier_id": "3",
-        "symbol": "USDC",
-        "amount": "0.000010"
-      },
-      {
-        "tier_id": "4",
-        "symbol": "USDC",
-        "amount": "0.000010"
-      },
-      {
-        "tier_id": "5",
-        "symbol": "USDC",
-        "amount": "0.000010"
-      }
-    ]
+    "token_badge_data": {
+      "symbol": "USDC",
+      "amount": "0.0001"
+    }
   },
   {
     "badge_id": "2",
     "token_badge": true,
     "count_unit": "transactions",
-    "token_badge_data":  {
+    "token_badge_data": {
       "symbol": "USDC",
       "amount": "0.0001"
     },
@@ -71,18 +47,16 @@
     "token_badge": true,
     "count_unit": "points",
     "tiers": [],
-    "token_badge_data":  {
+    "token_badge_data": {
       "symbol": "USDC",
       "amount": "0.0001"
     }
-   
   },
   {
     "badge_id": "8",
     "token_badge": false,
     "count_unit": null,
     "tiers": []
-
   },
   {
     "badge_id": "9",
@@ -131,7 +105,7 @@
     "token_badge": true,
     "count_unit": "transactions",
     "tiers": [],
-    "token_badge_data":  {
+    "token_badge_data": {
       "symbol": "USDC",
       "amount": "0.000010"
     }
@@ -189,7 +163,7 @@
     "token_badge": true,
     "count_unit": "points",
     "tiers": [],
-    "token_badge_data":  {
+    "token_badge_data": {
       "symbol": "USDC",
       "amount": "0.0001"
     }

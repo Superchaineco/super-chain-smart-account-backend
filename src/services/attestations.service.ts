@@ -4,9 +4,7 @@ import {
   ethers,
   Interface,
   JsonRpcProvider,
-  Wallet,
-  ZeroAddress,
-  zeroPadValue,
+  Wallet
 } from 'ethers';
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import {
@@ -26,10 +24,26 @@ import Safe, {
   encodeMultiSendData,
   OnchainAnalyticsProps,
 } from '@safe-global/protocol-kit';
-import SafeApiKit from '@safe-global/api-kit';
+import badgesInfo from './badges/badges_info.json';
 import Safe4337Pack from '@safe-global/relay-kit/dist/src/packs/safe-4337/Safe4337Pack';
 import { MetaTransactionData, OperationType } from '@safe-global/types-kit';
 import config from '@/config';
+
+
+
+type Reward = {
+  account: string;
+  symbol: string;
+  amount: number;
+};
+
+type RewardAggregate = {
+  account: string;
+  symbol: string;
+  amount: number;
+};
+
+
 
 export class AttestationsService {
   private easContractAddress = EAS_CONTRACT_ADDRESS;
@@ -148,7 +162,7 @@ export class AttestationsService {
       account: string;
       totalPoints: number;
       badges: ResponseBadge[];
-      badgeUpdates: { badgeId: number; level: number; points: number }[];
+      badgeUpdates: { badgeId: number; level: number; previousLevel: number; points: number }[];
       badgesToPerk: { badgeId: number; level: number; points: number }[];
     }[]
   ) {
@@ -196,13 +210,23 @@ export class AttestationsService {
 
     const iface = new Interface(REDEEM_PERK_ABI);
     const perkTxs: MetaTransactionData[] = [];
+
+    let rewards: Reward[] = [];
+
     for (const data of batchData) {
       if (!Array.isArray(data.badgesToPerk) || data.badgesToPerk.length === 0) continue;
 
-      const perks = data.badgesToPerk.map((p) => ({
-        badgeId: p.badgeId,
-        tier: p.level ?? 0,
-      }));
+      const perks = data.badgesToPerk.map((p) => {
+        rewards.push({
+          account: data.account,
+          symbol: badgesInfo[p.badgeId]?.token_badge_data.symbol || 'UNKNOWN',
+          amount: Number(badgesInfo[p.badgeId]?.token_badge_data.amount) || 0,
+        });
+        return {
+          badgeId: p.badgeId,
+          tier: p.level ?? 0,
+        }
+      });
 
       const dataCalldata = iface.encodeFunctionData('redeemPerks', [perks, data.account]) as `${string}`;
 
@@ -253,10 +277,31 @@ export class AttestationsService {
             data.badgeUpdates.some((update) => update.badgeId === badge.badgeId)
           );
 
+          const rewardMap: RewardAggregate[] = Array.from(
+            rewards.reduce(
+              (map: Map<string, RewardAggregate>, curr: Reward): Map<string, RewardAggregate> => {
+                const key: string = `${curr.account}-${curr.symbol}`;
+                const existing: RewardAggregate | undefined = map.get(key);
+
+                if (existing) {
+                  existing.amount += curr.amount;
+                } else {
+                  map.set(key, { ...curr });
+                }
+
+                return map;
+              },
+              new Map<string, RewardAggregate>()
+            ).values()
+          );
+
+
+
           return {
             account: data.account,
             hash: executeTxResponse.hash,
             isLevelUp,
+            rewards: rewardMap.filter(r => r.account === data.account),
             totalPoints: data.totalPoints,
             badgeUpdates: data.badgeUpdates,
             updatedBadges,
