@@ -39,7 +39,7 @@ export class AttestQueueService {
         });
 
 
-        if (process.env.ATTEST_KEY == 'LOCAL') {
+        if (process.env.ATTEST_KEY == 'REMOTE') {
             setInterval(() => this.pollAndProcess(), 5000);
         }
     }
