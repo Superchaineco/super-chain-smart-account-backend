@@ -162,7 +162,7 @@ export class AttestationsService {
       account: string;
       totalPoints: number;
       badges: ResponseBadge[];
-      badgeUpdates: { badgeId: number; level: number; points: number; previousLevel?: number }[]; 
+      badgeUpdates: { badgeId: number; level: number; points: number; previousLevel?: number }[];
       badgesToPerk: { badgeId: number; level: number; points: number }[];
     }[]
   ) {
@@ -278,8 +278,9 @@ export class AttestationsService {
           );
 
           const rewardMap: RewardAggregate[] = Array.from(
-            rewards.reduce(
+            rewards.filter(x=> x.symbol != 'UNKNOWN') .reduce(
               (map: Map<string, RewardAggregate>, curr: Reward): Map<string, RewardAggregate> => {
+                
                 const key: string = `${curr.account}-${curr.symbol}`;
                 const existing: RewardAggregate | undefined = map.get(key);
 
