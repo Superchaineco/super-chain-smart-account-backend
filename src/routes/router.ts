@@ -43,7 +43,7 @@ routes.get('/perks/:level', perksByLevel);
 
 routes.get('/user/:account/sponsorship-balance', getBalance);
 
-routes.post('/user/:account/badges/claim', verifyOwner, claimBadges); 
+routes.post('/user/:account/badges/claim', claimBadges);  //verifyOwner
 
 routes.get('/leaderboard/:account', rankByAccount);
 
