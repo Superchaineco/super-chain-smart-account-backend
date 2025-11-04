@@ -44,26 +44,27 @@ export async function claimBadges(req: Request, res: Response) {
     const tokenFromFrontend = req.body.captchaToken;
     const ipAddress = req.ip;
     let isHuman = false
-     if (tokenFromFrontend) {
-       const captchaRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-         method: "POST",
-         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-         body: new URLSearchParams({
-           secret: TURNSTILE_SECRET_KEY!,
-           response: tokenFromFrontend,
-           remoteip: ipAddress,
-         }),
-       });
+    if (tokenFromFrontend) {
+      const captchaRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret: TURNSTILE_SECRET_KEY!,
+          response: tokenFromFrontend,
+          remoteip: ipAddress,
+        }),
+      });
 
-       const data = await captchaRes.json();
-       console.log("Captcha ", account, ' isHuman: ', data.success)
-       isHuman = data.success
-     }
+      const data = await captchaRes.json();
+      console.log("Captcha ", account, ' isHuman: ', data.success)
+      isHuman = data.success
+    }
 
 
+    const extraData = req.body
     const badgesService = new BadgesServices();
     const eoas = await superChainAccountService.getEOAS(account);
-    const badges = await badgesService.getBadges(eoas, account);
+    const badges = await badgesService.getBadges(eoas, account, { ...(extraData ?? {}), account });
     //const attestationsService = new AttestationsService();
 
     const totalPoints = badgesService.getTotalPoints(badges);
