@@ -28,7 +28,7 @@ export class SelfService {
       ((ENV === ENVIRONMENTS.production) ?
         'https://scsa-backend-production.up.railway.app//api/self/verify' :
         'https://scsa-backend-staging.up.railway.app/api/self/verify'),
-      false,
+      (ENV === ENVIRONMENTS.production) ? false : true,
       AllIds,
       configStore,
       'uuid'
