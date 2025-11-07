@@ -285,7 +285,7 @@ export class AttestationsService {
                 const existing: RewardAggregate | undefined = map.get(key);
 
                 if (existing) {
-                  existing.amount += curr.amount;
+                  existing.amount += Number(curr.amount);
                 } else {
                   map.set(key, { ...curr });
                 }
