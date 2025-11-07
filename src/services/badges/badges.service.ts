@@ -334,14 +334,14 @@ export class BadgesServices {
           const totalBadgeTiers = badge.badgeTiers.length;
           const claimedBadgeTiers = badge.tier;
           const claimableBadgeTier = badge.claimableTier ?? 0;
-          const totalClaimedPerks = tokenBadgeData?.maxClaims - 1; //TODO Get this from graph          
+          const totalClaimedPerks = badge.perks.totalClaims?? 0;          
           const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
 
           const claimablePerk = (claimedBadgeTiers >= totalBadgeTiers ||
             claimableBadgeTier >= totalBadgeTiers) &&
             totalClaimedPerks < (tokenBadgeData?.maxClaims ?? 0);
 
-          badge.tokenBadge.totalPerkClaims = totalClaimedPerks;
+
           badge.perkClaimed = isClaimedPerkFromSc;
           badge.claimableByPerk = claimablePerk;
 
@@ -350,7 +350,7 @@ export class BadgesServices {
             tokenBadgeData && tokenBadgeData != null
               ? Number(tokenBadgeData?.maxClaims)
               : 0;
-
+          badge.tokenBadge.totalPerkClaims = totalClaimedPerks;
 
         }
       }

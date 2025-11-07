@@ -35,7 +35,7 @@ import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { SuperAccountsTypes } from './sources/super-accounts/types';
 import * as importedModule$0 from './sources/super-accounts/introspectionSchema';
-import { SUBGRAPH_URI } from '@/config/superChain/constants';
+import { SUBGRAPH_URI, SUBGRAPH_API_KEY } from '@/config/superChain/constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -54,8 +54,8 @@ export type MakeEmpty<
 export type Incremental<T> =
   | T
   | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+    [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+  };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & {
   [P in K]-?: NonNullable<T[P]>;
 };
@@ -2105,8 +2105,8 @@ export type SubscriptionResolver<
   TArgs = {}
 > =
   | ((
-      ...args: any[]
-    ) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
+    ...args: any[]
+  ) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
 export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
@@ -2879,7 +2879,7 @@ export async function getMeshOptions(): Promise<GetMeshOptions> {
   const additionalTypeDefs = [] as any[];
   const superAccountsHandler = new GraphqlHandler({
     name: 'super-accounts',
-    config: { endpoint: SUBGRAPH_URI },
+    config: { endpoint: SUBGRAPH_URI, operationHeaders: { Authorization: `Bearer ${SUBGRAPH_API_KEY}` } },
     baseDir,
     cache,
     pubsub,
