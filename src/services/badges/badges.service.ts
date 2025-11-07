@@ -51,7 +51,7 @@ export class BadgesServices {
     extraData?: any | undefined
   ): Promise<any[]> {
 
-    
+
     const CACHE_KEY = `cached_badges:${account}`;
     const OPTIMISTIC_UPDATED_CACHE_KEY = `optimistic_updated_cached_badges:${account}`;
 
@@ -329,20 +329,29 @@ export class BadgesServices {
       if (badgeInfo) {
         badge.countUnit = badgeInfo.count_unit;
         if (badgeInfo.token_badge && badgeInfo.token_badge_data) {
-          const tokenBadgeData = badge.perks?.find((x) => x.tier == 0);
-          const countTiersOfBadge = badge.badgeTiers.length;
-          const countTiersClaimed = badge.tier;
-          const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
-          const claimablePerk = countTiersClaimed == countTiersOfBadge && isClaimedPerkFromSc == false;
 
-          badge.claimableByPerk =
-            badge.claimable ||
-            (claimablePerk && tokenBadgeData && !tokenBadgeData.isCompleted);
+          const tokenBadgeData = badge.perks?.find((x) => x.tier == 0);
+          const totalBadgeTiers = badge.badgeTiers.length;
+          const claimedBadgeTiers = badge.tier;
+          const claimableBadgeTier = badge.claimableTier ?? 0;
+          const totalClaimedPerks = tokenBadgeData?.maxClaims - 1; //TODO Get this from graph          
+          const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
+
+          const claimablePerk = (claimedBadgeTiers >= totalBadgeTiers ||
+            claimableBadgeTier >= totalBadgeTiers) &&
+            totalClaimedPerks < (tokenBadgeData?.maxClaims ?? 0);
+
+          badge.tokenBadge.totalPerkClaims = totalClaimedPerks;
+          badge.perkClaimed = isClaimedPerkFromSc;
+          badge.claimableByPerk = claimablePerk;
+
           badge.tokenBadge = badgeInfo.token_badge_data;
           badge.tokenBadge.maxClaims =
             tokenBadgeData && tokenBadgeData != null
               ? Number(tokenBadgeData?.maxClaims)
               : 0;
+
+
         }
       }
     });
