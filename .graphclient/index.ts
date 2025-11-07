@@ -2902,7 +2902,7 @@ export async function getMeshOptions(): Promise<GetMeshOptions> {
   const documentHashMap = {
     '65143bb646393bbde5847f63fbd865c36d2a3e1e13d9dabc2786c3108710857d':
       GetFirst100UsersLevel3Document,
-    c46153825acf6fae72377db7a838d28dbb6c3f4d8fff55c91ccd4fdd5fc7f3cc:
+    f10185db861648e272d5017421b2776186140a1654fd1b984004bfbaddfe59d2:
       GetUserBadgesDocument,
   };
   additionalEnvelopPlugins.push(
@@ -2942,7 +2942,7 @@ export async function getMeshOptions(): Promise<GetMeshOptions> {
           },
           location: 'GetUserBadgesDocument.graphql',
           sha256Hash:
-            'c46153825acf6fae72377db7a838d28dbb6c3f4d8fff55c91ccd4fdd5fc7f3cc',
+            'f10185db861648e272d5017421b2776186140a1654fd1b984004bfbaddfe59d2',
         },
       ];
     },
@@ -3039,7 +3039,19 @@ export type GetUserBadgesQuery = {
   >;
   accountBadges: Array<
     Pick<AccountBadge, 'points' | 'tier'> & {
-      perkClaims: Array<{ perk: Pick<Perk, 'tier'> }>;
+      perkClaims: Array<{
+        perk: Pick<
+          Perk,
+          | 'id'
+          | 'badgeId'
+          | 'tier'
+          | 'token'
+          | 'amount'
+          | 'maxClaims'
+          | 'totalClaims'
+          | 'isCompleted'
+        >;
+      }>;
       badge: Pick<Badge, 'badgeId' | 'uri'> & {
         perks: Array<
           Pick<Perk, 'id' | 'tier' | 'isCompleted' | 'maxClaims' | 'amount'>
@@ -3106,7 +3118,14 @@ export const GetUserBadgesDocument = gql`
     accountBadges(where: { user: $user }) {
       perkClaims {
         perk {
+          id
+          badgeId
           tier
+          token
+          amount
+          maxClaims
+          totalClaims
+          isCompleted
         }
       }
       points

@@ -18,7 +18,14 @@ query GetUserBadges($user: String!) {
   accountBadges(where: { user: $user }) {
     perkClaims {
       perk {
+        id
+        badgeId
         tier
+        token
+        amount
+        maxClaims
+        totalClaims
+        isCompleted
       }
     }
     points
