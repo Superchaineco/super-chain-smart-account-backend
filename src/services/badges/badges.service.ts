@@ -334,12 +334,11 @@ export class BadgesServices {
           const totalBadgeTiers = badge.badgeTiers.length;
           const claimedBadgeTiers = badge.tier;
           const claimableBadgeTier = badge.claimableTier ?? 0;
-          const totalClaimedPerks = badge.perks.totalClaims?? 0;          
+          const totalClaimedPerks = badge.perks.totalClaims ?? 0;
           const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
 
-          const claimablePerk = (claimedBadgeTiers >= totalBadgeTiers ||
-            claimableBadgeTier >= totalBadgeTiers) &&
-            totalClaimedPerks < (tokenBadgeData?.maxClaims ?? 0);
+          const claimablePerk = (claimedBadgeTiers >= totalBadgeTiers || claimableBadgeTier >= totalBadgeTiers) &&
+            totalClaimedPerks < (tokenBadgeData?.maxClaims ?? 0) && !isClaimedPerkFromSc;
 
 
           badge.perkClaimed = isClaimedPerkFromSc;
