@@ -150,6 +150,7 @@ export class BadgesServices {
       badge: {
         ...badge,
       },
+      perkClaims: badge.perks
     }));
 
     const activeBadges = [
@@ -334,7 +335,7 @@ export class BadgesServices {
           const totalBadgeTiers = badge.badgeTiers.length;
           const claimedBadgeTiers = badge.tier;
           const claimableBadgeTier = badge.claimableTier ?? 0;
-          const totalClaimedPerks = badge.perkClaims?.totalClaims ?? 0;
+          const totalClaimedPerks = Number(badge.perkClaims[0].totalClaims ?? 0);
           const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
 
           const claimablePerk = (claimedBadgeTiers >= totalBadgeTiers || claimableBadgeTier >= totalBadgeTiers) &&

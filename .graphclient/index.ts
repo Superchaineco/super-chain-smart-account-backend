@@ -3032,7 +3032,7 @@ export type GetUserBadgesQuery = {
   badges: Array<
     Pick<Badge, 'badgeId' | 'uri'> & {
       perks: Array<
-        Pick<Perk, 'id' | 'tier' | 'isCompleted' | 'maxClaims' | 'amount'>
+        Pick<Perk, 'id' | 'tier' | 'isCompleted' | 'maxClaims' | 'amount' | 'totalClaims'>
       >;
       badgeTiers: Array<Pick<BadgeTier, 'points' | 'tier' | 'uri'>>;
     }
@@ -3108,6 +3108,7 @@ export const GetUserBadgesDocument = gql`
         isCompleted
         maxClaims
         amount
+        totalClaims
       }
       badgeTiers(orderBy: tier, orderDirection: asc) {
         points
