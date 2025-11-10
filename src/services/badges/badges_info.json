@@ -1,21 +1,15 @@
 [
   {
     "badge_id": "1",
-    "token_badge": true,
-    "count_unit": "transactions",
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "0.0001"
-    }
+    "token_badge": false,
+    "token_badge_data": null,
+    "count_unit": "transactions"
   },
   {
     "badge_id": "2",
-    "token_badge": true,
     "count_unit": "transactions",
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "0.0001"
-    },
+    "token_badge": false,
+    "token_badge_data": null,
     "tiers": []
   },
   {
@@ -35,7 +29,7 @@
     "token_badge": true,
     "token_badge_data": {
       "symbol": "OP",
-      "amount": "0.5"
+      "amount": "5"
     },
     "count_unit": null,
     "tiers": []
@@ -48,13 +42,10 @@
   },
   {
     "badge_id": "7",
-    "token_badge": true,
     "count_unit": "points",
     "tiers": [],
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "0.0001"
-    }
+    "token_badge": false,
+    "token_badge_data": null
   },
   {
     "badge_id": "8",
@@ -100,23 +91,17 @@
   },
   {
     "badge_id": "15",
-    "token_badge": true,
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "0.0001"
-    },
+    "token_badge": false,
+    "token_badge_data": null,
     "count_unit": "transactions",
     "tiers": []
   },
   {
     "badge_id": "16",
-    "token_badge": true,
     "count_unit": "transactions",
     "tiers": [],
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "0.0001"
-    }
+    "token_badge": false,
+    "token_badge_data": null
   },
   {
     "badge_id": "17",
@@ -162,23 +147,17 @@
   },
   {
     "badge_id": "24",
-    "token_badge": true,
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "0.0001"
-    },
+    "token_badge": false,
+    "token_badge_data": null,
     "count_unit": "transactions",
     "tiers": []
   },
   {
     "badge_id": "25",
-    "token_badge": true,
     "count_unit": "points",
     "tiers": [],
-    "token_badge_data": {
-      "symbol": "USDC",
-      "amount": "0.0001"
-    }
+    "token_badge": false,
+    "token_badge_data": null
   },
   {
     "badge_id": "26",
@@ -191,7 +170,7 @@
     "token_badge": true,
     "token_badge_data": {
       "symbol": "OP",
-      "amount": "1"
+      "amount": "20"
     },
     "tiers": []
   }
