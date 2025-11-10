@@ -5,7 +5,7 @@
     "description": "This pilot campaign will test our new campaigns feature and reward the most active Super Users of Season 8 with a share of OP tokens provided by the Superchain Eco team.",
     "start_date": "2025-11-07",
     "end_date": "2025-12-17",
-    "network": ["optimism"],
+    "network": ["OP Mainnet"],
     "banner": "/images/campaigns/superchain.png",
     "participate_description": "Due to campaign set-up only deposits in your EOA wallets connected to your account will earn rewards. Perks earned by your account (incl multipliers) will be activated on all wallets you have connected.",
     "campaign_link": null,
