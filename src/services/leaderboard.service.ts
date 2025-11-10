@@ -6,7 +6,7 @@ import { redis } from '@/utils/cache';
 export class LeaderBoardService {
   private readonly dune: DuneClient;
   private readonly cacheKey = 'leaderboard_list';
-  private readonly ttl = 86400 * 7; // 7 days
+  private readonly ttl = 86400; // 1 day
   private get zsetKey(): string {
     return `${this.cacheKey}_zset`;
   }
