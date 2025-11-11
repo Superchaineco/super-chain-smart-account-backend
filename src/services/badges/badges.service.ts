@@ -309,11 +309,11 @@ export class BadgesServices {
             tier: stat.tier,
             percentage:
               accountQuantity > 0
-                ? Math.floor(
-                  (Number(stat.total_claimed ?? 0) /
-                    Number(accountQuantity ?? 1)) *
-                  100
-                )
+                ?
+                (Number(stat.total_claimed ?? 0) /
+                  Number(accountQuantity ?? 1)) *
+                100
+
                 : 0,
           }));
         }
