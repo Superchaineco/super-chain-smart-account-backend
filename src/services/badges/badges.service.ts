@@ -36,12 +36,45 @@ export class BadgesServices {
   }
   private badges: ResponseBadge[] = [];
   private queries = {
-    getBadgeLevelMetadata: `SELECT
-  tier,
-  badge_id,
-  COUNT(*) AS total_claimed,                               
-  SUM(COUNT(*)) OVER (PARTITION BY badge_id) AS total_claims_per_badge
-  FROM badge_claims GROUP BY tier, badge_id`,
+    getBadgeTierCumulativeStats: `
+WITH max_tiers AS (
+  SELECT bc.badge_id, bc.account, MAX(bc.tier::int) AS max_tier
+  FROM badge_claims bc
+  GROUP BY bc.badge_id, bc.account
+),
+max_per_badge AS (
+  SELECT badge_id, MAX(max_tier) AS max_observed_tier
+  FROM max_tiers
+  GROUP BY badge_id
+),
+tiers AS (
+  -- genera 1..max_observed_tier por cada badge (aunque falten eventos intermedios)
+  SELECT m.badge_id, gs AS tier
+  FROM max_per_badge m
+  CROSS JOIN LATERAL generate_series(1, m.max_observed_tier) gs
+),
+participants AS (
+  -- participantes del badge (al menos un claim en cualquier tier)
+  SELECT badge_id, COUNT(DISTINCT account) AS unique_claimers
+  FROM max_tiers
+  GROUP BY badge_id
+),
+global_denom AS (
+  SELECT COUNT(*)::int AS total_accounts FROM super_accounts
+)
+SELECT
+  t.badge_id,
+  t.tier,
+  COUNT(*) FILTER (WHERE mt.max_tier >= t.tier) AS cumulative_claimed,
+  COALESCE(p.unique_claimers, 0)                AS unique_claimers_per_badge,
+  (SELECT total_accounts FROM global_denom)     AS total_accounts
+FROM tiers t
+LEFT JOIN max_tiers mt ON mt.badge_id = t.badge_id
+LEFT JOIN participants p ON p.badge_id = t.badge_id
+GROUP BY t.badge_id, t.tier, p.unique_claimers
+ORDER BY t.badge_id, t.tier;
+
+`,
 
     getAccountQuantity: `select count(account)  from super_accounts`,
   };
@@ -296,31 +329,42 @@ export class BadgesServices {
   private async updateStatsForBadges(badges: any[]) {
     const stats = await this.getStatsForBadges();
     const accountQuantity = await this.getAccountQuantity();
+
     if (stats && stats.length > 0) {
       badges.forEach((badge) => {
-        const badgeStats = stats.filter(
-          (stat) => stat.badge_id == badge.badgeId
-        );
-        if (badgeStats.length > 0) {
-          const total_claimed_per_badge = badgeStats[0]?.total_claims_per_badge;
-          badge.totalClaimed = Number(total_claimed_per_badge ?? 0);
-          badge.statistics = badgeStats.map((stat) => ({
-            totalClaimed: Number(stat.total_claimed ?? 0),
-            tier: stat.tier,
-            percentage:
-              accountQuantity > 0
-                ?
-                (Number(stat.total_claimed ?? 0) /
-                  Number(accountQuantity ?? 1)) *
-                100
+        const badgeStats = stats
+          .filter((s) => Number(s.badge_id) === Number(badge.badgeId))
+          .sort((a, b) => Number(a.tier) - Number(b.tier));
 
-                : 0,
-          }));
-        }
+        if (badgeStats.length === 0) return;
+
+        const uniqueClaimers = Number(badgeStats[0]?.unique_claimers_per_badge ?? 0);
+        badge.totalClaimed = uniqueClaimers;
+
+        const denom = accountQuantity > 0 ? Number(accountQuantity) : 1;
+
+        // Construye estadísticas con acumulado por tier (no decreciente en counts)
+        let prevPct = Infinity;
+        badge.statistics = badgeStats.map((row) => {
+          const totalClaimed = Number(row.cumulative_claimed ?? 0);
+          const rawPct = (totalClaimed / denom) * 100;
+
+          // Guard de monotonía: asegura percentage[t] >= percentage[t+1]
+          const percentage = Math.min(rawPct, prevPct);
+          prevPct = percentage;
+
+          return {
+            tier: Number(row.tier),
+            totalClaimed,
+            percentage,
+          };
+        });
       });
     }
+
     this.setBadgeRewards(badges);
   }
+
 
   private setBadgeRewards(badges: any[]) {
     badges.forEach((badge) => {
@@ -394,7 +438,7 @@ export class BadgesServices {
   private async getStatsForBadges() {
     const client = await this.pool.connect();
     try {
-      const result = await client.query(this.queries.getBadgeLevelMetadata);
+      const result = await client.query(this.queries.getBadgeTierCumulativeStats);
       return result.rows;
     } catch (error) {
       console.error('Error getting stats for badges:', error);
