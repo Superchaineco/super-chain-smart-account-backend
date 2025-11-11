@@ -21,7 +21,7 @@
   {
     "badge_id": "4",
     "token_badge": false,
-    "count_unit": "transactions",
+    "count_unit": "nouns",
     "tiers": []
   },
   {
@@ -42,7 +42,7 @@
   },
   {
     "badge_id": "7",
-    "count_unit": "points",
+    "count_unit": "score",
     "tiers": [],
     "token_badge": false,
     "token_badge_data": null
@@ -80,7 +80,7 @@
   {
     "badge_id": "13",
     "token_badge": false,
-    "count_unit": "transactions",
+    "count_unit": null,
     "tiers": []
   },
   {
@@ -118,7 +118,7 @@
   {
     "badge_id": "19",
     "token_badge": false,
-    "count_unit": "transactions",
+    "count_unit": "LSK earned",
     "tiers": []
   },
   {
@@ -154,7 +154,7 @@
   },
   {
     "badge_id": "25",
-    "count_unit": "points",
+    "count_unit": "score",
     "tiers": [],
     "token_badge": false,
     "token_badge_data": null
@@ -162,7 +162,7 @@
   {
     "badge_id": "26",
     "token_badge": false,
-    "count_unit": "transactions",
+    "count_unit": "highest tier",
     "tiers": []
   },
   {
