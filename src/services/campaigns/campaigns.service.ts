@@ -1,6 +1,6 @@
 import campaignsData from './campaigns.json';
-import { BadgesServices } from '../badges/badges.service';
-import { superChainAccountService } from '../superChainAccount.service';
+import { pgPool } from '@/config/db';
+import { AirdropService } from '../airdrop.service';
 
 // Types
 export type CampaignBoost =
@@ -73,13 +73,11 @@ type CampaignDetailsInput = {
   superAccountLevel: number;
 };
 
-import { Pool } from 'pg';
-import { AirdropService } from '../airdrop.service';
+
+
 
 // You can reuse this pool across your app
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const pool = pgPool
 
 
 

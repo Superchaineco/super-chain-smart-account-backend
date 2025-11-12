@@ -1,5 +1,5 @@
 // src/data/accounts.repo.ts
-import { pool } from "@/config/superChain/constants";
+import { pgPool } from '@/config/db';
 
 export interface AccountRecord {
   account: string;
@@ -15,7 +15,7 @@ export interface AccountRecord {
 
 
 export async function getAccountByAddress(account: string): Promise<AccountRecord | null> {
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql = `
       SELECT account, nationality, username, eoas,level,noun,total_points,total_badges
@@ -33,7 +33,7 @@ export async function getAccountByAddress(account: string): Promise<AccountRecor
 
 
 export async function getAccountByUsername(username: string): Promise<AccountRecord | null> {
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql = `
       SELECT account, nationality, username, eoas,level,noun,total_points,total_badges
@@ -51,7 +51,7 @@ export async function getAccountByUsername(username: string): Promise<AccountRec
 
 
 export async function getAccounts(): Promise<AccountRecord[]> {
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql = `
       SELECT account,
@@ -90,7 +90,7 @@ export async function listAccountsByEOAs(eoas: string[], page: number): Promise<
   const safePage: number = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
   const offset: number = (safePage - 1) * PAGE_SIZE;
 
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql: string = `
       SELECT account, nationality, username, eoas,level,noun,total_points,total_badges
@@ -116,7 +116,7 @@ export async function countAccountsByEOAs(eoas: string[]): Promise<number> {
 
   if (needles.length === 0) return 0;
 
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql: string = `SELECT count(*)::int AS c FROM super_accounts WHERE eoas && $1::text[]`;
     const { rows } = await client.query<{ c: number }>(sql, [needles]);
@@ -141,7 +141,7 @@ export async function setAccountEOAs(
   eoas: string[]
 ): Promise<boolean> {
   const cleaned = sanitizeEoas(eoas);
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql = `
       UPDATE public.super_accounts
@@ -176,7 +176,7 @@ export async function updateAccountStats(
     return false;
   }
 
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql = `
       UPDATE public.super_accounts
@@ -209,7 +209,7 @@ export async function setAccountNoun(
       ? null
       : JSON.stringify(noun);
 
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
     const sql = `
       UPDATE public.super_accounts
@@ -232,7 +232,7 @@ export async function setAccountNationality(
 
   if (!acc) throw new Error("account is required");
 
-  const client = await pool.connect();
+  const client = await pgPool.connect();
   try {
 
     const sql = `
@@ -245,7 +245,7 @@ export async function setAccountNationality(
     INSERT (account, nationality) VALUES (s.account, s.nationality)
 `;
     const { rowCount } = await client.query(sql, [acc, nat]);
-    return rowCount > 0; 
+    return rowCount > 0;
   } finally {
     client.release();
   }

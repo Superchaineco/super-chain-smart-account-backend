@@ -9,11 +9,11 @@ import IpfsService from '../ipfs.service';
 import { redisService } from '../redis.service';
 import { BadgeStrategyContext } from '../badges/strategies/context';
 import { superChainAccountService } from '../superChainAccount.service';
-import { DATABASE_URL } from '@/config/superChain/constants';
-import { Pool } from 'pg';
+import { pgPool } from '@/config/db';
 import badgesInfo from './badges_info.json';
 import { BadgeInfo } from '../dto/badge_data';
 import campaignsData from '../../services/campaigns/campaigns.json';
+import { Pool } from 'pg';
 
 export type Badge = GetUserBadgesQuery['accountBadges'][number];
 export type ResponseBadge = {
@@ -29,10 +29,10 @@ export type ResponseBadge = {
 export class BadgesServices {
   private pool: Pool;
   private badgesInfo: BadgeInfo[] = badgesInfo as unknown as BadgeInfo[];
+
+
   constructor() {
-    this.pool = new Pool({
-      connectionString: DATABASE_URL,
-    });
+    this.pool = pgPool
   }
   private badges: ResponseBadge[] = [];
   private queries = {
@@ -436,30 +436,26 @@ ORDER BY t.badge_id, t.tier;
   }
 
   private async getStatsForBadges() {
-    const client = await this.pool.connect();
+
     try {
-      const result = await client.query(this.queries.getBadgeTierCumulativeStats);
+      const result = await this.pool.query(this.queries.getBadgeTierCumulativeStats);
       return result.rows;
     } catch (error) {
       console.error('Error getting stats for badges:', error);
       return null;
-    } finally {
-      client.release();
     }
   }
 
   private async getAccountQuantity() {
-    const client = await this.pool.connect();
+
     try {
-      const result = await client.query(this.queries.getAccountQuantity);
+      const result = await this.pool.query(this.queries.getAccountQuantity);
       const accounts = result.rows[0]?.count ?? 0;
 
       return accounts;
     } catch (error) {
       console.error('Error getting account quantity:', error);
       return 0;
-    } finally {
-      client.release();
     }
   }
 }

@@ -1,8 +1,7 @@
 import { BaseBadgeStrategy } from "./badgeStrategy";
 import { redisService } from "../../redis.service";
-import axios from "axios";
+import { pgPool } from '@/config/db';
 import { Pool } from 'pg';
-import { DATABASE_URL } from '../../../config/superChain/constants';
 import { parseEther, formatEther } from "ethers";
 
 interface Threshold {
@@ -15,9 +14,7 @@ export class VaultsStrategy extends BaseBadgeStrategy {
 
   constructor() {
     super();
-    this.pool = new Pool({
-      connectionString: DATABASE_URL,
-    });
+    this.pool = pgPool
   }
 
   async getValue(eoas: string[], extraData: any | undefined): Promise<number> {
