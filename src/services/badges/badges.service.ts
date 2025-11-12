@@ -380,7 +380,7 @@ ORDER BY t.badge_id, t.tier;
           const claimedBadgeTiers = badge.tier;
           const claimableBadgeTier = badge.claimableTier ?? 0;
           const totalClaimedPerks = badge.perkClaims?.length > 0 ? Number(badge.perkClaims[0].perk?.totalClaims ?? badge.perkClaims[0].totalClaims ?? 0) : 0;
-          const isClaimedPerkFromSc = badge.perkClaims?.length > 0 && claimedBadgeTiers >= claimableBadgeTier;
+          const isClaimedPerkFromSc = badge.perkClaims?.length > 0 && claimedBadgeTiers >= totalBadgeTiers;
 
           const claimablePerk = (claimedBadgeTiers >= totalBadgeTiers || claimableBadgeTier >= totalBadgeTiers) &&
             totalClaimedPerks < (tokenBadgeData?.maxClaims ?? 0) && !isClaimedPerkFromSc;
