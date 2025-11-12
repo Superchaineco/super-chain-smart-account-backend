@@ -167,8 +167,11 @@
   },
   {
     "badge_id": "27",
-    "token_badge": false,
-    "token_badge_data": null,
+    "token_badge": true,
+    "token_badge_data": {
+      "symbol": "OP",
+      "amount": "10"
+    },
     "tiers": []
   }
 ]
