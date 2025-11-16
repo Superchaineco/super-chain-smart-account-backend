@@ -22,7 +22,7 @@ process.on('SIGTERM', async () => {
 
 
 if (ENV === ENVIRONMENTS.production) {
-  cron.schedule('30 13 * * 0', async () => {
+  cron.schedule('0 13 * * *', async () => {
     try {
       const leaderboardService = new LeaderBoardService();
       await leaderboardService.refreshLeaderBoardCache();
