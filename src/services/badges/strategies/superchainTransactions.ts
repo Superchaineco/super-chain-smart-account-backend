@@ -20,6 +20,7 @@ export class SuperChainTransactionsStrategy extends BaseBadgeStrategy {
         totalTxs += await this.getAlchemyTransactionsCount(CHAIN_KEYS.INK, NETWORKS[CHAIN_KEYS.INK], eoas);
         totalTxs += await this.getAlchemyTransactionsCount(CHAIN_KEYS.SONEIUM, NETWORKS[CHAIN_KEYS.SONEIUM], eoas);
         totalTxs += await this.getAlchemyTransactionsCount(CHAIN_KEYS.UNICHAIN, NETWORKS[CHAIN_KEYS.UNICHAIN], eoas);
+        totalTxs += await this.getAlchemyTransactionsCount(CHAIN_KEYS.CELO, NETWORKS[CHAIN_KEYS.CELO], eoas);
 
         const apiCall: ExternalApiCall = {
             service: "blockscout",

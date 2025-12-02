@@ -34,6 +34,7 @@ export const CHAIN_KEYS = {
   SONEIUM: "Soneium",
   UNICHAIN: "unichain-130",
   MODE: "mode-34443",
+  CELO: "celo-42220"
 } as const;
 
 export const NETWORKS: Record<(typeof CHAIN_KEYS)[keyof typeof CHAIN_KEYS], Network> = {
@@ -43,6 +44,7 @@ export const NETWORKS: Record<(typeof CHAIN_KEYS)[keyof typeof CHAIN_KEYS], Netw
   [CHAIN_KEYS.SONEIUM]: Network.SONEIUM_MAINNET,
   [CHAIN_KEYS.UNICHAIN]: Network.UNICHAIN_MAINNET,
   [CHAIN_KEYS.MODE]: Network.ETH_MAINNET,
+  [CHAIN_KEYS.CELO]: Network.CELO_MAINNET,
 };
 
 export enum EXPLORER_SERVICES {
