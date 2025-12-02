@@ -8,15 +8,15 @@ import router from './routes/router';
 import authRouter from './routes/auth';
 import {
   DOMAIN,
-  ENV,
-  ENVIRONMENTS,
-  SESSION_SECRET,
+  ENV
 } from './config/superChain/constants';
 import { redis } from './utils/cache';
 import { setupBullBoard } from './utils/bullBoard';
 const app = express();
 console.debug('ENV', ENV);
 console.log('DOMAIN:', JSON.stringify(DOMAIN));
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
 
 setupBullBoard(app);
 
@@ -60,6 +60,11 @@ app.use((req, res, next) => {
 //     rolling: true,
 //   })
 // );
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  swaggerOptions: { persistAuthorization: true },
+}));
+app.get("/docs.json", (_req, res) => res.json(swaggerSpec));
 
 app.set('trust proxy', 1);
 app.use(morgan('tiny'));

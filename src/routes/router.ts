@@ -20,6 +20,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handleSafeDetail, handleTxHistory, handleTxPropose, handleTxQueued, SAFE_CLIENT_BASE } from '@/services/safe.service';
 import { getAirdrop, postAirdrop } from '@/controllers/airdrop';
 import selfVerify, { getNationalitiesBatch, selfCheck } from '@/controllers/self';
+import { getAccount, getAccountByUsername, getAllAccounts, postAccountsByEOAs, requireApiKey } from '@/controllers/account';
 
 
 
@@ -75,6 +76,17 @@ routes.post('/raffle/claim', raffleClaim);
 routes.post('/world-id/verify/:account', verifyOwner, verifyWorldId);
 
 routes.post('/farcaster/verify/:account', verifyOwner, verifyFarcaster);
+
+routes.use('/account/by-address/:address', requireApiKey, getAccount);
+
+routes.use(
+  '/account/by-username/:username',
+  requireApiKey,
+  getAccountByUsername
+);
+routes.use('/accounts', requireApiKey, getAllAccounts);
+
+routes.post('/accounts/by-eoas', requireApiKey, postAccountsByEOAs);
 
 
 

@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { redisService } from '@/services/redis.service';
 import { castToUserIdentifier } from '@selfxyz/common/utils/circuits/uuid';
-import { Console } from 'console';
-import { pool } from '@/config/superChain/constants';
 import { SelfService } from '@/services/self.service';
+import { pgPool } from '@/config/db';
 
 export default async function selfVerify(req: Request, res: Response) {
   if (req.method === 'POST') {
@@ -78,6 +76,7 @@ interface NationalityResponse {
 }
 
 export async function getNationalitiesBatch(req: Request, res: Response) {
+  const client = await pgPool.connect();
   try {
     const { addresses } = req.body;
 
@@ -106,7 +105,7 @@ export async function getNationalitiesBatch(req: Request, res: Response) {
 
     type Row = { account: string; nationality: string | null };
 
-    const { rows } = await pool.query<Row>(
+    const { rows } = await client.query<Row>(
       `
   SELECT account, nationality
   FROM public.super_accounts
@@ -135,5 +134,8 @@ export async function getNationalitiesBatch(req: Request, res: Response) {
     return res.status(500).json({
       error: 'Internal error',
     });
+  }
+  finally {
+    client.release();
   }
 }

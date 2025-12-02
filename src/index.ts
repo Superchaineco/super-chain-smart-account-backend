@@ -5,8 +5,24 @@ import cron from 'node-cron';
 import { LeaderBoardService } from './services/leaderboard.service';
 import { ENV, ENVIRONMENTS } from './config/superChain/constants';
 
+
+import { pgPool } from './config/db'; // o la ruta donde definas el pool
+
+process.on('SIGINT', async () => {
+  console.log('🔻 Gracefully shutting down...');
+  await pgPool.end();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('🔻 Gracefully shutting down...');
+  await pgPool.end();
+  process.exit(0);
+});
+
+
 if (ENV === ENVIRONMENTS.production) {
-  cron.schedule('30 13 * * 0', async () => {
+  cron.schedule('0 13 * * *', async () => {
     try {
       const leaderboardService = new LeaderBoardService();
       await leaderboardService.refreshLeaderBoardCache();

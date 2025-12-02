@@ -7,12 +7,7 @@ export enum ENVIRONMENTS {
   staging = 'staging',
 }
 
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // requerido en Railway
-  },
-});
+
 
 export const ENV = Object.values(ENVIRONMENTS).includes(
   process.env.NODE_ENV as ENVIRONMENTS
@@ -52,7 +47,7 @@ const config = {
 
 import SuperChainModuleABI from './abi/SuperChainModule.json';
 import SunnyAirdropABI from './abi/SunnyAirdrop.json';
-import { Pool } from 'pg';
+
 import RedeemPerkABI from './abi/RedeemPerk.json';
 import SA_AirdropABI from './abi/SA_Airdrop.json';
 export const SUPER_CHAIN_MODULE_ABI = SuperChainModuleABI;
@@ -105,3 +100,4 @@ export const ECO_ACCOUNTS_PERKS_ADDRESS = process.env.ECO_ACCOUNTS_PERKS_ADDRESS
 export const REDEEM_PERK_ABI = RedeemPerkABI;
 export const SUPERCHAIN_ECO_AIRDROP_ADDRESS =  process.env.SUPERCHAIN_ECO_AIRDROP_ADDRESS;
 export const SUPERCHAIN_ECO_AIRDROP_ABI = SA_AirdropABI;
+export const BLOCKSCOUT_API_KEY = process.env.BLOCKSCOUT_API_KEY || '';

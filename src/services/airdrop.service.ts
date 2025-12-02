@@ -6,6 +6,7 @@ import {
   SUPERCHAIN_ECO_AIRDROP_ADDRESS,
   SUPERCHAIN_ECO_AIRDROP_ABI,
 } from "@/config/superChain/constants";
+import { pgPool } from "@/config/db";
 
 // -----------------------------
 // Types
@@ -73,12 +74,7 @@ export class AirdropService {
 
   constructor(pool?: Pool) {
     // You can inject a shared Pool from outside for tests / DI.
-    this.pool =
-      pool ??
-      new Pool({
-        connectionString: process.env.DATABASE_URL,
-        // optional: max, idleTimeoutMillis, etc.
-      });
+    this.pool = pool ?? pgPool;
 
     const provider = new JsonRpcProvider(JSON_RPC_PROVIDER);
     this.airdropContract = new Contract(SUPERCHAIN_ECO_AIRDROP_ADDRESS, SUPERCHAIN_ECO_AIRDROP_ABI, provider);
@@ -136,7 +132,7 @@ RETURNING ar.hash;
   }
 
   /** Fetch latest airdrop row for an account and shape the API response. */
-  public async fetchAirdropForAccount(input: FetchAirdropForAccountInput, conditionId: number, airdropLabel:string): Promise<GetAirdropResponse> {
+  public async fetchAirdropForAccount(input: FetchAirdropForAccountInput, conditionId: number, airdropLabel: string): Promise<GetAirdropResponse> {
     const { account } = input;
     const { addrBuf } = normalizeAccountToBytea(account);
 
@@ -159,7 +155,7 @@ RETURNING ar.hash;
       LIMIT 1;
     `;
 
-    const { rows } = await this.pool.query(q, [addrBuf,airdropLabel]);
+    const { rows } = await this.pool.query(q, [addrBuf, airdropLabel]);
 
     // Not found: mirror your previous fallback payload
     if (!rows || rows.length === 0) {
