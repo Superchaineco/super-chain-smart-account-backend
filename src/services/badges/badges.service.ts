@@ -14,6 +14,7 @@ import { Pool } from 'pg';
 import badgesInfo from './badges_info.json';
 import { BadgeInfo } from '../dto/badge_data';
 import campaignsData from '../../services/campaigns/campaigns.json';
+import erc20Info from './erc20_info.json';
 
 export type Badge = GetUserBadgesQuery['accountBadges'][number];
 export type ResponseBadge = {
@@ -334,7 +335,7 @@ export class BadgesServices {
           const totalBadgeTiers = badge.badgeTiers.length;
           const claimedBadgeTiers = badge.tier;
           const claimableBadgeTier = badge.claimableTier ?? 0;
-          const totalClaimedPerks = badge.perks.totalClaims?? 0;          
+          const totalClaimedPerks = badge.perks.totalClaims ?? 0;
           const isClaimedPerkFromSc = badge.perkClaims?.length > 0;
 
           const claimablePerk = (claimedBadgeTiers >= totalBadgeTiers ||
@@ -344,17 +345,41 @@ export class BadgesServices {
 
           badge.perkClaimed = isClaimedPerkFromSc;
           badge.claimableByPerk = claimablePerk;
+          if (isClaimedPerkFromSc) {
+            this.setBadgeRewardWhenPerkIsClaimed(badge);
+          }
+          else {
+            badge.tokenBadge = badgeInfo.token_badge_data;
+            badge.tokenBadge.maxClaims =
+              tokenBadgeData && tokenBadgeData != null
+                ? Number(tokenBadgeData?.maxClaims)
+                : 0;
+            badge.tokenBadge.totalPerkClaims = totalClaimedPerks;
+          }
 
-          badge.tokenBadge = badgeInfo.token_badge_data;
-          badge.tokenBadge.maxClaims =
-            tokenBadgeData && tokenBadgeData != null
-              ? Number(tokenBadgeData?.maxClaims)
-              : 0;
-          badge.tokenBadge.totalPerkClaims = totalClaimedPerks;
 
         }
       }
     });
+  }
+
+  private setBadgeRewardWhenPerkIsClaimed(badge: any): void {
+
+    const perkDetail = badge.perkClaims[0].perk;
+    const { symbol, decimals } = this.getSymbolDecimalsFromToken(perkDetail.token);
+    const amount = Number(perkDetail.amount) / 10 ** decimals;
+    badge.tokenBadge = {
+      maxClaims: Number(perkDetail.maxClaims),
+      amount: amount,
+      symbol: symbol,
+    };
+  }
+
+  private getSymbolDecimalsFromToken(token: string): { symbol: string, decimals: number } {
+    const tokenInfo = erc20Info.find(
+      (data) => data.address == token
+    );
+    return { symbol: tokenInfo?.symbol ?? '', decimals: Number(tokenInfo?.decimals ?? 0) };
   }
 
   private async updateBadgeDataForAccount(
