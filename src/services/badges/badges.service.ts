@@ -13,8 +13,8 @@ import { pgPool } from '@/config/db';
 import badgesInfo from './badges_info.json';
 import { BadgeInfo } from '../dto/badge_data';
 import campaignsData from '../../services/campaigns/campaigns.json';
-import { Pool } from 'pg';
 import erc20Info from './erc20_info.json';
+import { Pool } from 'pg';
 
 export type Badge = GetUserBadgesQuery['accountBadges'][number];
 export type ResponseBadge = {
@@ -416,6 +416,7 @@ ORDER BY t.badge_id, t.tier;
       maxClaims: Number(perkDetail.maxClaims),
       amount: amount,
       symbol: symbol,
+      totalPerkClaims: Number(perkDetail.totalClaims)
     };
   }
 
