@@ -92,6 +92,7 @@ export const Seasons: Season[] = [
       [CHAIN_KEYS.MODE]: [18_409_009, 26_271_409],
       [CHAIN_KEYS.INK]: [3_505_189, 19_211_989],
       [CHAIN_KEYS.SONEIUM]: [1_925_425, 9_787_825],
+      [CHAIN_KEYS.CELO]: [0, 0],
     },
   },
   {
