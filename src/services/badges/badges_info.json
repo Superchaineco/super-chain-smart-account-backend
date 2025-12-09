@@ -173,5 +173,11 @@
       "amount": "10"
     },
     "tiers": []
+  },  {
+    "badge_id": "28",
+    "token_badge": false,
+    "token_badge_data": null,
+    "count_unit": "transactions",
+    "tiers": []
   }
 ]
