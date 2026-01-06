@@ -33,6 +33,7 @@ export class VaultsStrategy extends BaseBadgeStrategy {
     const ttl = 3600; // 1 hora
 
     const fetchFunction = async () => {
+      return 0;
       const client = await this.pool.connect();
       try {
         const query = `SELECT * FROM vaults_transactions WHERE account = $1 ORDER BY block_time ASC`;
