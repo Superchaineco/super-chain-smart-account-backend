@@ -28,12 +28,12 @@ export type ResponseBadge = {
 };
 
 export class BadgesServices {
-  private pool: Pool;
+  
   private badgesInfo: BadgeInfo[] = badgesInfo as unknown as BadgeInfo[];
 
 
   constructor() {
-    this.pool = pgPool
+    
   }
   private badges: ResponseBadge[] = [];
   private queries = {
@@ -462,26 +462,48 @@ ORDER BY t.badge_id, t.tier;
   }
 
   private async getStatsForBadges() {
+    const CACHE_KEY: string = `badges:statsForBadges`;
+    const ttl: number = 120;
 
-    try {
-      const result = await this.pool.query(this.queries.getBadgeTierCumulativeStats);
-      return result.rows;
-    } catch (error) {
-      console.error('Error getting stats for badges:', error);
-      return null;
-    }
+    const fetchFunction: () => Promise<unknown> = async () => {
+      try {
+        const result = await pgPool.query(this.queries.getBadgeTierCumulativeStats);
+        return result.rows;
+      } catch (error) {
+        console.error('Error getting stats for badges:', error);
+        return null;
+      }
+    };
+
+    return redisService.getCachedDataWithCallback(
+      CACHE_KEY,
+      fetchFunction,
+      ttl,
+      false
+    );
   }
 
   private async getAccountQuantity() {
+    const CACHE_KEY: string = `badges:accountQuantity`;
+    const ttl: number = 120;
 
-    try {
-      const result = await this.pool.query(this.queries.getAccountQuantity);
-      const accounts = result.rows[0]?.count ?? 0;
+    const fetchFunction: () => Promise<number> = async () => {
+      try {
+        const result = await pgPool.query(this.queries.getAccountQuantity);
+        const accounts: number = Number(result.rows[0]?.count ?? 0);
+        return accounts;
+      } catch (error) {
+        console.error('Error getting account quantity:', error);
+        return 0;
+      }
+    };
 
-      return accounts;
-    } catch (error) {
-      console.error('Error getting account quantity:', error);
-      return 0;
-    }
+    return redisService.getCachedDataWithCallback(
+      CACHE_KEY,
+      fetchFunction,
+      ttl,
+      false
+    );
   }
+
 }
