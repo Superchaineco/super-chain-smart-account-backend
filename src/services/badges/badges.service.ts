@@ -485,7 +485,7 @@ ORDER BY t.badge_id, t.tier;
 
   private async getAccountQuantity() {
     const CACHE_KEY: string = `badges:accountQuantity`;
-    const ttl: number = 120;
+    const ttl: number = 300;
 
     const fetchFunction: () => Promise<number> = async () => {
       try {
