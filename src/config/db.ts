@@ -7,8 +7,8 @@ export const pgPool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false },
     max: Number(process.env.PG_POOL_MAX ?? 50),
-    idleTimeoutMillis: 300_000,
-    connectionTimeoutMillis: 300_000, 
+    idleTimeoutMillis: 1000,
+    connectionTimeoutMillis: 1000, 
 });
 pgPool.on('connect', (c) => {
     c.query("SET statement_timeout='30s'; SET idle_in_transaction_session_timeout='30s';").catch(() => { });
