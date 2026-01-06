@@ -18,7 +18,7 @@ export class VaultsStrategy extends BaseBadgeStrategy {
   }
 
   async getValue(eoas: string[], extraData: any | undefined): Promise<number> {
-    return 0;
+    //return 0;
     const account = extraData.account
     const enableLogs = false;
 
