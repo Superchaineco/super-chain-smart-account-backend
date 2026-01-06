@@ -10,14 +10,15 @@ interface Threshold {
 }
 
 export class VaultsStrategy extends BaseBadgeStrategy {
-  private pool: Pool;
+ 
 
   constructor() {
     super();
-    this.pool = pgPool
+
   }
 
   async getValue(eoas: string[], extraData: any | undefined): Promise<number> {
+    return 0;
     const account = extraData.account
     const enableLogs = false;
 

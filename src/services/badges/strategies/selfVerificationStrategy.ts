@@ -7,7 +7,7 @@ export class SelfVerificationStrategy extends BaseBadgeStrategy {
 
     async getValue(eoas: string[], extraData: any | undefined): Promise<boolean> {
 
-
+        return false;
         const account = extraData.account
 
         const accountData = await getAccountByAddress(account)
