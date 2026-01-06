@@ -76,7 +76,7 @@ interface NationalityResponse {
 }
 
 export async function getNationalitiesBatch(req: Request, res: Response) {
-  const client = await pgPool.connect();
+  
   try {
     const { addresses } = req.body;
 
@@ -105,7 +105,7 @@ export async function getNationalitiesBatch(req: Request, res: Response) {
 
     type Row = { account: string; nationality: string | null };
 
-    const { rows } = await client.query<Row>(
+    const { rows } = await pgPool.query<Row>(
       `
   SELECT account, nationality
   FROM public.super_accounts
@@ -135,7 +135,5 @@ export async function getNationalitiesBatch(req: Request, res: Response) {
       error: 'Internal error',
     });
   }
-  finally {
-    client.release();
-  }
+  
 }

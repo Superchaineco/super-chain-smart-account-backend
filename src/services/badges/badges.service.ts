@@ -14,7 +14,7 @@ import badgesInfo from './badges_info.json';
 import { BadgeInfo } from '../dto/badge_data';
 import campaignsData from '../../services/campaigns/campaigns.json';
 import erc20Info from './erc20_info.json';
-import { Pool } from 'pg';
+
 
 export type Badge = GetUserBadgesQuery['accountBadges'][number];
 export type ResponseBadge = {

@@ -86,7 +86,7 @@ async function getPointsForClaims(
   badgeIds: string[],
   blockNumbers: number[],
 ): Promise<{ distributed_points: number; myPoints: number; my_points: { id: number; points: number }[] }> {
-  const client = await pool.connect();
+ 
   try {
     if (badgeIds.length === 0) {
       return { distributed_points: 0, myPoints: 0, my_points: [] };
@@ -104,7 +104,7 @@ async function getPointsForClaims(
       WHERE badge_id = ANY($1)
         AND block_number BETWEEN $2 AND $3
     `;
-    const resultDistributed = await client.query(queryDistributed, [numericBadgeIds, from, to]);
+    const resultDistributed = await pgPool.query(queryDistributed, [numericBadgeIds, from, to]);
     const distributed_points: number = Number(resultDistributed.rows[0]?.distributed_points ?? 0);
 
 
@@ -118,7 +118,7 @@ async function getPointsForClaims(
         AND block_number BETWEEN $3 AND $4
       GROUP BY badge_id
     `;
-    const resultMyPoints = await client.query(queryMyPoints, [numericBadgeIds, account, from, to]);
+    const resultMyPoints = await pgPool.query(queryMyPoints, [numericBadgeIds, account, from, to]);
 
     const my_points: { id: number; points: number }[] = resultMyPoints.rows.map((row) => ({
       id: Number(row.id),
@@ -132,9 +132,7 @@ async function getPointsForClaims(
   } catch (err) {
     console.error('Error fetching points for claims:', err);
     throw err;
-  } finally {
-    client.release();
-  }
+  } 
 }
 
 
