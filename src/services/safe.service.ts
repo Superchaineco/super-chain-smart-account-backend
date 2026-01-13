@@ -110,6 +110,11 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
         });
         let data: any;
         try {
+            const uCl = upstream.headers.get('content-length');
+            if (uCl === '0') {
+                console.warn(`[SAFE][${reqId}] UPSTREAM empty body (cl=0) -> returning {}`);
+                return { url, status: upstream.status, headers, body: {} };
+            }
             data = await upstream.json();
         } catch (err: any) {
             const raw = await upstreamClone.text();
