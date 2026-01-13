@@ -71,6 +71,9 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
         method,
         headers: buildUpstreamHeaders(req),
     };
+    if (method === 'POST' && req.path.endsWith('/messages')) {
+        console.info(`[SAFE][${reqId}] POST /messages bodyLen=${req.header('content-length') ?? 'na'}`);
+    }
 
     if (!['GET', 'HEAD'].includes(method)) {
         const bodyStr = typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {});
@@ -86,6 +89,15 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
     const fetchApi = async () => {
 
         const upstream = await fetch(url, init);
+        const uCt = upstream.headers.get('content-type');
+        const uCl = upstream.headers.get('content-length');
+
+        if (!uCt || uCl === '0' || uCl == null) {
+            console.warn(
+                `[SAFE][${reqId}] UPSTREAM suspicious headers status=${upstream.status} ct=${uCt ?? 'na'} cl=${uCl ?? 'na'}`
+            );
+        }
+
         console.info(
             `[SAFE][${reqId}] UPSTREAM status=${upstream.status} ms=${Date.now() - startMs} ct=${upstream.headers.get('content-type') ?? 'na'} cl=${upstream.headers.get('content-length') ?? 'na'}`
         );
@@ -98,6 +110,13 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
         try {
             data = await upstream.json();
         } catch (err: any) {
+            try {
+                const raw = await upstream.text(); // OJO: esto solo sirve si NO consumiste el body antes.
+                console.error(`[SAFE][${reqId}] UPSTREAM rawLen=${raw.length} rawSnippet="${raw.slice(0, 200)}"`);
+            } catch (e: any) {
+                console.error(`[SAFE][${reqId}] UPSTREAM could not read raw text msg=${e?.message ?? e}`);
+            }
+
             console.error(
                 `[SAFE][${reqId}] UPSTREAM json() failed status=${upstream.status} ct=${upstream.headers.get('content-type') ?? 'na'} msg=${err?.message ?? err}`
             );
