@@ -17,7 +17,7 @@ import { raffleClaim } from '@/controllers/raffle';
 import { verifyWorldId } from '@/controllers/worldID';
 import { verifyFarcaster } from '@/controllers/farcaster';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handleSafeDetail, handleTxHistory, handleTxPropose, handleTxQueued, SAFE_CLIENT_BASE } from '@/services/safe.service';
+import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handleSafeDetail, handleSafeRequest, handleTxHistory, handleTxPropose, handleTxQueued, SAFE_CLIENT_BASE } from '@/services/safe.service';
 import { getAirdrop, postAirdrop } from '@/controllers/airdrop';
 import selfVerify, { getNationalitiesBatch, selfCheck } from '@/controllers/self';
 import { getAccount, getAccountByUsername, getAllAccounts, postAccountsByEOAs, requireApiKey } from '@/controllers/account';
@@ -89,47 +89,11 @@ routes.use('/accounts', requireApiKey, getAllAccounts);
 routes.post('/accounts/by-eoas', requireApiKey, postAccountsByEOAs);
 
 
-
-const reSafeDetailExact =
-  /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/?$/;
-const reBalancesUsdExact =
-  /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/balances\/usd\/?$/;
-const reChainsRoot = /^\/v1\/chains\/?$/;
-const reMessagesExact =
-  /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/messages\/?$/;
-const reTxHistoryExact =
-  /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/transactions\/history\/?$/;
-const reTxQueuedExact =
-  /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/transactions\/queued\/?$/;
-const reModuleTx = /^\/v1\/chains\/(\d+)\/transactions\/([A-Za-z0-9_]+)$/;
-const reTxProposeExact =
-  /^\/v1\/chains\/(\d+)\/transactions\/(0x[a-fA-F0-9]{40})\/propose\/?$/;
-
-// ======================
-// Dispatcher
-// ======================
-
 routes.use('/safe', async (req, res, next) => {
   const p = req.path;
-
-  try {
-    if (reBalancesUsdExact.test(p)) { await handleBalancesUsd(req, res); return; }
-    if (reSafeDetailExact.test(p)) { await handleSafeDetail(req, res); return; }
-    if (reChainsRoot.test(p)) { await handleChains(req, res); return; }
-    if (reMessagesExact.test(p)) { await handleMessages(req, res); return; }
-    if (reTxHistoryExact.test(p)) { await handleTxHistory(req, res); return; }
-    if (reTxQueuedExact.test(p)) { await handleTxQueued(req, res); return; }
-    if (reModuleTx.test(p)) { await handleModuleTx(req, res); return; }
-    if (reTxProposeExact.test(p)) { await handleTxPropose(req, res); return; }
-  } catch (err: any) {
-    console.error('[SAFE DISPATCH ERROR]', err?.message);
-    res.status(502).json({ error: 'Upstream error', detail: err?.message });
-    return;
-  }
-
+  await handleSafeRequest(p, req, res)
   return next();
 });
-
 
 
 routes.use(

@@ -6,12 +6,7 @@ import { redisService } from './redis.service';
 export const SAFE_CLIENT_BASE = 'https://safe-client.safe.global'; // upstream actual
 const SAFE_BEARER = () => process.env.SAFE_API_TOKEN ?? ''; // <-- pon tu token en env
 
-// ======================
-// Helpers
-// ======================
 
-// Copia headers “seguros” al upstream y añade Bearer.
-// Puedes afinar la lista si necesitas re-enviar más/menos headers.
 function buildUpstreamHeaders(req: Request): Record<string, string> {
     const h = new Headers();
     // Reenvía algunos headers típicos
@@ -129,7 +124,40 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
 
 }
 
+const reSafeDetailExact =
+    /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/?$/;
+const reBalancesUsdExact =
+    /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/balances\/usd\/?$/;
+const reChainsRoot = /^\/v1\/chains\/?$/;
+const reMessagesExact =
+    /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/messages\/?$/;
+const reTxHistoryExact =
+    /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/transactions\/history\/?$/;
+const reTxQueuedExact =
+    /^\/v1\/chains\/(\d+)\/safes\/(0x[a-fA-F0-9]{40})\/transactions\/queued\/?$/;
+const reModuleTx = /^\/v1\/chains\/(\d+)\/transactions\/([A-Za-z0-9_]+)$/;
+const reTxProposeExact =
+    /^\/v1\/chains\/(\d+)\/transactions\/(0x[a-fA-F0-9]{40})\/propose\/?$/;
 
+
+
+export async function handleSafeRequest(p: string, req: Request, res: Response): Promise<void> {
+
+    try {
+        if (reBalancesUsdExact.test(p)) { await handleBalancesUsd(req, res); return; }
+        if (reSafeDetailExact.test(p)) { await handleSafeDetail(req, res); return; }
+        if (reChainsRoot.test(p)) { await handleChains(req, res); return; }
+        if (reMessagesExact.test(p)) { await handleMessages(req, res); return; }
+        if (reTxHistoryExact.test(p)) { await handleTxHistory(req, res); return; }
+        if (reTxQueuedExact.test(p)) { await handleTxQueued(req, res); return; }
+        if (reModuleTx.test(p)) { await handleModuleTx(req, res); return; }
+        if (reTxProposeExact.test(p)) { await handleTxPropose(req, res); return; }
+    } catch (err: any) {
+        console.error('[SAFE DISPATCH ERROR]', err?.message);
+        res.status(502).json({ error: 'Upstream error', detail: err?.message });
+        return;
+    }
+}
 
 
 
@@ -148,58 +176,48 @@ function getAddress(req: Request): string | undefined {
 
 
 export async function handleTxPropose(req: Request, res: Response): Promise<void> {
-  // Va a SAFE_CLIENT_BASE + req.url y añade Bearer automáticamente
-  await passthroughUpstream(req, res);
-  return;
+    // Va a SAFE_CLIENT_BASE + req.url y añade Bearer automáticamente
+    await passthroughUpstream(req, res);
+    return;
 }
 /** GET safe detail: /v1/chains/:chainId/safes/:address */
 export async function handleSafeDetail(req: Request, res: Response): Promise<void> {
-    const chainId = getChainId(req);
-    const address = getAddress(req);
-    // TODO: mapear chainId → key, consultar otros servicios, ensamblar payload
+
     await passthroughUpstream(req, res);
     return;
 }
 
 /** GET balances USD: /v1/chains/:chainId/safes/:address/balances/usd */
 export async function handleBalancesUsd(req: Request, res: Response): Promise<void> {
-    const chainId = getChainId(req);
-    const address = getAddress(req);
-    // TODO: enriquecer balances, normalizar formato, cache/currency rates
+
     await passthroughUpstream(req, res, 15);
     return;
 }
 
 /** GET chains root: /v1/chains */
 export async function handleChains(req: Request, res: Response): Promise<void> {
-    // TODO: cachear lista, traducir IDs, filtrar redes soportadas
+
     await passthroughUpstream(req, res, 7200);
     return;
 }
 
 /** GET messages: /v1/chains/:chainId/safes/:address/messages */
 export async function handleMessages(req: Request, res: Response): Promise<void> {
-    const chainId = getChainId(req);
-    const address = getAddress(req);
-    // TODO: mergear con mensajes offchain/otros backends, paginar
+
     await passthroughUpstream(req, res);
     return;
 }
 
 /** GET tx history: /v1/chains/:chainId/safes/:address/transactions/history */
 export async function handleTxHistory(req: Request, res: Response): Promise<void> {
-    const chainId = getChainId(req);
-    const address = getAddress(req);
-    // TODO: componer con tu backend, ordenar, mapear estados, paginación
+
     await passthroughUpstream(req, res, 60);
     return;
 }
 
 /** GET tx queued: /v1/chains/:chainId/safes/:address/transactions/queued */
 export async function handleTxQueued(req: Request, res: Response): Promise<void> {
-    const chainId = getChainId(req);
-    const address = getAddress(req);
-    // TODO: idem history, priorización, merge con colas internas
+
     await passthroughUpstream(req, res);
     return;
 }
