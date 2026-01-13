@@ -89,6 +89,8 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
     const fetchApi = async () => {
 
         const upstream = await fetch(url, init);
+        const upstreamClone = upstream.clone();
+
         const uCt = upstream.headers.get('content-type');
         const uCl = upstream.headers.get('content-length');
 
@@ -110,16 +112,8 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
         try {
             data = await upstream.json();
         } catch (err: any) {
-            try {
-                const raw = await upstream.text(); // OJO: esto solo sirve si NO consumiste el body antes.
-                console.error(`[SAFE][${reqId}] UPSTREAM rawLen=${raw.length} rawSnippet="${raw.slice(0, 200)}"`);
-            } catch (e: any) {
-                console.error(`[SAFE][${reqId}] UPSTREAM could not read raw text msg=${e?.message ?? e}`);
-            }
-
-            console.error(
-                `[SAFE][${reqId}] UPSTREAM json() failed status=${upstream.status} ct=${upstream.headers.get('content-type') ?? 'na'} msg=${err?.message ?? err}`
-            );
+            const raw = await upstreamClone.text();
+            console.error(`[SAFE][${reqId}] UPSTREAM rawLen=${raw.length} rawSnippet="${raw.slice(0, 200)}"`);
             throw err;
         }
 
