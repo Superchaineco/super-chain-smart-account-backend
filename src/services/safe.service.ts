@@ -58,6 +58,14 @@ type CachedResponse = {
 async function passthroughUpstream(req: Request, res: Response, ttl?: number): Promise<void> {
     const url = upstreamUrlFromReq(req);
     const method = req.method.toUpperCase();
+    const startMs = Date.now();
+    const reqId =
+        (req.headers['x-request-id'] as string) ??
+        `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+    console.info(
+        `[SAFE][${reqId}] IN ${method} path=${req.path} originalUrl=${req.originalUrl} upstream=${url} ttl=${ttl ?? 0} cl=${req.header('content-length') ?? 'na'} ct=${req.header('content-type') ?? 'na'}`
+    );
 
     const init: RequestInit = {
         method,
@@ -66,20 +74,36 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
 
     if (!['GET', 'HEAD'].includes(method)) {
         const bodyStr = typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {});
+        console.debug(`[SAFE][${reqId}] IN bodyBytes=${Buffer.byteLength(bodyStr, 'utf8')}`);
+
         (init.headers as Record<string, string>)['content-type'] ??= 'application/json';
         (init as any).body = bodyStr;
     }
 
+    res.once('finish', () => console.info(`[SAFE][${reqId}] RES finish status=${res.statusCode} ms=${Date.now() - startMs}`));
+    res.once('close', () => console.warn(`[SAFE][${reqId}] RES close  status=${res.statusCode} ms=${Date.now() - startMs} headersSent=${res.headersSent}`));
 
     const fetchApi = async () => {
 
         const upstream = await fetch(url, init);
+        console.info(
+            `[SAFE][${reqId}] UPSTREAM status=${upstream.status} ms=${Date.now() - startMs} ct=${upstream.headers.get('content-type') ?? 'na'} cl=${upstream.headers.get('content-length') ?? 'na'}`
+        );
 
         const headers: HeaderEntry[] = [];
         upstream.headers.forEach((value, key) => {
             if (!['content-security-policy'].includes(key)) headers.push({ key, value });
         });
-        const data = await upstream.json();
+        let data: any;
+        try {
+            data = await upstream.json();
+        } catch (err: any) {
+            console.error(
+                `[SAFE][${reqId}] UPSTREAM json() failed status=${upstream.status} ct=${upstream.headers.get('content-type') ?? 'na'} msg=${err?.message ?? err}`
+            );
+            throw err;
+        }
+
         return {
             url,
             status: upstream.status,
@@ -91,11 +115,17 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
 
 
     const canCache = method === 'GET' && ttl && ttl > 0;
+    console.debug(`[SAFE][${reqId}] CACHE ${canCache ? `ON ttl=${ttl}` : 'OFF'}`);
+
     const response: CachedResponse = canCache
         ? await redisService.getCachedDataWithCallback(url, fetchApi, ttl, true)
         : await fetchApi();
 
     res.status(response.status);
+    console.info(
+        `[SAFE][${reqId}] OUT status=${response.status} ms=${Date.now() - startMs} headersSent=${res.headersSent}`
+    );
+
 
     for (const { key, value } of response.headers) {
         // Salta headers problemáticos/hop-by-hop
@@ -117,9 +147,9 @@ async function passthroughUpstream(req: Request, res: Response, ttl?: number): P
         }
     }
 
-
     res.json(response.body);
     return;
+
 
 
 }
