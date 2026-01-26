@@ -21,6 +21,7 @@ import { handleBalancesUsd, handleChains, handleMessages, handleModuleTx, handle
 import { getAirdrop, postAirdrop } from '@/controllers/airdrop';
 import selfVerify, { getNationalitiesBatch, selfCheck } from '@/controllers/self';
 import { getAccount, getAccountByUsername, getAllAccounts, postAccountsByEOAs, requireApiKey } from '@/controllers/account';
+import { liskBoost } from '@/controllers/liskBoost';
 
 
 
@@ -87,6 +88,10 @@ routes.use(
 routes.use('/accounts', requireApiKey, getAllAccounts);
 
 routes.post('/accounts/by-eoas', requireApiKey, postAccountsByEOAs);
+
+
+
+routes.post('/lisk-boost', liskBoost);
 
 
 routes.use('/safe', async (req, res, next) => {
